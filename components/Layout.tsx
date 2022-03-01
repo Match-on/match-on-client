@@ -13,6 +13,7 @@ export default function Layout({ children }: LayoutProps) {
       <Header />
       <NavBar />
       {children}
+      {/* <div style={{ background: "red", width: "1535px", height: "720px" }}>jh</div> */}
     </React.Fragment>
   );
 }
