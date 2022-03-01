@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import Logo from "./logo";
 import sidebarData, { LogOutIcon, MyPageIcon } from "./data";
 import NavBarDetail from "./NavBarDetail";
+import NavDetail from "./NavBarDetail";
 
 const Nav = styled.div`
   position: fixed;
@@ -25,10 +26,15 @@ const NavListWrapper = styled.ul`
 `;
 
 const NavList = styled.li`
-  margin-bottom: 15px;
-  width: 50px;
+  padding: 30px 0px 30px 0px;
+  width: 100%;
   height: 50px;
   text-align: center;
+`;
+
+const NavMenu = styled.a`
+  font-size: 18px;
+  cursor: pointer;
 `;
 
 const SettingWrapper = styled.ul`
@@ -42,40 +48,48 @@ const SettingWrapper = styled.ul`
 `;
 
 const LogOutdiv = styled.div`
-  padding-top: 15px;
+  padding-top: 20px;
   cursor: pointer;
 `;
 
 export default function NavBar() {
   // const router = useRouter();
-  const [sidebar, setSidebar] = useState(false);
-  const showSidebar = () => setSidebar(true);
-  const closeSidebar = () => setSidebar(false);
+  const [showDetail, setShowDetail] = useState(false);
+  const clickSidebar = () => {
+    setShowDetail(!showDetail);
+    console.log("click");
+  };
   return (
-    <Nav>
-      <Logo />
-      <NavListWrapper>
-        {sidebarData.map((v, i) => (
-          <NavList key={`sidebar-${i}`}>
-            <Link href={v.link}>
-              <a>{v.icon}</a>
+    <React.Fragment>
+      <Nav>
+        <Logo />
+        <NavListWrapper>
+          {sidebarData.map((v, i) => (
+            <NavList key={`sidebar-${i}`} onClick={() => setShowDetail(true)}>
+              <Link href={v.link}>
+                <NavMenu>{v.icon}</NavMenu>
+              </Link>
+            </NavList>
+          ))}
+        </NavListWrapper>
+        <SettingWrapper>
+          <NavList>
+            <Link href="/mypage">
+              <NavMenu>
+                <MyPageIcon />
+              </NavMenu>
             </Link>
+            <LogOutdiv onClick={() => console.log("logout")}>
+              <LogOutIcon />
+            </LogOutdiv>
           </NavList>
-        ))}
-      </NavListWrapper>
-      <SettingWrapper>
-        <NavList>
-          <Link href="/mypage">
-            <a>
-              <MyPageIcon />
-            </a>
-          </Link>
-          <LogOutdiv onClick={() => console.log("logout")}>
-            <LogOutIcon />
-          </LogOutdiv>
-        </NavList>
-      </SettingWrapper>
-    </Nav>
+        </SettingWrapper>
+      </Nav>
+      <button style={{ position: "fixed", left: showDetail ? "380px" : "100px" }} onClick={clickSidebar}>
+        show
+      </button>
+      {showDetail && <NavBarDetail />}
+    </React.Fragment>
   );
 }
 {
