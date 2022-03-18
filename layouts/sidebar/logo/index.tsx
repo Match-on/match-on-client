@@ -6,14 +6,18 @@ import { ImHome } from "react-icons/im";
 const LogoFrame = styled.div`
   position: absolute;
   width: 100%;
-  height: 50px;
+  height: 83px;
+  text-align: center;
   .logo {
+    display: inline-block;
     position: absolute;
     color: #fff;
-    font-size: 28px;
-    top: 35px;
+    font-size: 30px;
+    left: 20px;
+    top: 43px;
     cursor: pointer;
-    margin-left: 30px;
+    border: 1px solid black;
+    background-color: #47d2d2;
   }
 `;
 
