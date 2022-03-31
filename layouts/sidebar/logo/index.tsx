@@ -33,4 +33,8 @@ const Logo = () => {
   );
 };
 
+export const LogoName = () => {
+  return <LogoFrame>match-on</LogoFrame>;
+};
+
 export default Logo;
