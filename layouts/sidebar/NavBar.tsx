@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import styled from "@emotion/styled";
+import { jsx, keyframes, css } from "@emotion/react";
 
-import Logo from "./logo";
+import Logo, { LogoName } from "./logo";
 import sidebarData from "./data";
 
 const Nav = styled.div`
@@ -27,27 +28,39 @@ const NavListWrapper = styled.ul`
 
 const NavList = styled.li`
   width: 100%;
-  width: 25px;
   height: 25px;
   margin-bottom: 37px;
   &:hover {
-    border: 2px solid black;
   }
 `;
 
 const NavMenu = styled.a`
+  width: 100%;
+  font-size: 16px;
   cursor: pointer;
 `;
-
-const NavDetail1 = styled.div`
+const smoothappear = keyframes`
+  0%{
+    transform:translateX(-114px);
+  }
+  50%{
+    transform:translateX(-50px);
+  }
+  100%{
+    transform:translateX(0);
+  }
+`;
+const NavDetail = styled.div`
   position: fixed;
   background: white;
   top: 0;
-  left: 70px;
+  left: -70px;
   width: 114px;
   height: 100%;
   background-color: white;
   z-index: 1;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
 `;
 
 const NavDetailWrapper = styled.ul`
@@ -60,25 +73,21 @@ const NavDetailWrapper = styled.ul`
   list-style: none;
 `;
 
-const NavDetail = styled.li`
+const NavDetailList = styled.li`
   width: 100%;
-  width: 25px;
+  width: 100%;
   height: 25px;
   margin-bottom: 37px;
   &:hover {
-    border: 2px solid black;
   }
 `;
 
 const NavBar: React.FC = () => {
   // const router = useRouter();
-  const [isHover, setIsHover] = useState(false);
-  const handleClick = () => {
-    setIsHover((prev) => !prev);
-    console.log("clicked");
-  };
+  const [isHover, setIsHover] = useState<boolean>(false);
+
   return (
-    <React.Fragment>
+    <div onMouseOver={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
       <Nav>
         <Logo />
         <NavListWrapper>
@@ -89,23 +98,23 @@ const NavBar: React.FC = () => {
               </Link>
             </NavList>
           ))}
-          <button onClick={handleClick}>hihi</button>
         </NavListWrapper>
       </Nav>
       {isHover && (
-        <NavDetail1>
+        <NavDetail style={{ left: "70px" }}>
+          <LogoName />
           <NavDetailWrapper>
             {sidebarData.map((v, i) => (
-              <NavDetail key={`sidebardetail-${i}`}>
+              <NavDetailList key={`sidebardetail-${i}`}>
                 <Link href={v.link}>
                   <NavMenu>{v.text}</NavMenu>
                 </Link>
-              </NavDetail>
+              </NavDetailList>
             ))}
           </NavDetailWrapper>
-        </NavDetail1>
+        </NavDetail>
       )}
-    </React.Fragment>
+    </div>
   );
 };
 
