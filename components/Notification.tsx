@@ -1,7 +1,8 @@
 import React from "react";
+import NotificationIcon from "../public/topbarSVG/notification.svg";
 
 const Notification: React.FC = () => {
-  return <div style={{ width: "25px", height: "25px", backgroundColor: "gray" }}></div>;
+  return <NotificationIcon />;
 };
 
 export default Notification;
