@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import styled from "@emotion/styled";
 import { jsx, keyframes, css } from "@emotion/react";
@@ -39,18 +40,16 @@ const NavMenu = styled.a`
   width: 100%;
   font-size: 16px;
   cursor: pointer;
-`;
-const smoothappear = keyframes`
-  0%{
-    transform:translateX(-114px);
+  &:hover {
+    color: #46d2d3;
   }
-  50%{
-    transform:translateX(-50px);
-  }
-  100%{
-    transform:translateX(0);
+  svg {
+    &:hover {
+      stroke: #46d2d3;
+    }
   }
 `;
+
 const NavDetail = styled.div`
   position: fixed;
   background: white;
@@ -66,7 +65,7 @@ const NavDetail = styled.div`
 
 const NavDetailWrapper = styled.ul`
   position: absolute;
-  top: 174px;
+  top: 176px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -78,13 +77,13 @@ const NavDetailList = styled.li`
   width: 100%;
   width: 100%;
   height: 25px;
-  margin-bottom: 37px;
+  margin-bottom: 38px;
   &:hover {
   }
 `;
 
 const NavBar: React.FC = () => {
-  // const router = useRouter();
+  // const router = useRouter(); //router.pathname()이 query 붙었을 때 어떻게 되는지 확인하고 작업
   const [isHover, setIsHover] = useState<boolean>(false);
 
   return (
