@@ -18,10 +18,12 @@ const Top = styled.div`
 const TopWrapper = styled.div`
   position: absolute;
   display: flex;
-  align-items: center;
-  right: 0;
-  width: 200px;
+  justify-content: space-between;
+  right: 50px;
+  top: 10px;
+  width: 150px;
   height: 100%;
+  cursor: pointer;
 `;
 
 const Topbar: React.FC = () => {
