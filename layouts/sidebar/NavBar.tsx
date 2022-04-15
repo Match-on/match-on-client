@@ -30,6 +30,7 @@ const NavList = styled.li`
   width: 100%;
   height: 25px;
   margin-bottom: 37px;
+  text-align: center;
   &:hover {
   }
 `;
