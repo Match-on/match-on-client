@@ -12,9 +12,9 @@ type LayoutProps = {
 
 const MainContent = styled.div`
   position: absolute;
-  width: calc(100% - 70px);
+  width: calc(100% - 80px);
   height: calc(100% - 50px);
-  left: 70px;
+  left: 80px;
   top: 50px;
   background-color: #f2f7f7;
 `;
