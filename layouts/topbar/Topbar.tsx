@@ -7,10 +7,10 @@ import styled from "@emotion/styled";
 
 const Top = styled.div`
   position: absolute;
-  width: calc(100% - 70px);
+  width: calc(100% - 80px);
   height: 50px;
   top: 0;
-  left: 70px;
+  left: 80px;
   background-color: #f2f7f7;
   border: 1px solid black;
 `;
