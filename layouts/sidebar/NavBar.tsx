@@ -13,7 +13,7 @@ const Nav = styled.div`
   background: white;
   top: 0;
   left: 0;
-  width: 70px;
+  width: 80px;
   height: 100%;
 `;
 
@@ -54,8 +54,8 @@ const NavDetail = styled.div`
   position: fixed;
   background: white;
   top: 0;
-  left: -70px;
-  width: 114px;
+  left: -80px;
+  width: 124px;
   height: 100%;
   background-color: white;
   z-index: 1;
@@ -66,6 +66,7 @@ const NavDetail = styled.div`
 const NavDetailWrapper = styled.ul`
   position: absolute;
   top: 176px;
+  left: 10px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -78,8 +79,6 @@ const NavDetailList = styled.li`
   width: 100%;
   height: 25px;
   margin-bottom: 38px;
-  &:hover {
-  }
 `;
 
 const NavBar: React.FC = () => {
@@ -101,7 +100,7 @@ const NavBar: React.FC = () => {
         </NavListWrapper>
       </Nav>
       {isHover && (
-        <NavDetail style={{ left: "70px" }}>
+        <NavDetail style={{ left: "80px" }}>
           <LogoName />
           <NavDetailWrapper>
             {sidebarData.map((v, i) => (
