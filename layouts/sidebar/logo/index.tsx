@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
 import Link from "next/link";
-import { ImHome } from "react-icons/im";
 
 const LogoFrame = styled.div`
   position: absolute;
@@ -26,7 +25,7 @@ const Logo = () => {
     <LogoFrame>
       <Link href={"/"}>
         <a>
-          <ImHome className="logo" />
+          <div className="logo" />
         </a>
       </Link>
     </LogoFrame>
