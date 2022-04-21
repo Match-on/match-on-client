@@ -1,6 +1,7 @@
+import { NextPage } from "next";
 import React from "react";
 
-const mypage: React.FC = () => {
+const mypage: NextPage = () => {
   return <div>MyPage</div>;
 };
 

@@ -1,6 +1,7 @@
+import { NextPage } from "next";
 import React from "react";
 
-const classboard: React.FC = () => {
+const classboard: NextPage = () => {
   return <div>Class Board</div>;
 };
 
