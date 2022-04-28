@@ -6,8 +6,8 @@ import { NextApiRequest } from "next";
 export default NextAuth({
   providers: [
     CredentialsProvider({
-      id: "email-password-credential",
-      name: "email-password-credential",
+      id: "matchOn-credential",
+      name: "matchOn-credential",
       credentials: {
         email: { label: "Email", type: "email", placeholder: "test@test.com" },
         password: { label: "Password", type: "password" },
@@ -36,3 +36,5 @@ export default NextAuth({
     },
   },
 });
+
+//참고 블로그 https://birdmee.tistory.com/33
