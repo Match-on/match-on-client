@@ -16,9 +16,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
           </Layout>
         </Auth>
       ) : (
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <Component {...pageProps} />
       )}
     </SessionProvider>
   );
