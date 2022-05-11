@@ -38,7 +38,7 @@ const Login: React.FC = () => {
     if (response.url) {
       await router.push(response.url);
     } else {
-      alert("틀림");
+      alert("로그인에 실패하였습니다.");
     }
   };
 
