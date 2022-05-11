@@ -1,5 +1,4 @@
-import type { AppProps } from "next/app";
-import { SessionProvider, useSession } from "next-auth/react";
+import { getSession, SessionProvider, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -7,6 +6,11 @@ import Layout from "../layouts/Layout";
 import "../styles/globals.css";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
+  useEffect(() => {
+    console.log("auth", Component.auth);
+    console.log("session", session);
+  }, [Component, session]);
+
   return (
     <SessionProvider session={session}>
       {Component.auth ? (
@@ -16,25 +20,30 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
           </Layout>
         </Auth>
       ) : (
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       )}
     </SessionProvider>
   );
 }
 
-function Auth({ children }) {
-  const router = useRouter();
+const Auth = ({ children }) => {
   const { data: session, status } = useSession();
-  const isUser = !!session?.user;
+  const loading = status === "loading";
+  const hasUser = !!session?.user;
+  const router = useRouter();
   useEffect(() => {
-    if (status === "loading") return; // Do nothing while loading
-    if (!isUser) router.push("/login"); //Redirect to login
-  }, [isUser, status]);
-
-  if (isUser) {
-    return children;
+    console.log("ss", session);
+    if (!loading && !hasUser) {
+      router.push("/login");
+    }
+  }, [loading, hasUser]);
+  if (loading || !hasUser) {
+    return <div>Waiting for session...</div>;
   }
-  // Session is being fetched, or no user.
-  // If no user, useEffect() will redirect.
-  return <div>Loading...</div>;
-}
+  console.log("child", children);
+  console.log("ss", session);
+
+  return children;
+};

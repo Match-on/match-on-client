@@ -1,5 +1,5 @@
 import React from "react";
-import { signOut, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 //signOut === 로그아웃 함수 useSession === nextauth에서 user가 로그인되어 있는 지를 알려주는 훅
 import DirectMsg from "../../components/DirectMsg";
 import Notification from "../../components/Notification";
@@ -30,21 +30,30 @@ const TopWrapper = styled.div`
 
 const Topbar: React.FC = () => {
   const { data: session, status } = useSession();
+  console.log("top", status);
+
   return (
     <Top>
       <TopWrapper>
         <DirectMsg />
         <Notification />
         <UserInfo name={session?.user.name} />
-        <button
-          onClick={() =>
-            signOut({
-              callbackUrl: "http://localhost:3000/",
-            })
-          }
-        >
-          Sign Out
-        </button>
+        {status === "authenticated" ? (
+          <button
+            onClick={() =>
+              signOut({
+                callbackUrl: "http://localhost:3000/",
+              })
+            }
+            style={{ height: "30px" }}
+          >
+            Sign Out
+          </button>
+        ) : (
+          <button onClick={() => signIn()} style={{ height: "30px" }}>
+            Sign In
+          </button>
+        )}
       </TopWrapper>
     </Top>
   );

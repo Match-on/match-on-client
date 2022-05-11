@@ -22,6 +22,7 @@ export default NextAuth({
       },
     }),
   ],
+  secret: process.env.SECRET,
   // 추가
   pages: {
     signIn: "/login",

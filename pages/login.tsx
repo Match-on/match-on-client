@@ -34,7 +34,7 @@ const Login: React.FC = () => {
       redirect: false,
       callbackUrl: "http://localhost:3000/home",
     });
-    console.log("resonse", response);
+    console.log("response", response);
     if (response.url) {
       await router.push(response.url);
     } else {
