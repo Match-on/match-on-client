@@ -1,10 +1,14 @@
 import styled from "@emotion/styled";
 import { NextPage } from "next";
+import Link from "next/link";
 import React from "react";
-import ProjectBox from "../../components/myproject/projectBox";
+import ProjectBox from "../../components/myprojects/ProjectBox";
 
 const MyprojectPage = styled.div`
-  margin: 0 50px 0 50px;
+  position: absolute;
+  width: calc(100% - 8%);
+  margin-left: 4%;
+  height: 100%;
 `;
 
 const MyprojectTitle = styled.div`
@@ -31,16 +35,76 @@ const BookmarksContainer = styled.div`
 const ProjectContainer = styled.div``;
 
 const data = [
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
-  { title: "밥조", subject: "정보서비스디자인01", describe: "세상의 모든 이동 mobility", deadline: "2022-12-31" },
+  {
+    title: "Match-On",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "123456",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "1234567",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "2123456",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "3123456",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "4123456",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "5123456",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "6123456",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "7123456",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "8123456",
+  },
+  {
+    title: "밥조",
+    subject: "정보서비스디자인01",
+    describe: "세상의 모든 이동 mobility",
+    deadline: "2022-12-31",
+    id: "9123456",
+  },
 ];
 
 const myproject: NextPage = () => {
@@ -50,15 +114,23 @@ const myproject: NextPage = () => {
       <SubTitle>즐겨찾기</SubTitle>
       <BookmarksContainer>
         {data.map((v, i) => (
-          <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
+          <Link href={`/myproject/${v.id}`} key={`favorite-${i}`}>
+            <a>
+              <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
+            </a>
+          </Link>
         ))}
       </BookmarksContainer>
       <SubTitle>내 프로젝트</SubTitle>
-      <BookmarksContainer>
+      {/* <BookmarksContainer>
         {data.map((v, i) => (
-          <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
+          <Link href={`/myproject/${v.title}/${v.id}`} key={`project-${i}`}>
+            <a>
+              <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
+            </a>
+          </Link>
         ))}
-      </BookmarksContainer>
+      </BookmarksContainer> */}
     </MyprojectPage>
   );
 };

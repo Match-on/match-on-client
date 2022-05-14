@@ -13,11 +13,10 @@ type LayoutProps = {
 const MainContent = styled.div`
   position: absolute;
   width: calc(100% - 80px);
-  height: 100%;
+  height: 100vh;
   left: 80px;
   top: 50px;
-  background-color: #f2f7f7;
-  overflow-y: scroll;
+  min-height: 100vh;
 `;
 
 export default function Layout({ children }: LayoutProps) {

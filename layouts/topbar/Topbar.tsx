@@ -13,8 +13,6 @@ const Top = styled.div`
   height: 50px;
   top: 0;
   left: 80px;
-  background-color: #f2f7f7;
-  border: 1px solid black;
 `;
 
 const TopWrapper = styled.div`

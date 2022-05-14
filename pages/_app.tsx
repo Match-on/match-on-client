@@ -6,11 +6,6 @@ import Layout from "../layouts/Layout";
 import "../styles/globals.css";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
-  useEffect(() => {
-    console.log("auth", Component.auth);
-    console.log("session", session);
-  }, [Component, session]);
-
   return (
     <SessionProvider session={session}>
       {Component.auth ? (
@@ -21,6 +16,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
         </Auth>
       ) : (
         <Layout>
+          <div>{session}</div>
           <Component {...pageProps} />
         </Layout>
       )}
