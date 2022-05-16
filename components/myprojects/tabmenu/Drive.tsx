@@ -1,7 +1,14 @@
 import React from "react";
+import styled from "@emotion/styled";
+
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+`;
 
 const Drive = () => {
-  return <div>드라이브</div>;
+  return <Container>드라이브</Container>;
 };
 
 export default Drive;
