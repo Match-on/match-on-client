@@ -13,10 +13,9 @@ type LayoutProps = {
 const MainContent = styled.div`
   position: absolute;
   width: calc(100% - 80px);
-  height: 100vh;
+  height: 100%;
   left: 80px;
   top: 50px;
-  min-height: 100vh;
 `;
 
 export default function Layout({ children }: LayoutProps) {
