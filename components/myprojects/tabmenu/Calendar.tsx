@@ -2,19 +2,20 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { format } from "date-fns";
 import Calendar from "react-calendar";
+import CalendarModal from "../../Modal/CalendarModal";
 //1367 645
 const Container = styled.div`
   width: 100%;
   height: 83%;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   background-color: #ffffff;
 `;
 
 const CalendarContainer = styled.div`
   width: 60%;
-  height: 536px;
+  height: 83%;
   background-color: #f8fbfb;
   border-radius: 10px;
   .react-calendar__navigation {
@@ -41,19 +42,20 @@ const CalendarContainer = styled.div`
     padding: 5px 0;
     cursor: pointer;
     &:hover {
-      background-color: #47d2d2;
+      border-bottom: 5px solid #47d2d2;
     }
 
     &:active {
-      background-color: #47d2e5;
+      border-bottom: 5px solid #47d2d2;
     }
   }
   .react-calendar__month-view__days {
     display: grid !important;
     grid-template-columns: 14.2% 14.2% 14.2% 14.2% 14.2% 14.2% 14.2%;
-    grid-template-rows: repeat(5, minmax(5rem, auto));
+    grid-template-rows: repeat(5, minmax(2rem, 5rem));
     .react-calendar__tile {
       font-size: 15px;
+      font-weight: 600;
       max-width: initial !important;
     }
   }
@@ -68,12 +70,57 @@ const CalendarContainer = styled.div`
   }
 `;
 
+const ScheduleContainer = styled.div`
+  width: 32%;
+  height: 594px;
+  background-color: #f8fbfb;
+  border-radius: 10px;
+`;
+
+const ScheduleDate = styled.div`
+  width: 100%;
+  height: 30px;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+`;
+
+const ScheduleListGroup = styled.div`
+  width: 100%;
+`;
+
+const ScheduleList = styled.div`
+  width: 90%;
+  height: 44px;
+`;
+
+const AddButton = styled.div`
+  width: 109px;
+  height: 38px;
+  font-size: 16px;
+  text-align: center;
+  background-color: #47d2d2;
+  border-radius: 10px;
+  cursor: pointer;
+`;
+
+const todolist = [
+  { title: "회의 10시", author: "조성훈" },
+  { title: "회의 10시", author: "조성훈" },
+  { title: "회의 10시", author: "조성훈" },
+  { title: "회의 10시", author: "조성훈" },
+];
+
 const CalendarTab = () => {
   const [value, setValue] = useState(new Date());
   const [clickedDay, setClickedDay] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
   const clickDay = (value) => {
     console.log(value);
-    setClickedDay(format(value, "yyyy-MM-dd"));
+    setClickedDay(format(value, "MMMM dd"));
+  };
+  const handleModalOpen = () => {
+    setIsOpen(!isOpen);
   };
 
   return (
@@ -90,7 +137,19 @@ const CalendarTab = () => {
           onClickDay={clickDay}
         />
       </CalendarContainer>
-      <div>{clickedDay}</div>
+      <ScheduleContainer>
+        <ScheduleDate>{clickedDay}</ScheduleDate>
+        <ScheduleListGroup>
+          {todolist.map((v, i) => (
+            <ScheduleList key={`list-${i}`}>
+              {v.title}
+              {v.author}
+            </ScheduleList>
+          ))}
+        </ScheduleListGroup>
+        <AddButton onClick={handleModalOpen}>일정 추가</AddButton>
+      </ScheduleContainer>
+      {isOpen && <CalendarModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );
 };
