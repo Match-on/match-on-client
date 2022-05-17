@@ -1,6 +1,5 @@
 import React from "react";
 
-import { FaRegBookmark } from "react-icons/fa";
 import Myproject from "../../public/sidebarSVG/side_myproject.svg";
 import Classboard from "../../public/sidebarSVG/side_classboard.svg";
 import Contest from "../../public/sidebarSVG/side_contest.svg";
