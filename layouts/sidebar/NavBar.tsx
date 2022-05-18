@@ -7,19 +7,19 @@ import { jsx, keyframes, css } from "@emotion/react";
 
 import Logo, { LogoName } from "./logo";
 import sidebarData from "./data";
-
+//1536 864
 const Nav = styled.div`
   position: fixed;
   background: white;
   top: 0;
   left: 0;
-  width: 80px;
+  width: 5em;
   height: 100%;
 `;
 
 const NavListWrapper = styled.ul`
   position: absolute;
-  top: 174px;
+  top: 10.875em;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -29,8 +29,8 @@ const NavListWrapper = styled.ul`
 
 const NavList = styled.li`
   width: 100%;
-  height: 25px;
-  margin-bottom: 37px;
+  height: 1.57em;
+  margin-bottom: 2.32em;
   text-align: center;
   &:hover {
   }
@@ -38,7 +38,7 @@ const NavList = styled.li`
 
 const NavMenu = styled.a`
   width: 100%;
-  font-size: 16px;
+  font-size: 1em;
   cursor: pointer;
   &:hover {
     color: #46d2d3;
@@ -54,19 +54,19 @@ const NavDetail = styled.div`
   position: fixed;
   background: white;
   top: 0;
-  left: -80px;
-  width: 124px;
+  left: -5em;
+  width: 7.75em;
   height: 100%;
   background-color: white;
   z-index: 1;
-  border-top-right-radius: 30px;
-  border-bottom-right-radius: 30px;
+  border-top-right-radius: 1.875em;
+  border-bottom-right-radius: 1.875em;
 `;
 
 const NavDetailWrapper = styled.ul`
   position: absolute;
-  top: 176px;
-  left: 10px;
+  top: 11em;
+  left: 0.625em;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -77,8 +77,8 @@ const NavDetailWrapper = styled.ul`
 const NavDetailList = styled.li`
   width: 100%;
   width: 100%;
-  height: 25px;
-  margin-bottom: 38px;
+  height: 1.57em;
+  margin-bottom: 2.32em;
 `;
 
 const NavBar: React.FC = () => {

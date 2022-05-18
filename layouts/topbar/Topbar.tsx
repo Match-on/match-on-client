@@ -8,20 +8,20 @@ import styled from "@emotion/styled";
 import UserInfo from "../../components/UserInfo";
 
 const Top = styled.div`
-  position: absolute;
-  width: calc(100% - 80px);
-  height: 50px;
+  position: fixed;
+  width: calc(100% - 5em);
+  height: 3.125em;
   top: 0;
-  left: 80px;
+  right: 0;
+  border: 1px solid black;
 `;
 
 const TopWrapper = styled.div`
-  position: absolute;
   display: flex;
   justify-content: space-between;
-  right: 50px;
-  top: 10px;
-  width: 150px;
+  right: 3.125em;
+  top: 0.625em;
+  width: 9.375em;
   height: 100%;
   cursor: pointer;
 `;

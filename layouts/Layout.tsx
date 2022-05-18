@@ -5,26 +5,32 @@ import NavBar from "./sidebar/NavBar";
 import Topbar from "./topbar/Topbar";
 
 import styled from "@emotion/styled";
-
+//1536 864
+//1367 645
 type LayoutProps = {
   children: React.ReactNode;
 };
 
+const LayoutContainer = styled.div`
+  display: gird;
+`;
+
 const MainContent = styled.div`
-  position: absolute;
-  width: calc(100% - 80px);
-  height: 100%;
-  left: 80px;
-  top: 50px;
+  position: fixed;
+  width: calc(100% - 5em);
+  height: calc(100% - 3.125em);
+  left: 5em;
+  top: 3.125em;
+  overflow: auto;
 `;
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <React.Fragment>
+    <LayoutContainer>
       <Header />
       <NavBar />
       <Topbar />
       <MainContent>{children}</MainContent>
-    </React.Fragment>
+    </LayoutContainer>
   );
 }

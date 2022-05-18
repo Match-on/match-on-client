@@ -20,23 +20,23 @@ const MyprojectPage = styled.div`
 
 const Header = styled.div`
   width: 100%;
-  height: 44px;
+  height: 2.75em;
   display: flex;
   align-items: center;
-  margin-bottom: 80px;
+  margin-bottom: 5em;
 `;
 
 const Title = styled.div`
-  padding: 0 10px 0 10px;
-  font-size: 24px;
+  padding: 0 0.625em 0 0.625em;
+  font-size: 1.5rem;
   font-weight: 400;
-  border-left: 4px solid #50d5d5;
+  border-left: 0.25em solid #50d5d5;
   text-align: center;
   cursor: pointer;
 `;
 
 const SubTitle = styled.div`
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
   color: #aaaaaa;
 `;
@@ -49,12 +49,12 @@ const MainContent = styled.div`
 const Container = styled.div`
   width: 100%;
   height: 100%;
-  margin-top: -4px;
+  margin-top: -0.25rem;
 `;
 
 const Tab = styled.div`
   width: 100%;
-  height: 40px;
+  height: 2.5em;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -63,23 +63,24 @@ const Tab = styled.div`
 
 const TabMenu = styled.div<{ clicked: boolean }>`
   width: calc(100% / 6);
-  height: 35px;
+  height: 100%;
+  line-height: 2.5em;
   text-align: center;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: 400;
   background-color: ${(props) => (props.clicked ? "#ffffff" : "#F1F7F7")};
   color: ${(props) => (props.clicked ? "#000000" : "#aaaaaa")};
-  border-bottom: ${(props) => (props.clicked ? "#ffffff" : "2px solid #47d2d2")};
-  border-top: ${(props) => (props.clicked ? "2px solid #47d2d2" : "")};
-  border-left: ${(props) => (props.clicked ? "2px solid #47d2d2" : "")};
-  border-right: ${(props) => (props.clicked ? "2px solid #47d2d2" : "")};
-  border-radius: ${(props) => (props.clicked ? "10px 10px 0 0" : "")};
+  border-bottom: ${(props) => (props.clicked ? "#ffffff" : "0.15em solid #47d2d2")};
+  border-top: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
+  border-left: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
+  border-right: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
+  border-radius: ${(props) => (props.clicked ? "0.625em 0.625em 0 0" : "")};
   cursor: pointer;
   &:hover {
     color: #000000;
     background-color: white;
-    border: 2px solid #47d2d2;
-    border-radius: 10px 10px 0 0;
+    border: 0.15em solid #47d2d2;
+    border-radius: 0.625em 0.625em 0 0;
     border-bottom: none;
   }
 `;

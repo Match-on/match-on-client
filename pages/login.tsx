@@ -2,8 +2,9 @@ import React from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
-
+//main
 const LogIn = styled.div`
+  position: fixed;
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -13,8 +14,9 @@ const LogIn = styled.div`
 `;
 
 const LoginForm = styled.div`
-  width: 543px;
-  height: 660px;
+  margin: auto;
+  width: 34em;
+  height: 41.25em;
   border: 1px solid black;
   border-radius: 30px;
 `;

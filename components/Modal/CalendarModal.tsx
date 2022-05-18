@@ -64,7 +64,7 @@ const ContetnInput = styled.input`
 
 const CalendarModal = ({ isOpen, handleOpen }) => {
   return (
-    <Modal isOpen={isOpen} onRequesClose={handleOpen} style={customStyles}>
+    <Modal isOpen={isOpen} onRequesClose={handleOpen} ariaHideApp={false} style={customStyles}>
       <Header>
         <Title>일정 추가</Title>
         <CloseButton onClick={handleOpen}>

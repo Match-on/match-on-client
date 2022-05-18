@@ -5,24 +5,23 @@ import React from "react";
 import ProjectBox from "../../components/myprojects/ProjectBox";
 
 const MyprojectPage = styled.div`
-  position: absolute;
   width: calc(100% - 8%);
   margin-left: 4%;
   height: 100%;
 `;
 
 const MyprojectTitle = styled.div`
-  width: 153px;
-  font-size: 24px;
+  width: 9.6em;
+  font-size: 1.5rem;
   font-weight: 400;
-  border-left: 4px solid #50d5d5;
+  border-left: 0.25rem solid #50d5d5;
   text-align: center;
 `;
 
 const SubTitle = styled.div`
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 400;
-  margin: 40px 0 17px 0;
+  margin: 2.5em 0 1em 0;
   color: #aaaaaa;
 `;
 
@@ -122,7 +121,7 @@ const myproject: NextPage = () => {
         ))}
       </BookmarksContainer>
       <SubTitle>내 프로젝트</SubTitle>
-      {/* <BookmarksContainer>
+      <BookmarksContainer>
         {data.map((v, i) => (
           <Link href={`/myproject/${v.title}/${v.id}`} key={`project-${i}`}>
             <a>
@@ -130,7 +129,7 @@ const myproject: NextPage = () => {
             </a>
           </Link>
         ))}
-      </BookmarksContainer> */}
+      </BookmarksContainer>
     </MyprojectPage>
   );
 };

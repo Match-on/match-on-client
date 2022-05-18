@@ -17,17 +17,17 @@ const CalendarContainer = styled.div`
   width: 60%;
   height: 83%;
   background-color: #f8fbfb;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   .react-calendar__navigation {
     display: flex;
     margin-bottom: 5%;
     .react-calendar__navigation__label {
-      font-size: 20px;
+      font-size: 1.25rem;
       font-weight: bold;
     }
 
     .react-calendar__navigation__arrow {
-      font-size: 25px;
+      font-size: 1.563rem;
       flex-grow: 0.333;
     }
   }
@@ -37,24 +37,24 @@ const CalendarContainer = styled.div`
   button {
     background-color: #f8fbfb;
     border: 0;
-    border-radius: 3px;
+    border-radius: 0.188rem;
     color: black;
-    padding: 5px 0;
+    padding: 0.313rem 0;
     cursor: pointer;
     &:hover {
-      border-bottom: 5px solid #47d2d2;
+      border-bottom: 0.313rem solid #47d2d2;
     }
 
     &:active {
-      border-bottom: 5px solid #47d2d2;
+      border-bottom: 0.313rem solid #47d2d2;
     }
   }
   .react-calendar__month-view__days {
     display: grid !important;
     grid-template-columns: 14.2% 14.2% 14.2% 14.2% 14.2% 14.2% 14.2%;
-    grid-template-rows: repeat(5, minmax(2rem, 5rem));
+    grid-template-rows: repeat(5, 20%);
     .react-calendar__tile {
-      font-size: 15px;
+      font-size: 1rem;
       font-weight: 600;
       max-width: initial !important;
     }
@@ -71,16 +71,16 @@ const CalendarContainer = styled.div`
 `;
 
 const ScheduleContainer = styled.div`
-  width: 32%;
-  height: 594px;
+  width: 33%; //450
+  height: 92%; //594
   background-color: #f8fbfb;
-  border-radius: 10px;
+  border-radius: 0.625rem;
 `;
 
 const ScheduleDate = styled.div`
   width: 100%;
-  height: 30px;
-  font-size: 25px;
+  height: 5%;
+  font-size: 1.563rem;
   font-weight: bold;
   text-align: center;
 `;
@@ -91,16 +91,16 @@ const ScheduleListGroup = styled.div`
 
 const ScheduleList = styled.div`
   width: 90%;
-  height: 44px;
+  height: 2.75rem;
 `;
 
 const AddButton = styled.div`
   width: 109px;
   height: 38px;
-  font-size: 16px;
+  font-size: 1rem;
   text-align: center;
   background-color: #47d2d2;
-  border-radius: 10px;
+  border-radius: 0.625rem;
   cursor: pointer;
 `;
 
