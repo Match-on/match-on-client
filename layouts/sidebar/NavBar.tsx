@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 import styled from "@emotion/styled";
-import { jsx, keyframes, css } from "@emotion/react";
 
 import Logo, { LogoName } from "./logo";
 import sidebarData from "./data";
