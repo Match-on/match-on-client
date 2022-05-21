@@ -18,6 +18,10 @@ const CalendarContainer = styled.div`
   height: 83%;
   background-color: #f8fbfb;
   border-radius: 0.625rem;
+  .react-calendar {
+    width: 100%;
+    height: 100%;
+  }
   .react-calendar__navigation {
     display: flex;
     margin-bottom: 5%;
@@ -31,9 +35,17 @@ const CalendarContainer = styled.div`
       flex-grow: 0.333;
     }
   }
+  .react-calendar__viewContainer {
+    width: 100%;
+    height: 100%;
+  }
+  .react-calendar__month-view {
+    width: 100%;
+    height: 100%;
+  }
   .react-calendar__month-view__weekdays {
     text-align: center;
-  }
+  } //요일
   button {
     background-color: #f8fbfb;
     border: 0;
@@ -42,20 +54,21 @@ const CalendarContainer = styled.div`
     padding: 0.313rem 0;
     cursor: pointer;
     &:hover {
-      border-bottom: 0.313rem solid #47d2d2;
+      border-bottom: 0.25rem solid #47d2d2;
     }
 
     &:active {
-      border-bottom: 0.313rem solid #47d2d2;
+      border-bottom: 0.25rem solid #47d2d2;
     }
   }
   .react-calendar__month-view__days {
     display: grid !important;
+    height: 80%;
     grid-template-columns: 14.2% 14.2% 14.2% 14.2% 14.2% 14.2% 14.2%;
-    grid-template-rows: repeat(5, 20%);
+    grid-template-rows: repeat(5, 50%);
     .react-calendar__tile {
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 400;
       max-width: initial !important;
     }
   }
@@ -92,6 +105,7 @@ const ScheduleListGroup = styled.div`
 const ScheduleList = styled.div`
   width: 90%;
   height: 2.75rem;
+  font-size: 1rem;
 `;
 
 const AddButton = styled.div`
