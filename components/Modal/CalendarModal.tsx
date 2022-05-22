@@ -2,7 +2,7 @@ import Modal from "react-modal";
 import styled from "@emotion/styled";
 //1367 645
 import Close from "../../public/componentSVG/CloseButton.svg";
-import { useState } from "react";
+import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { ko } from "date-fns/esm/locale";
@@ -88,25 +88,99 @@ const CompleteButton = styled.div`
   cursor: pointer;
 `;
 
+const ColorContainer = styled.div`
+  width: 9.1rem;
+  height: 9.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25));
+  background-color: white;
+  border-radius: 0.625rem;
+  border: 1px solid black;
+`;
+
+const RepeatOptions = ["없음", "매일", "매주", "매달", "매년"];
+const ColorOptions = [
+  "#ffffff",
+  "#fef445",
+  "#fac712",
+  "#f34725",
+  "#e6e6e6",
+  "#cee741",
+  "#8ed14f",
+  "#da0063",
+  "#808080",
+  "#14cdd4",
+  "#0ca888",
+  "#9610ac",
+  "#1a1a1a",
+  "#2d9bf0",
+  "#414bb2",
+  "#652cb3",
+];
+
 const CalendarModal = ({ isOpen, handleOpen }) => {
-  const [values, setValues] = useState({
-    title: "",
-    start: "시작일",
-    end: "마감일",
-    repeat: "반복",
-    color: "Color",
-    schedule: "",
-  });
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [colorClick, setColorClick] = useState(false);
+  const [values, setValues] = useState({
+    title: "",
+    start: format(startDate, "yyyy-MM-dd"),
+    end: format(endDate, "yyyy-MM-dd"),
+    repeat: "반복",
+    color: "#1a1a1a",
+    schedule: "",
+  });
+
   const changeStartDate = (date) => {
-    setValues({ ...values, start: date });
+    setValues({ ...values, start: format(date, "yyyy-MM-dd") });
     setStartDate(date);
   };
   const changeEndDate = (date) => {
-    setValues({ ...values, end: date });
+    setValues({ ...values, end: format(date, "yyyy-MM-dd") });
     setEndDate(date);
   };
+  const changeRepeat = (e) => {
+    setValues({ ...values, repeat: e.target.value });
+  };
+
+  // const ExampleCustomInput = ({
+  //   value,
+  //   onClick,
+  // }: {
+  //   value: string;
+  //   onClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  // }) => (
+  //   <div onClick={onClick} style={{ width: "100%", height: "100%", fontSize: "0.75rem" }}>
+  //     {value}
+  //   </div>
+  // );
+
+  const ExampleCustomInput = (props: React.HTMLProps<HTMLDivElement>, ref: React.Ref<HTMLInputElement>) => {
+    return (
+      <div {...props} style={{ width: "100%", height: "100%", fontSize: "100%", color: "#47d2d2" }}>
+        {props.value}
+      </div>
+    );
+  };
+  const ColorCircle = ({ color }) => {
+    return (
+      <div
+        onClick={() => setValues({ ...values, color: color })}
+        style={{ width: "1.4rem", height: "1.4rem", borderRadius: "50%", cursor: "pointer", backgroundColor: color }}
+      ></div>
+    );
+  };
+  const ColorBox = () => {
+    return (
+      <ColorContainer>
+        {ColorOptions.map((item, v) => (
+          <ColorCircle color={item} key={item} />
+        ))}
+      </ColorContainer>
+    );
+  };
+
   return (
     <Modal isOpen={isOpen} onRequesClose={handleOpen} ariaHideApp={false} style={customStyles}>
       <Header>
@@ -119,21 +193,41 @@ const CalendarModal = ({ isOpen, handleOpen }) => {
         <ContetnInput placeholder="제목"></ContetnInput>
         <ContentBox style={{ border: "none" }}>
           <ContentBox style={{ width: "48%" }}>
-            <DatePicker dateFormat="yyyy-MM-dd" selected={startDate} onChange={(date) => changeStartDate(date)} />
+            <DatePicker
+              dateFormat="yyyy-MM-dd"
+              selected={startDate}
+              onChange={(date) => changeStartDate(date)}
+              customInput={React.createElement(React.forwardRef(ExampleCustomInput))}
+            />
           </ContentBox>
           <ContentBox style={{ width: "48%" }}>
-            <DatePicker dateFormat="yyyy-MM-dd" selected={endDate} onChange={(date) => changeEndDate(date)} />
+            <DatePicker
+              dateFormat="yyyy-MM-dd"
+              selected={endDate}
+              onChange={(date) => changeEndDate(date)}
+              customInput={React.createElement(React.forwardRef(ExampleCustomInput))}
+            />
           </ContentBox>
         </ContentBox>
         <ContentBox style={{ border: "none" }}>
-          <ContentBox style={{ width: "48%" }}>{values.repeat}</ContentBox>
-          <ContentBox style={{ width: "48%" }}>{values.color}</ContentBox>
+          <ContentBox style={{ width: "48%" }}>
+            {values.repeat}
+            <select onChange={changeRepeat}>
+              {RepeatOptions.map((item, i) => (
+                <option value={item} key={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </ContentBox>
+          <ContentBox style={{ width: "48%" }} onClick={() => setColorClick(!colorClick)}>
+            <ColorCircle color={values.color} />
+            {colorClick && <ColorBox />}
+          </ContentBox>
         </ContentBox>
         <ContetnInput placeholder="일정을 입력하세요" style={{ height: "18.625rem" }}></ContetnInput>
       </Contents>
-      <CompleteButton>완료</CompleteButton>
-      {/* {dateOpen && } */}
-      {/* setValues({ ...values, start: format(date, "yyyy-mm-dd") }) */}
+      <CompleteButton onClick={handleOpen}>완료</CompleteButton>
     </Modal>
   );
 };
