@@ -5,7 +5,7 @@ import Close from "../../public/componentSVG/CloseButton.svg";
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
-import { ko } from "date-fns/esm/locale";
+//import { ko } from "date-fns/esm/locale";
 import "react-datepicker/dist/react-datepicker.css";
 
 const customStyles = {

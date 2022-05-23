@@ -44,6 +44,7 @@ const SubTitle = styled.div`
 const MainContent = styled.div`
   width: 100%;
   height: 100%;
+  font-size: 1rem;
 `;
 
 const Container = styled.div`
@@ -55,10 +56,17 @@ const Container = styled.div`
 const Tab = styled.div`
   width: 100%;
   height: 2.5em;
+  font-size: 1rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  @media screen and (max-width: 768px) {
+    font-size: 0.5rem;
+  }
+  /* @media screen and (max-width: 450px) {
+    font-size: 0.2rem;
+  } */
 `;
 
 const TabMenu = styled.div<{ clicked: boolean }>`
