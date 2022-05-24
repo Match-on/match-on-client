@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { NextPage } from "next";
 import Link from "next/link";
 import React from "react";
-import ProjectBox from "../../components/myprojects/ProjectBox";
+import ProjectBox from "../../components/myprojects/components/ProjectBox";
 
 const MyprojectPage = styled.div`
   width: calc(100% - 8%);

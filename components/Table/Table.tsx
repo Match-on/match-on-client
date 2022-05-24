@@ -11,7 +11,7 @@ const TableContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 93.5%;
 `;
 
 const Table = styled.table`
@@ -30,7 +30,7 @@ const Tbody = styled.tbody`
 
 const Tablerow = styled.tr<{ selected: boolean }>`
   width: 100%;
-  height: 88px;
+  height: 5.5em;
   background-color: ${(props) => (props.selected ? "rgba(242, 246, 246, 0.5)" : "#ffffff")};
 `;
 
