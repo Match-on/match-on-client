@@ -16,6 +16,7 @@ export default NextAuth({
         const email = credentials.email;
         const password = credentials.password;
         if (email === "test@test.com" && password === "test") {
+          console.log("crede", credentials);
           return credentials;
         }
         throw new Error("아이디 혹은 패스워드가 틀립니다.");

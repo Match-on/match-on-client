@@ -2,6 +2,9 @@ import React from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
+import { userLogin } from "../src/redux/reducers/user";
+import { AppDispatch } from "../src/redux/store";
+import { useAppDispatch } from "../src/hooks/hooks";
 //main
 const LogIn = styled.div`
   position: fixed;
@@ -23,7 +26,7 @@ const LoginForm = styled.div`
 
 const Login: React.FC = () => {
   const router = useRouter();
-
+  const dispatch = useAppDispatch();
   const login = async (e: any) => {
     e.preventDefault();
     // Form 안에서 이메일, 패스워드 가져오기
