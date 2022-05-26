@@ -1,26 +1,30 @@
 import { getSession, SessionProvider, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { Provider } from "react-redux";
 
 import Layout from "../layouts/Layout";
 import "../styles/globals.css";
+import { store } from "../src/redux/store";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <SessionProvider session={session}>
-      {Component.auth ? (
-        <Auth>
+    <Provider store={store}>
+      <SessionProvider session={session}>
+        {Component.auth ? (
+          <Auth>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Auth>
+        ) : (
           <Layout>
+            <div>{session}</div>
             <Component {...pageProps} />
           </Layout>
-        </Auth>
-      ) : (
-        <Layout>
-          <div>{session}</div>
-          <Component {...pageProps} />
-        </Layout>
-      )}
-    </SessionProvider>
+        )}
+      </SessionProvider>
+    </Provider>
   );
 }
 
