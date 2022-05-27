@@ -11,7 +11,7 @@ const Nav = styled.div`
   background: white;
   top: 0;
   left: 0;
-  width: 5em;
+  width: 5rem;
   height: 100%;
 `;
 
@@ -27,7 +27,7 @@ const NavListWrapper = styled.ul`
 
 const NavList = styled.li`
   width: 100%;
-  height: 1.57em;
+  height: 1.57rem;
   margin-bottom: 2.32em;
   text-align: center;
   &:hover {
@@ -36,7 +36,7 @@ const NavList = styled.li`
 
 const NavMenu = styled.a`
   width: 100%;
-  font-size: 1em;
+  font-size: 1rem;
   cursor: pointer;
   &:hover {
     color: #46d2d3;
@@ -53,7 +53,7 @@ const NavDetail = styled.div`
   background: white;
   top: 0;
   left: -5em;
-  width: 7.75em;
+  width: 7.75rem;
   height: 100%;
   background-color: white;
   z-index: 1;
@@ -64,7 +64,7 @@ const NavDetail = styled.div`
 const NavDetailWrapper = styled.ul`
   position: absolute;
   top: 11em;
-  left: 0.625em;
+  left: 0.625rem;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -75,7 +75,7 @@ const NavDetailWrapper = styled.ul`
 const NavDetailList = styled.li`
   width: 100%;
   width: 100%;
-  height: 1.57em;
+  height: 1.57rem;
   margin-bottom: 2.32em;
 `;
 

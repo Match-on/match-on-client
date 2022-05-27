@@ -125,19 +125,17 @@ const CalendarModal = ({ isOpen, handleOpen }) => {
   const [colorClick, setColorClick] = useState(false);
   const [values, setValues] = useState({
     title: "",
-    start: format(startDate, "yyyy-MM-dd"),
-    end: format(endDate, "yyyy-MM-dd"),
+    start: format(startDate, "yyyy-MM-dd h:mm"),
+    end: format(endDate, "yyyy-MM-dd h:mm"),
     repeat: "반복",
     color: "#1a1a1a",
     schedule: "",
   });
 
   const changeStartDate = (date) => {
-    setValues({ ...values, start: format(date, "yyyy-MM-dd") });
     setStartDate(date);
   };
   const changeEndDate = (date) => {
-    setValues({ ...values, end: format(date, "yyyy-MM-dd") });
     setEndDate(date);
   };
   const changeRepeat = (e) => {
@@ -194,18 +192,24 @@ const CalendarModal = ({ isOpen, handleOpen }) => {
         <ContentBox style={{ border: "none" }}>
           <ContentBox style={{ width: "48%" }}>
             <DatePicker
-              dateFormat="yyyy-MM-dd"
+              // dateFormat="yyyy-MM-dd"
               selected={startDate}
               onChange={(date) => changeStartDate(date)}
               customInput={React.createElement(React.forwardRef(ExampleCustomInput))}
+              timeInputLabel="Time:"
+              dateFormat="MM/dd/yyyy h:mm aa"
+              showTimeInput
             />
           </ContentBox>
           <ContentBox style={{ width: "48%" }}>
             <DatePicker
-              dateFormat="yyyy-MM-dd"
+              // dateFormat="yyyy-MM-dd"
               selected={endDate}
               onChange={(date) => changeEndDate(date)}
               customInput={React.createElement(React.forwardRef(ExampleCustomInput))}
+              timeInputLabel="Time:"
+              dateFormat="MM/dd/yyyy h:mm aa"
+              showTimeInput
             />
           </ContentBox>
         </ContentBox>

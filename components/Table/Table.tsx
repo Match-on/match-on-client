@@ -32,9 +32,36 @@ const Tablerow = styled.tr<{ selected: boolean }>`
   width: 100%;
   height: 5.5em;
   background-color: ${(props) => (props.selected ? "rgba(242, 246, 246, 0.5)" : "#ffffff")};
+  &:hover {
+    background-color: rgba(242, 246, 246, 0.5);
+  }
+  cursor: pointer;
 `;
 
-const TableRow1 = ({ row, index, select, handleRow }) => {
+const TableHeader = styled.div`
+  height: 10%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: auto;
+`;
+
+const UploadButton = styled.div`
+  width: 6.813rem;
+  height: 2.375rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  color: #ffffff;
+  background-color: #47d2d2;
+  border-radius: 0.625rem;
+  cursor: pointer;
+`;
+
+const RowComponent = ({ row, index, select, handleRow }) => {
   return (
     <Tablerow {...row.getRowProps()} onClick={() => handleRow(index)} selected={index === select}>
       {row.cells.map((cell) => (
@@ -44,7 +71,7 @@ const TableRow1 = ({ row, index, select, handleRow }) => {
   );
 };
 
-const TableComponent = ({ columns, data }) => {
+const TableComponent = ({ columns, data, handleOpen }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, setGlobalFilter } = useTable(
     { columns, data },
     useGlobalFilter,
@@ -54,13 +81,15 @@ const TableComponent = ({ columns, data }) => {
   const [select, setSelect] = useState(-1);
 
   const handleClickedRow = (index) => {
-    console.log(index);
     setSelect(index);
   };
 
   return (
     <TableContainer>
-      <Search onSubmit={setGlobalFilter} />
+      <TableHeader>
+        <Search onSubmit={setGlobalFilter} />
+        <UploadButton onClick={handleOpen}>업로드</UploadButton>
+      </TableHeader>
       <Table {...getTableProps()}>
         {/* <thead>
           {headerGroups.map((headerGroup) => (
@@ -75,7 +104,7 @@ const TableComponent = ({ columns, data }) => {
           {rows.map((row, index) => {
             prepareRow(row);
             return (
-              <TableRow1 row={row} index={index} select={select} handleRow={handleClickedRow} key={`row-${index}`} />
+              <RowComponent row={row} index={index} select={select} handleRow={handleClickedRow} key={`row-${index}`} />
             );
           })}
         </Tbody>

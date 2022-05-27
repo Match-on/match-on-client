@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import TableComponent from "../../Table/Table";
+import NoticeModal from "../../Modal/NoticeModal";
 
 const Container = styled.div`
   width: 100%;
@@ -39,9 +40,15 @@ const Notice = () => {
     { title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
     { title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
   ];
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleModalOpen = () => {
+    setIsOpen(!isOpen);
+  };
   return (
     <Container>
-      <TableComponent columns={columns} data={data} />
+      <TableComponent columns={columns} data={data} handleOpen={handleModalOpen} />
+      {isOpen && <NoticeModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );
 };

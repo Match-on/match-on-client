@@ -3,14 +3,15 @@ import React from "react";
 import styled from "@emotion/styled";
 
 const Form = styled.form`
-  width: 100%;
-  height: 6.5%;
-  padding: 1.25rem 1.25rem 3rem 1.25rem;
+  width: 50%;
+  height: 80%;
+  padding: 0 0 0 1.25rem;
+  display: inline-block;
 `;
 
 const Input = styled.input`
-  width: 50%;
-  height: 100%;
+  width: 100%;
+  height: 80%;
   padding: 1.25rem 0 1.25rem 0;
   border: none;
   border-radius: 0.188rem;
