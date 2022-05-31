@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import TableComponent from "../../Table/Table";
-import NoticeModal from "../../Modal/NoticeModal";
+import NoticeModal from "../../TableContents/Input/NoticeInputModal";
 
 const Container = styled.div`
   width: 100%;
@@ -29,16 +29,16 @@ const Notice = () => {
   );
 
   const data = [
-    { title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
-    { title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
-    { title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
-    { title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
-    { title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
-    { title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
-    { title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
-    { title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
-    { title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
-    { title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
+    { class: "notice", id: "notice-122345", title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
+    { class: "notice", id: "notice-1235445", title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
+    { class: "notice", id: "notice-12345", title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
+    { class: "notice", id: "notice-123445", title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
+    { class: "notice", id: "notice-12345", title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
+    { class: "notice", id: "notice-123245", title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
+    { class: "notice", id: "notice-123545", title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
+    { class: "notice", id: "notice-129345", title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
+    { class: "notice", id: "notice-124345", title: "프로젝트 이름", author: "조성훈", date: "2022-05-30" },
+    { class: "notice", id: "notice-123545", title: "다음 회의 가능 날짜", author: "조성훈", date: "2022-05-01" },
   ];
   const [isOpen, setIsOpen] = useState(false);
 
@@ -47,7 +47,7 @@ const Notice = () => {
   };
   return (
     <Container>
-      <TableComponent columns={columns} data={data} handleOpen={handleModalOpen} />
+      <TableComponent columns={columns} data={data} handleInputOpen={handleModalOpen} />
       {isOpen && <NoticeModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );

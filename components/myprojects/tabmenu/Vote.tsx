@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import TableComponent from "../../Table/Table";
-import VoteModal from "../../Modal/VoteModal";
+import VoteModal from "../../TableContents/Input/VoteInputModal";
 
 const Container = styled.div`
   width: 100%;
@@ -33,16 +33,16 @@ const Vote = () => {
   );
 
   const data = [
-    { name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
-    { name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
-    { name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
-    { name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
-    { name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
-    { name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
-    { name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
-    { name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
-    { name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
-    { name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
+    { class: "vote", id: "vote-12345", name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
+    { class: "vote", id: "vote-123456", name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
+    { class: "vote", id: "vote-123451", name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
+    { class: "vote", id: "vote-123452", name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
+    { class: "vote", id: "vote-123458", name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
+    { class: "vote", id: "vote-123458", name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
+    { class: "vote", id: "vote-12345", name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
+    { class: "vote", id: "vote-123454", name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
+    { class: "vote", id: "vote-12345", name: "프로젝트 이름", date: "2022-05-30", voted: "2", entire: "4" },
+    { class: "vote", id: "vote-123459", name: "다음 회의 가능 날짜", date: "2022-05-01", voted: "3", entire: "4" },
   ];
   const [isOpen, setIsOpen] = useState(false);
 
@@ -51,7 +51,7 @@ const Vote = () => {
   };
   return (
     <Container>
-      <TableComponent columns={columns} data={data} handleOpen={handleModalOpen} />
+      <TableComponent columns={columns} data={data} handleInputOpen={handleModalOpen} />
       {isOpen && <VoteModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );

@@ -1,9 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import TableComponent from "../../Table/Table";
+import MeetingInputModal from "../../TableContents/Input/MeetingInputModal";
 
 const Container = styled.div`
-  position: absolute;
   width: 100%;
   height: 80%;
   background-color: #ffffff;
@@ -29,18 +29,25 @@ const MeetingLog = () => {
   );
 
   const data = [
-    { name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
-    { name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
-    { name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
-    { name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
-    { name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
-    { name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
-    { name: "abcd", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
-    { name: "abcde", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
+    { class: "meeting", id: "meeting-125345", name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
+    { class: "meeting", id: "meeting-1234215", name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
+    { class: "meeting", id: "meeting-1234445", name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
+    { class: "meeting", id: "meeting-1254345", name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
+    { class: "meeting", id: "meeting-1236545", name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
+    { class: "meeting", id: "meeting-12365445", name: "abc", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
+    { class: "meeting", id: "meeting-1234845", name: "abcd", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
+    { class: "meeting", id: "meeting-1237845", name: "abcde", email: "dfs@dfsfdsf.com", phone: "000-0000-0000" },
   ];
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleModalOpen = () => {
+    setIsOpen(!isOpen);
+  };
   return (
     <Container>
-      <TableComponent columns={columns} data={data} />
+      <TableComponent columns={columns} data={data} handleInputOpen={handleModalOpen} />
+      {isOpen && <MeetingInputModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );
 };

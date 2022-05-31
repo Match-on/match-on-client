@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTable, useGlobalFilter, useSortBy } from "react-table";
 
 import Search from "./Search";
 
 import styled from "@emotion/styled";
+import MeetingOutputModal from "../TableContents/Output/MeetingOutput";
+import NoticeOutputModal from "../TableContents/Output/NoticeOutput";
+import VoteOutputModal from "../TableContents/Output/VoteOutput";
+import { useAppDispatch } from "../../src/hooks/hooks";
+import { selectRow } from "../../src/redux/reducers/tableRow";
 
 //pagination 추가
 
@@ -71,27 +76,39 @@ const RowComponent = ({ row, index, select, handleRow }) => {
   );
 };
 
-const TableComponent = ({ columns, data, handleOpen }) => {
+const TableComponent = ({ columns, data, handleInputOpen }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, setGlobalFilter } = useTable(
     { columns, data },
     useGlobalFilter,
     useSortBy
   );
+  const dispatch = useAppDispatch();
 
-  const [select, setSelect] = useState(-1);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleClickedRow = (index) => {
-    setSelect(index);
+  const [rowInfo, setRowInfo] = useState({ class: "", index: -1, id: "" });
+
+  const handleOpen = () => {
+    setIsOpen(!isOpen);
   };
 
+  const handleClickedRow = (row, index) => {
+    handleOpen();
+    setRowInfo({ class: row.original.class, index: index, id: row.original.id });
+  };
+  useEffect(() => {
+    dispatch(selectRow(rowInfo));
+  }, [rowInfo]);
+
   return (
-    <TableContainer>
-      <TableHeader>
-        <Search onSubmit={setGlobalFilter} />
-        <UploadButton onClick={handleOpen}>업로드</UploadButton>
-      </TableHeader>
-      <Table {...getTableProps()}>
-        {/* <thead>
+    <>
+      <TableContainer>
+        <TableHeader>
+          <Search onSubmit={setGlobalFilter} />
+          <UploadButton onClick={handleInputOpen}>업로드</UploadButton>
+        </TableHeader>
+        <Table {...getTableProps()}>
+          {/* <thead>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
@@ -100,16 +117,30 @@ const TableComponent = ({ columns, data, handleOpen }) => {
             </tr>
           ))}
         </thead> */}
-        <Tbody {...getTableBodyProps()}>
-          {rows.map((row, index) => {
-            prepareRow(row);
-            return (
-              <RowComponent row={row} index={index} select={select} handleRow={handleClickedRow} key={`row-${index}`} />
-            );
-          })}
-        </Tbody>
-      </Table>
-    </TableContainer>
+          <Tbody {...getTableBodyProps()}>
+            {rows.map((row, index) => {
+              prepareRow(row);
+              return (
+                <RowComponent
+                  row={row}
+                  index={index}
+                  select={rowInfo.index}
+                  handleRow={() => handleClickedRow(row, index)}
+                  key={`row-${index}`}
+                />
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+      {/* {isOpen && rowInfo.class == "meeting" && (
+        <MeetingOutputModal isOpen={isOpen} handleOpen={handleOpen} id={rowInfo.id} />
+      )}
+      {isOpen && rowInfo.class == "notice" && (
+        <NoticeOutputModal isOpen={isOpen} handleOpen={handleOpen} id={rowInfo.id} />
+      )}
+      {isOpen && rowInfo.class == "vote" && <VoteOutputModal isOpen={isOpen} handleOpen={handleOpen} id={rowInfo.id} />} */}
+    </>
   );
 };
 

@@ -1,14 +1,20 @@
+import styled from "@emotion/styled";
 import BackToTable from "../../Table/BackToTable";
 
+const Container = styled.div`
+  width: 100%;
+  height: 80%;
+  background-color: #ffffff;
+`;
 const NoticeOutput = ({ id }) => {
   return (
-    <div>
+    <Container>
       NoticeOutput
       <div>{id}</div>
       <div>
         <BackToTable />
       </div>
-    </div>
+    </Container>
   );
 };
 

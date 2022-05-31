@@ -60,8 +60,9 @@ const MainContent = styled.div`
 
 const Container = styled.div`
   width: 100%;
-  height: 100%;
-  margin-top: -0.25rem;
+  height: 70%;
+  margin-top: -1%;
+  padding-top: 1%;
 `;
 
 const Tab = styled.div`
