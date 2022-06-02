@@ -1,8 +1,8 @@
 import Modal from "react-modal";
 import styled from "@emotion/styled";
 //1367 645
-import Close from "../../../public/componentSVG/CloseButton.svg";
-import EditorForm from "../../myprojects/components/Editor";
+import Close from "../../../../../public/componentSVG/CloseButton.svg";
+import EditorForm from "../../../components/Editor";
 
 const customStyles = {
   overlay: {
@@ -62,11 +62,11 @@ const ContetnInput = styled.input`
   :-ms-input-placeholder {
   }
 `;
-const NoticeInputModal = ({ isOpen, handleOpen }) => {
+const MeetingInputModal = ({ isOpen, handleOpen }) => {
   return (
     <Modal isOpen={isOpen} onRequesClose={handleOpen} ariaHideApp={false} style={customStyles}>
       <Header>
-        <Title>공지사항 생성란</Title>
+        <Title>일정 추가</Title>
         <CloseButton onClick={handleOpen}>
           <Close />
         </CloseButton>
@@ -80,4 +80,4 @@ const NoticeInputModal = ({ isOpen, handleOpen }) => {
   );
 };
 
-export default NoticeInputModal;
+export default MeetingInputModal;

@@ -1,11 +1,11 @@
 import React from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 //signOut === 로그아웃 함수 useSession === nextauth에서 user가 로그인되어 있는 지를 알려주는 훅
-import DirectMsg from "../../components/DirectMsg";
-import Notification from "../../components/Notification";
+import DirectMsg from "../../components/sub/DirectMsg";
+import Notification from "../../components/sub/Notification";
 
 import styled from "@emotion/styled";
-import UserInfo from "../../components/UserInfo";
+import UserInfo from "../../components/sub/UserInfo";
 
 const Top = styled.div`
   position: fixed;

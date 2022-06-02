@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
+import CalendarTabMain from "./components/Calendar";
+import MemberProfile from "./components/MemberProfile";
 
 const Container = styled.div`
   display: flex;
@@ -67,12 +69,16 @@ const Tabmain = () => {
         </AlarmDday>
         <CalendarContainer>
           <div style={{ fontSize: "1rem", color: "#aaaaaa" }}>달력</div>
-          <WhiteBox></WhiteBox>
+          <WhiteBox>
+            <CalendarTabMain />
+          </WhiteBox>
         </CalendarContainer>
       </LeftContainer>
       <RightContainer>
         <div style={{ fontSize: "1rem", color: "#aaaaaa" }}>팀원 프로필</div>
-        <WhiteBox></WhiteBox>
+        <WhiteBox>
+          <MemberProfile />
+        </WhiteBox>
       </RightContainer>
     </Container>
   );

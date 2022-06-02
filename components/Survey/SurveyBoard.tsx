@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import styled from "@emotion/styled";
 
-import TableComponent from "../Table/Table";
+import TableComponent from "../sub/Table/Table";
 
 import NewSurvey from "../../public/componentSVG/survey/newSurvey.svg";
 import OldSurvey from "../../public/componentSVG/survey/oldSurvey.svg";

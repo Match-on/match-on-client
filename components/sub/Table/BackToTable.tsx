@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { useAppDispatch } from "../../src/hooks/hooks";
-import { unSelectRow } from "../../src/redux/reducers/tableRow";
+import { useAppDispatch } from "../../../src/hooks/hooks";
+import { unSelectRow } from "../../../src/redux/reducers/tableRow";
 
 const BackTo = styled.div`
   font-size: 0.75rem;

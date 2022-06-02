@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
-import TableComponent from "../../Table/Table";
-import VoteModal from "../../TabContents/Input/VoteInputModal";
+import TableComponent from "../../sub/Table/Table";
+import VoteModal from "./TabContents/Input/VoteInputModal";
 
 const Container = styled.div`
   width: 100%;

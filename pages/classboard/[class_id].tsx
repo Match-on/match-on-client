@@ -1,24 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
-import { RootState } from "../../src/redux/store";
 
 import styled from "@emotion/styled";
-
-import TabMain from "../../components/myprojects/tabmenu/TabMain/Tabmain";
-import MeetingLog from "../../components/myprojects/tabmenu/MeetingLog";
-import VedioConference from "../../components/myprojects/tabmenu/VedioConference";
-import Drive from "../../components/myprojects/tabmenu/Drive";
-import Vote from "../../components/myprojects/tabmenu/Vote";
-import Notice from "../../components/myprojects/tabmenu/Notice";
-import CalendarTab from "../../components/myprojects/tabmenu/CalendarTab";
-import TeamMember from "../../components/myprojects/tabmenu/TeamMember";
-import { useAppDispatch } from "../../src/hooks/hooks";
-import BackToTable from "../../components/sub/Table/BackToTable";
-import { unSelectRow } from "../../src/redux/reducers/tableRow";
-import MeetingOutput from "../../components/myprojects/tabmenu/TabContents/Output/MeetingOutput";
-import VoteOutput from "../../components/myprojects/tabmenu/TabContents/Output/VoteOutput";
-import NoticeOutput from "../../components/myprojects/tabmenu/TabContents/Output/NoticeOutput";
 
 const MyprojectPage = styled.div`
   position: absolute;
@@ -122,19 +105,15 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
   );
 };
 
-export default function ProjectDetail() {
+export default function ClassDetail() {
   const [tab, setTab] = useState(0);
   const router = useRouter();
-  const { project_id } = router.query;
-  const row = useSelector((state: RootState) => state.table.value);
-  const dispatch = useAppDispatch();
+  const { class_id } = router.query;
   //이제 테이블에서 액션 디스패치하면 됨.
   // dispatch(userLogin({ name: "조성훈", age: 25, email: "bbb@bbb.bbb" }))
   const handleTabMenu = (index) => {
     console.log(`${index}clicked`);
     setTab(index + 1);
-    console.log(row);
-    dispatch(unSelectRow());
   };
 
   return (
@@ -149,19 +128,7 @@ export default function ProjectDetail() {
             <TabItem title={v.tabTitle} index={index} tab={tab} handleTabMenu={handleTabMenu} key={`tab=${index}`} />
           ))}
         </Tab>
-        <Container>
-          {tab === 0 && <TabMain />}
-          {tab === 1 && row.class === "" && <MeetingLog />}
-          {tab === 1 && row.class === "meeting" && <MeetingOutput id={row.id} />}
-          {tab === 2 && <VedioConference />}
-          {tab === 3 && <Drive />}
-          {tab === 4 && row.class === "" && <Vote />}
-          {tab === 4 && row.class === "vote" && <VoteOutput id={row.id} />}
-          {tab === 5 && row.class === "" && <Notice />}
-          {tab === 5 && row.class === "notice" && <NoticeOutput id={row.id} />}
-          {tab === 6 && <CalendarTab />}
-          {tab === 7 && <TeamMember />}
-        </Container>
+        <Container></Container>
       </MainContent>
     </MyprojectPage>
   );

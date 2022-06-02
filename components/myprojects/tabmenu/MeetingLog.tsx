@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
-import TableComponent from "../../Table/Table";
-import MeetingInputModal from "../../TabContents/Input/MeetingInputModal";
+import TableComponent from "../../sub/Table/Table";
+import MeetingInputModal from "./TabContents/Input/MeetingInputModal";
 
 const Container = styled.div`
   width: 100%;

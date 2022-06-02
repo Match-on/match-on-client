@@ -123,7 +123,7 @@ const myproject: NextPage = () => {
       <SubTitle>내 프로젝트</SubTitle>
       <BookmarksContainer>
         {data.map((v, i) => (
-          <Link href={`/myproject/${v.title}/${v.id}`} key={`project-${i}`}>
+          <Link href={`/myproject/${v.id}`} key={`project-${i}`}>
             <a>
               <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
             </a>

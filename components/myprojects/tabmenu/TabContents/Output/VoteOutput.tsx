@@ -1,16 +1,15 @@
 import styled from "@emotion/styled";
-import BackToTable from "../../Table/BackToTable";
+import BackToTable from "../../../../sub/Table/BackToTable";
 
 const Container = styled.div`
   width: 100%;
   height: 80%;
   background-color: #ffffff;
 `;
-
-const MeetingOutput = ({ id }) => {
+const VoteOutput = ({ id }) => {
   return (
     <Container>
-      MeetingOutput
+      VoteOutput
       <div>{id}</div>
       <div>
         <BackToTable />
@@ -19,4 +18,4 @@ const MeetingOutput = ({ id }) => {
   );
 };
 
-export default MeetingOutput;
+export default VoteOutput;

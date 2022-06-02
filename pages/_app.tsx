@@ -2,7 +2,7 @@ import { getSession, SessionProvider, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { Provider } from "react-redux";
-import RefreshTokenHandler from "../components/auth/refreshTokenHandler";
+import RefreshTokenHandler from "../components/sub/auth/refreshTokenHandler";
 import Layout from "../layouts/Layout";
 import "../styles/globals.css";
 import { store } from "../src/redux/store";

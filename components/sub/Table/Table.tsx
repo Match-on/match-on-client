@@ -4,11 +4,11 @@ import { useTable, useGlobalFilter, useSortBy } from "react-table";
 import Search from "./Search";
 
 import styled from "@emotion/styled";
-import MeetingOutputModal from "../TabContents/Output/MeetingOutput";
-import NoticeOutputModal from "../TabContents/Output/NoticeOutput";
-import VoteOutputModal from "../TabContents/Output/VoteOutput";
-import { useAppDispatch } from "../../src/hooks/hooks";
-import { selectRow } from "../../src/redux/reducers/tableRow";
+import MeetingOutputModal from "../../myprojects/tabmenu/TabContents/Output/MeetingOutput";
+import NoticeOutputModal from "../../myprojects/tabmenu/TabContents/Output/NoticeOutput";
+import VoteOutputModal from "../../myprojects/tabmenu/TabContents/Output/VoteOutput";
+import { useAppDispatch } from "../../../src/hooks/hooks";
+import { selectRow } from "../../../src/redux/reducers/tableRow";
 
 //pagination 추가
 

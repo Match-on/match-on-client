@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import styled from "@emotion/styled";
 //1367 645
-import Close from "../../../public/componentSVG/CloseButton.svg";
-import CheckCircle from "../../../public/myprojectSVG/CheckBox.svg";
+import Close from "../../../../../public/componentSVG/CloseButton.svg";
+import CheckCircle from "../../../../../public/myprojectSVG/CheckBox.svg";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 
