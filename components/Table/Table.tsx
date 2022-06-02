@@ -4,9 +4,9 @@ import { useTable, useGlobalFilter, useSortBy } from "react-table";
 import Search from "./Search";
 
 import styled from "@emotion/styled";
-import MeetingOutputModal from "../TableContents/Output/MeetingOutput";
-import NoticeOutputModal from "../TableContents/Output/NoticeOutput";
-import VoteOutputModal from "../TableContents/Output/VoteOutput";
+import MeetingOutputModal from "../TabContents/Output/MeetingOutput";
+import NoticeOutputModal from "../TabContents/Output/NoticeOutput";
+import VoteOutputModal from "../TabContents/Output/VoteOutput";
 import { useAppDispatch } from "../../src/hooks/hooks";
 import { selectRow } from "../../src/redux/reducers/tableRow";
 
@@ -76,7 +76,7 @@ const RowComponent = ({ row, index, select, handleRow }) => {
   );
 };
 
-const TableComponent = ({ columns, data, handleInputOpen }) => {
+const TableComponent = ({ columns, data, handleInputOpen, upload }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, setGlobalFilter } = useTable(
     { columns, data },
     useGlobalFilter,
@@ -98,6 +98,7 @@ const TableComponent = ({ columns, data, handleInputOpen }) => {
   };
   useEffect(() => {
     dispatch(selectRow(rowInfo));
+    console.log(rowInfo);
   }, [rowInfo]);
 
   return (
@@ -105,18 +106,18 @@ const TableComponent = ({ columns, data, handleInputOpen }) => {
       <TableContainer>
         <TableHeader>
           <Search onSubmit={setGlobalFilter} />
-          <UploadButton onClick={handleInputOpen}>업로드</UploadButton>
+          {upload === "" ? <div /> : <UploadButton onClick={handleInputOpen}>{upload}</UploadButton>}
         </TableHeader>
         <Table {...getTableProps()}>
           {/* <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
-              ))}
-            </tr>
-          ))}
-        </thead> */}
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
+                ))}
+              </tr>
+            ))}
+          </thead> */}
           <Tbody {...getTableBodyProps()}>
             {rows.map((row, index) => {
               prepareRow(row);

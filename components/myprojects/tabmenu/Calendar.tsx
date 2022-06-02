@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { format } from "date-fns";
 import Calendar from "react-calendar";
-import CalendarModal from "../../TableContents/Input/CalendarInputModal";
+import CalendarModal from "../../TabContents/Input/CalendarInputModal";
 //1367 645
 const Container = styled.div`
   width: 100%;

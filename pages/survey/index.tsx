@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 
-import NewSurvey from "../../public/componentSVG/survey/newSurvey.svg";
-import OldSurvey from "../../public/componentSVG/survey/oldSurvey.svg";
 import SurveyBoard from "../../components/Survey/SurveyBoard";
 import MySurvey from "../../components/Survey/MySurvey";
+import { useSelector } from "react-redux";
+import { RootState } from "../../src/redux/store";
+import { useAppDispatch } from "../../src/hooks/hooks";
+import { unSelectRow } from "../../src/redux/reducers/tableRow";
+import SurveyPost from "../../components/Survey/Output/SurveyPost";
 
 const SurveyPage = styled.div`
   position: absolute;
@@ -107,9 +110,13 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
 const survey: React.FC = () => {
   const [tab, setTab] = useState(0);
   const router = useRouter();
+
+  const row = useSelector((state: RootState) => state.table.value);
+  const dispatch = useAppDispatch();
   const handleTabMenu = (index) => {
     console.log(`${index}clicked`);
     setTab(index);
+    dispatch(unSelectRow());
   };
 
   return (
@@ -124,8 +131,10 @@ const survey: React.FC = () => {
           ))}
         </Tab>
         <Container>
-          {tab === 0 && <SurveyBoard />}
-          {tab === 1 && <MySurvey />}
+          {tab === 0 && row.class === "" && <SurveyBoard />}
+          {tab === 0 && row.class === "survey" && <SurveyPost id={row.id} />}
+          {tab === 1 && row.class === "" && <MySurvey />}
+          {tab === 1 && row.class === "survey" && <SurveyPost id={row.id} />}
         </Container>
       </MainContent>
     </SurveyPage>

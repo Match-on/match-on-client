@@ -14,14 +14,12 @@ const LeftContainer = styled.div`
   justify-content: space-between;
   width: 67%;
   height: 100%;
-  border: 1px solid black;
 `;
 
 const RightContainer = styled.div`
   width: 33%;
   margin-left: 2%;
   height: 100%;
-  border: 1px solid black;
 `;
 
 const AlarmDday = styled.div`
@@ -29,25 +27,21 @@ const AlarmDday = styled.div`
   justify-content: space-between;
   width: 100%;
   height: 32%;
-  border: 2px solid black;
 `;
 
 const RecentAlarm = styled.div`
   width: 80%;
   height: 100%;
-  border: 1px solid black;
 `;
 
 const Dday = styled.div`
   width: 17%;
   height: 100%;
-  border: 1px solid black;
 `;
 
 const CalendarContainer = styled.div`
   width: 100%;
   height: 65%;
-  border: 2px solid black;
 `;
 
 const WhiteBox = styled.div`

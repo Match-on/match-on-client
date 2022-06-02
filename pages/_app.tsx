@@ -2,24 +2,26 @@ import { getSession, SessionProvider, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { Provider } from "react-redux";
-
+import RefreshTokenHandler from "../components/auth/refreshTokenHandler";
 import Layout from "../layouts/Layout";
 import "../styles/globals.css";
 import { store } from "../src/redux/store";
+import { useState } from "react";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
+  const [interval, setInterval] = useState(0);
   return (
     <Provider store={store}>
-      <SessionProvider session={session}>
+      <SessionProvider session={session} refetchInterval={interval}>
         {Component.auth ? (
           <Auth>
             <Layout>
               <Component {...pageProps} />
+              <RefreshTokenHandler setInterval={setInterval} />
             </Layout>
           </Auth>
         ) : (
           <Layout>
-            <div>{session}</div>
             <Component {...pageProps} />
           </Layout>
         )}

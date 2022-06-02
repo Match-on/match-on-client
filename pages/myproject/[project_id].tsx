@@ -15,11 +15,10 @@ import CalendarTab from "../../components/myprojects/tabmenu/Calendar";
 import TeamMember from "../../components/myprojects/tabmenu/TeamMember";
 import { useAppDispatch } from "../../src/hooks/hooks";
 import BackToTable from "../../components/Table/BackToTable";
-import Abcde from "../../components/TableContents/Output/abcde";
 import { unSelectRow } from "../../src/redux/reducers/tableRow";
-import MeetingOutput from "../../components/TableContents/Output/MeetingOutput";
-import VoteOutput from "../../components/TableContents/Output/VoteOutput";
-import NoticeOutput from "../../components/TableContents/Output/NoticeOutput";
+import MeetingOutput from "../../components/TabContents/Output/MeetingOutput";
+import VoteOutput from "../../components/TabContents/Output/VoteOutput";
+import NoticeOutput from "../../components/TabContents/Output/NoticeOutput";
 
 const MyprojectPage = styled.div`
   position: absolute;

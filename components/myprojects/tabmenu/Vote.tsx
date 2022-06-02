@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import TableComponent from "../../Table/Table";
-import VoteModal from "../../TableContents/Input/VoteInputModal";
+import VoteModal from "../../TabContents/Input/VoteInputModal";
 
 const Container = styled.div`
   width: 100%;
@@ -51,7 +51,7 @@ const Vote = () => {
   };
   return (
     <Container>
-      <TableComponent columns={columns} data={data} handleInputOpen={handleModalOpen} />
+      <TableComponent columns={columns} data={data} handleInputOpen={handleModalOpen} upload="업로드" />
       {isOpen && <VoteModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );

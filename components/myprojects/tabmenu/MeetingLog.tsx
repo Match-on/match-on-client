@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import TableComponent from "../../Table/Table";
-import MeetingInputModal from "../../TableContents/Input/MeetingInputModal";
+import MeetingInputModal from "../../TabContents/Input/MeetingInputModal";
 
 const Container = styled.div`
   width: 100%;
@@ -46,7 +46,7 @@ const MeetingLog = () => {
   };
   return (
     <Container>
-      <TableComponent columns={columns} data={data} handleInputOpen={handleModalOpen} />
+      <TableComponent columns={columns} data={data} handleInputOpen={handleModalOpen} upload="업로드" />
       {isOpen && <MeetingInputModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );
