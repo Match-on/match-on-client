@@ -1,16 +1,16 @@
 import styled from "@emotion/styled";
 import { NextPage } from "next";
 import Link from "next/link";
-import React from "react";
-import ProjectBox from "../../components/myprojects/components/ProjectBox";
+import React, { useEffect, useRef, useState } from "react";
+import { ClassBox } from "../../components/myprojects/components/ProjectClassBox";
 
-const MyprojectPage = styled.div`
+const ClassPage = styled.div`
   width: calc(100% - 8%);
   margin-left: 4%;
   height: 100%;
 `;
 
-const MyprojectTitle = styled.div`
+const ClassTitle = styled.div`
   width: 9.6em;
   font-size: 1.5rem;
   font-weight: 400;
@@ -27,110 +27,124 @@ const SubTitle = styled.div`
 
 const BookmarksContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
   align-content: space-between;
 `;
 
-const ProjectContainer = styled.div``;
-
 const data = [
   {
-    title: "Match-On",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
     id: "1234567",
+    class: "정보서비스디자인",
+    classification: "전공 선택",
+    professor: "신동천",
+    grade: 3,
+    time: "월요일 3 4",
   },
   {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "2123456",
+    id: "1234567",
+    class: "정보서비스디자인",
+    classification: "전공 선택",
+    professor: "신동천",
+    grade: 3,
+    time: "월요일 3 4",
   },
   {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "3123456",
+    id: "1234567",
+    class: "정보서비스디자인",
+    classification: "전공 선택",
+    professor: "신동천",
+    grade: 3,
+    time: "월요일 3 4",
   },
   {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "4123456",
+    id: "1234567",
+    class: "정보서비스디자인",
+    classification: "전공 선택",
+    professor: "신동천",
+    grade: 3,
+    time: "월요일 3 4",
   },
   {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "5123456",
+    id: "1234567",
+    class: "정보서비스디자인",
+    classification: "전공 선택",
+    professor: "신동천",
+    grade: 3,
+    time: "월요일 3 4",
   },
   {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "6123456",
+    id: "1234567",
+    class: "정보서비스디자인",
+    classification: "전공 선택",
+    professor: "신동천",
+    grade: 3,
+    time: "월요일 3 4",
   },
   {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "7123456",
+    id: "1234567",
+    class: "정보서비스디자인",
+    classification: "전공 선택",
+    professor: "신동천",
+    grade: 3,
+    time: "월요일 3 4",
   },
   {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "8123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "9123456",
+    id: "1234567",
+    class: "정보서비스디자인",
+    classification: "전공 선택",
+    professor: "신동천",
+    grade: 3,
+    time: "월요일 3 4",
   },
 ];
 
 const ClassBoard: NextPage = () => {
+  const TOTAL_SLIDES = data.length;
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slideRef = useRef(null);
+  const NextSlide = () => {
+    if (currentSlide >= TOTAL_SLIDES) {
+      return;
+    } else {
+      console.log(TOTAL_SLIDES);
+
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
+  const PrevSlide = () => {
+    if (currentSlide === 0) {
+      return;
+    } else {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
+  useEffect(() => {
+    slideRef.current.style.transition = "all 0.5s ease-in-out";
+    slideRef.current.style.transform = `translateX(-${currentSlide}00%)`;
+  }, [currentSlide]);
+
   return (
-    <MyprojectPage>
-      <MyprojectTitle>중앙대학교</MyprojectTitle>
+    <ClassPage>
+      <ClassTitle>중앙대학교</ClassTitle>
       <SubTitle>즐겨찾기</SubTitle>
-      <BookmarksContainer>
+      <div>{currentSlide + 1}컨테니어</div>
+      <BookmarksContainer ref={slideRef}>
         {data.map((v, i) => (
           <Link href={`/classboard/${v.id}`} key={`favorite-${i}`}>
             <a>
-              <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
+              <ClassBox
+                className={v.class}
+                classfication={v.classification}
+                professor={v.professor}
+                grade={v.grade}
+                time={v.time}
+              />
             </a>
           </Link>
         ))}
       </BookmarksContainer>
-      <SubTitle>내 프로젝트</SubTitle>
-      <BookmarksContainer>
-        {data.map((v, i) => (
-          <Link href={`/classboard/${v.id}`} key={`class-${i}`}>
-            <a>
-              <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
-            </a>
-          </Link>
-        ))}
-      </BookmarksContainer>
-    </MyprojectPage>
+      <button onClick={PrevSlide}>prev</button>
+      <button onClick={NextSlide}>next</button>
+    </ClassPage>
   );
 };
 
