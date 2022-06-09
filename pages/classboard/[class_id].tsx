@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 
 import styled from "@emotion/styled";
+import FreeBoard from "../../components/ClassBoard/TabContents/FreeBoard";
+import InfoBoard from "../../components/ClassBoard/TabContents/InfoBoard";
+import RecruitBoard from "../../components/ClassBoard/TabContents/RecruitBoard";
 
 const MyprojectPage = styled.div`
   position: absolute;
@@ -64,7 +67,7 @@ const Tab = styled.div`
 `;
 
 const TabMenu = styled.div<{ clicked: boolean }>`
-  width: calc(100% / 6);
+  width: calc(100% / 3);
   height: 100%;
   line-height: 2.5em;
   text-align: center;
@@ -88,18 +91,14 @@ const TabMenu = styled.div<{ clicked: boolean }>`
 `;
 
 const tabContArr = [
-  { tabNumber: 0, tabTitle: "회의록" },
-  { tabNumber: 1, tabTitle: "화상 회의" },
-  { tabNumber: 2, tabTitle: "드라이브" },
-  { tabNumber: 3, tabTitle: "투표" },
-  { tabNumber: 4, tabTitle: "공지사항" },
-  { tabNumber: 5, tabTitle: "달력" },
-  { tabNumber: 6, tabTitle: "팀원" },
+  { tabNumber: 0, tabTitle: "자유게시판" },
+  { tabNumber: 1, tabTitle: "정보게시판" },
+  { tabNumber: 2, tabTitle: "팀원모집 게시판" },
 ];
 
 const TabItem = ({ title, index, tab, handleTabMenu }) => {
   return (
-    <TabMenu onClick={() => handleTabMenu(index)} clicked={index === tab - 1}>
+    <TabMenu onClick={() => handleTabMenu(index)} clicked={index === tab}>
       {title}
     </TabMenu>
   );
@@ -108,18 +107,18 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
 export default function ClassDetail() {
   const [tab, setTab] = useState(0);
   const router = useRouter();
-  const { class_id } = router.query;
+  const { class_id } = router.query; //class_id로 쿼리 던져서 정보 얻기
   //이제 테이블에서 액션 디스패치하면 됨.
   // dispatch(userLogin({ name: "조성훈", age: 25, email: "bbb@bbb.bbb" }))
   const handleTabMenu = (index) => {
     console.log(`${index}clicked`);
-    setTab(index + 1);
+    setTab(index);
   };
 
   return (
     <MyprojectPage>
       <Header>
-        <Title onClick={() => handleTabMenu(-1)}>Match-On</Title>
+        <Title onClick={() => handleTabMenu(-1)}>{class_id}</Title>
         <SubTitle>"ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ"</SubTitle>
       </Header>
       <MainContent>
@@ -128,7 +127,11 @@ export default function ClassDetail() {
             <TabItem title={v.tabTitle} index={index} tab={tab} handleTabMenu={handleTabMenu} key={`tab=${index}`} />
           ))}
         </Tab>
-        <Container></Container>
+        <Container>
+          {tab === 0 && <FreeBoard />}
+          {tab === 1 && <InfoBoard />}
+          {tab === 2 && <RecruitBoard />}
+        </Container>
       </MainContent>
     </MyprojectPage>
   );
