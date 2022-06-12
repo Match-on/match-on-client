@@ -17,7 +17,7 @@ const Nav = styled.div`
 
 const NavListWrapper = styled.ul`
   position: absolute;
-  top: 10.875em;
+  top: 8rem;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -63,7 +63,7 @@ const NavDetail = styled.div`
 
 const NavDetailWrapper = styled.ul`
   position: absolute;
-  top: 11em;
+  top: 8.2rem;
   left: 0.625rem;
   width: 100%;
   display: flex;

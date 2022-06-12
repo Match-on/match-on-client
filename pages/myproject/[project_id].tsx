@@ -23,17 +23,17 @@ import NoticeOutput from "../../components/myprojects/tabmenu/TabContents/Output
 const MyprojectPage = styled.div`
   position: absolute;
   width: calc(100% - 8%);
-  height: 100%;
+  height: 92%;
   margin-left: 4%;
   /* height: 100%; */
 `;
 
 const Header = styled.div`
   width: 100%;
-  height: 2.75em;
+  height: 8%;
   display: flex;
   align-items: center;
-  margin-bottom: 5em;
+  margin-bottom: 3%;
 `;
 
 const Title = styled.div`
@@ -53,20 +53,20 @@ const SubTitle = styled.div`
 
 const MainContent = styled.div`
   width: 100%;
-  height: 100%;
+  height: 90%;
   font-size: 1rem;
 `;
 
 const Container = styled.div`
   width: 100%;
-  height: 70%;
+  height: 100%;
   margin-top: -1%;
   padding-top: 1%;
 `;
 
 const Tab = styled.div`
   width: 100%;
-  height: 2.5em;
+  height: 6%;
   font-size: 1rem;
   display: flex;
   flex-direction: row;
@@ -83,7 +83,9 @@ const Tab = styled.div`
 const TabMenu = styled.div<{ clicked: boolean }>`
   width: calc(100% / 6);
   height: 100%;
-  line-height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   font-size: 1em;
   font-weight: 400;

@@ -2,7 +2,7 @@ import Modal from "react-modal";
 import styled from "@emotion/styled";
 //1367 645
 import Close from "../../../../../public/componentSVG/CloseButton.svg";
-import EditorForm from "../../../components/Editor";
+import EditorForm from "../../../../sub/Editor";
 
 const customStyles = {
   overlay: {

@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 //1367 645
 const Container = styled.div`
   width: 100%;
-  height: 80%;
+  height: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -11,37 +11,35 @@ const Container = styled.div`
 `;
 
 const ButtonSet = styled.div`
-  width: 480px;
-  height: 100px;
+  width: 35%;
+  height: 14%;
   display: flex;
   justify-content: space-between;
 `;
 
 const StartButton = styled.div`
-  width: 210px;
-  height: 90px;
-  border-radius: 20px;
+  width: 50%;
+  height: 100%;
+  border-radius: 1.25rem;
   text-align: center;
   font-weight: 400;
-  font-size: 16px;
-  line-height: 90px;
+  font-size: 1rem;
   border: 2px solid black;
 `;
 
 const SettingButton = styled.div`
-  width: 210px;
-  height: 90px;
-  border-radius: 20px;
+  width: 50%;
+  height: 100%;
+  border-radius: 1.25rem;
   text-align: center;
   font-weight: 400;
-  font-size: 16px;
-  line-height: 90px;
+  font-size: 1rem;
   border: 2px solid black;
 `;
 
 const VedioSchedule = styled.div`
-  width: 400px;
-  height: 450px;
+  width: 30%;
+  height: 70%;
   border: 2px solid black;
 `;
 

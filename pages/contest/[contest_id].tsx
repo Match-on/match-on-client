@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 
 import styled from "@emotion/styled";
-import FreeBoard from "../../components/ClassBoard/TabContents/FreeBoard";
-import InfoBoard from "../../components/ClassBoard/TabContents/InfoBoard";
-import RecruitBoard from "../../components/ClassBoard/TabContents/RecruitBoard";
+
 import { useSelector } from "react-redux";
 import { RootState } from "../../src/redux/store";
 import { useAppDispatch } from "../../src/hooks/hooks";
 import { unSelectRow } from "../../src/redux/reducers/tableRow";
-import InfoOutput from "../../components/ClassBoard/components/Output/InfoOutput";
-import TeamOutput from "../../components/ClassBoard/components/Output/TeamOutput";
+import Introduction from "../../components/Contest/TabContents/Introduction";
+import RecruitContest from "../../components/Contest/TabContents/RecruitContest";
+import Comments from "../../components/Contest/TabContents/Comments";
 
 const MyprojectPage = styled.div`
   position: absolute;
@@ -98,9 +97,9 @@ const TabMenu = styled.div<{ clicked: boolean }>`
 `;
 
 const tabContArr = [
-  { tabNumber: 0, tabTitle: "자유게시판" },
-  { tabNumber: 1, tabTitle: "정보게시판" },
-  { tabNumber: 2, tabTitle: "팀원모집 게시판" },
+  { tabNumber: 0, tabTitle: "소개" },
+  { tabNumber: 1, tabTitle: "팀원 모집" },
+  { tabNumber: 2, tabTitle: "댓글" },
 ];
 
 const TabItem = ({ title, index, tab, handleTabMenu }) => {
@@ -111,10 +110,10 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
   );
 };
 
-export default function ClassDetail() {
+export default function ContestDetail() {
   const [tab, setTab] = useState(0);
   const router = useRouter();
-  const { class_id } = router.query; //class_id로 쿼리 던져서 정보 얻기
+  const { contest_id } = router.query; //class_id로 쿼리 던져서 정보 얻기
   const row = useSelector((state: RootState) => state.table.value);
   const dispatch = useAppDispatch();
   //이제 테이블에서 액션 디스패치하면 됨.
@@ -128,8 +127,7 @@ export default function ClassDetail() {
   return (
     <MyprojectPage>
       <Header>
-        <Title>{class_id}</Title>
-        <SubTitle>"ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ"</SubTitle>
+        <Title>공모전</Title>
       </Header>
       <MainContent>
         <Tab>
@@ -138,12 +136,9 @@ export default function ClassDetail() {
           ))}
         </Tab>
         <Container>
-          {tab === 0 && row.class === "" && <FreeBoard />}
-          {tab === 0 && row.class === "freeboard" && <InfoOutput />}
-          {tab === 1 && row.class === "" && <InfoBoard />}
-          {tab === 1 && row.class === "infoboard" && <InfoOutput />}
-          {tab === 2 && row.class === "" && <RecruitBoard />}
-          {tab === 2 && row.class === "recruitboard" && <TeamOutput />}
+          {tab === 0 && <Introduction />}
+          {tab === 1 && <RecruitContest />}
+          {tab === 2 && <Comments />}
         </Container>
       </MainContent>
     </MyprojectPage>

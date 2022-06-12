@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
 
-const BoxContainer = styled.div`
+const ProjectContainer = styled.div`
   width: 15.875em;
   height: 18.75em;
   display: flex;
@@ -9,13 +9,27 @@ const BoxContainer = styled.div`
   cursor: pointer;
 `;
 
-const BoxContent = styled.div`
-  width: 13.75em;
+const ClassContainer = styled.div`
+  display: flex;
+  width: 16.5rem;
+  cursor: pointer;
+  margin-right: calc(20vw - 16.5rem);
+`;
+
+const ProjectContent = styled.div`
+  width: 93%;
   height: 18.75em;
-  margin: auto;
   background-color: white;
   border-radius: 1.25em;
   padding: 1em;
+`;
+const ClassContent = styled.div<{ selected: boolean }>`
+  width: 93%;
+  height: 18.75em;
+  background-color: white;
+  border-radius: 1.25em;
+  padding: 1em;
+  box-shadow: ${(props) => (props.selected ? "0px 0px 10px rgba(0, 0, 0, 0.3)" : "")};
 `;
 
 const Title = styled.div`
@@ -47,13 +61,13 @@ const Board = styled.div`
 
 export const ProjectBox = ({ title, subject, describe, deadline }) => {
   return (
-    <BoxContainer>
-      <BoxContent>
+    <ProjectContainer>
+      <ProjectContent>
         <Title>{title}</Title>
         <Subject>{subject}</Subject>
         <Describe>{describe}</Describe>
-      </BoxContent>
-    </BoxContainer>
+      </ProjectContent>
+    </ProjectContainer>
   );
 };
 // id: "1234567",
@@ -62,10 +76,10 @@ export const ProjectBox = ({ title, subject, describe, deadline }) => {
 //     professor: "신동천",
 //     grade: 3,
 //     time: "월요일 3 4",
-export const ClassBox = ({ className, classfication, professor, grade, time }) => {
+export const ClassBox = ({ className, classfication, professor, grade, time, selected }) => {
   return (
-    <BoxContainer>
-      <BoxContent>
+    <ClassContainer>
+      <ClassContent selected={selected}>
         <Title>{className}</Title>
         <Subject>{classfication}</Subject>
         <Describe style={{ height: "30%" }}>
@@ -79,7 +93,7 @@ export const ClassBox = ({ className, classfication, professor, grade, time }) =
           <div>정보공유게시판</div>
           <div>팀원모집게시판</div>
         </Board>
-      </BoxContent>
-    </BoxContainer>
+      </ClassContent>
+    </ClassContainer>
   );
 };

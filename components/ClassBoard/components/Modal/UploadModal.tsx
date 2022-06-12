@@ -1,8 +1,8 @@
 import Modal from "react-modal";
 import styled from "@emotion/styled";
 //1367 645
-import Close from "../../../../../public/componentSVG/CloseButton.svg";
-import EditorForm from "../../../../sub/Editor";
+import Close from "../../../../public/componentSVG/CloseButton.svg";
+import EditorForm from "../../../sub/Editor";
 
 const customStyles = {
   overlay: {
@@ -50,28 +50,30 @@ const ContentBox = styled.div`
   border-radius: 8px;
 `;
 
-const ContetnInput = styled.input`
+const ContentInput = styled.input`
   width: 100%;
-  height: 10%;
+  height: 5%;
   border: 0.5px solid #aaaaaa;
   border-radius: 8px;
   padding-left: 10px;
+  margin-bottom: 3%;
   ::placeholder,
   ::-webkit-input-placeholder {
   }
   :-ms-input-placeholder {
   }
 `;
-const NoticeInputModal = ({ isOpen, handleOpen }) => {
+const UploadModal = ({ isOpen, handleOpen }) => {
   return (
     <Modal isOpen={isOpen} onRequesClose={handleOpen} ariaHideApp={false} style={customStyles}>
       <Header>
-        <Title>공지사항 생성란</Title>
+        <Title>글 쓰기</Title>
         <CloseButton onClick={handleOpen}>
           <Close />
         </CloseButton>
       </Header>
       <Contents>
+        <ContentInput placeholder="제목" />
         {/* <ContentBox></ContentBox>
         <ContetnInput placeholder="dd"></ContetnInput> */}
         <EditorForm />
@@ -80,4 +82,4 @@ const NoticeInputModal = ({ isOpen, handleOpen }) => {
   );
 };
 
-export default NoticeInputModal;
+export default UploadModal;

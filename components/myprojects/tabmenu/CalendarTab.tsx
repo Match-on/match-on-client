@@ -6,7 +6,7 @@ import CalendarModal from "./TabContents/Input/CalendarInputModal";
 //1367 645
 const Container = styled.div`
   width: 100%;
-  height: 83%;
+  height: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;

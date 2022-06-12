@@ -4,7 +4,7 @@ import MemberBox from "../components/MemberBox";
 
 const Container = styled.div`
   width: 100%;
-  height: 83%;
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
   background-color: #ffffff;

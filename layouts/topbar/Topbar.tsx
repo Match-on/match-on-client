@@ -10,10 +10,9 @@ import UserInfo from "../../components/sub/UserInfo";
 const Top = styled.div`
   position: fixed;
   width: calc(100% - 5em);
-  height: 3.125em;
+  height: 6%;
   top: 0;
   right: 0;
-  border: 1px solid black;
 `;
 
 const TopWrapper = styled.div`

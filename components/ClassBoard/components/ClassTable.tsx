@@ -4,6 +4,8 @@ import { useTable, useGlobalFilter, useSortBy } from "react-table";
 import Search from "../../sub/Table/Search";
 
 import styled from "@emotion/styled";
+import { useAppDispatch } from "../../../src/hooks/hooks";
+import { selectRow } from "../../../src/redux/reducers/tableRow";
 
 //pagination 추가
 
@@ -61,6 +63,16 @@ const UploadButton = styled.div`
   cursor: pointer;
 `;
 
+const SortBox = styled.div`
+  display: flex;
+  font-size: 0.75rem;
+`;
+
+const SortSelect = styled.div`
+  cursor: pointer;
+  color: #50d5d5;
+`;
+
 const RowComponent = ({ row, index, select, handleRow }) => {
   return (
     <Tablerow {...row.getRowProps()} onClick={() => handleRow(index)} selected={index === select}>
@@ -71,12 +83,18 @@ const RowComponent = ({ row, index, select, handleRow }) => {
   );
 };
 
-const ClassTable = ({ columns, data, handleInputOpen, upload }) => {
+const ClassTable = ({ columns, data, handleInputOpen }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, setGlobalFilter } = useTable(
     { columns, data },
     useGlobalFilter,
     useSortBy
   );
+
+  const sortIcon = ["▼", "▲"];
+  const [sortClick, setSortClick] = useState(true);
+  const handleSortClick = () => {
+    setSortClick(!sortClick);
+  };
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -90,27 +108,35 @@ const ClassTable = ({ columns, data, handleInputOpen, upload }) => {
     handleOpen();
     setRowInfo({ class: row.original.class, index: index, id: row.original.id });
   };
+  const dispatch = useAppDispatch();
   useEffect(() => {
+    dispatch(selectRow(rowInfo));
     console.log(rowInfo);
   }, [rowInfo]);
-
   return (
     <>
       <TableContainer>
         <TableHeader>
           <Search onSubmit={setGlobalFilter} />
-          {upload === "" ? <div /> : <UploadButton onClick={handleInputOpen}>{upload}</UploadButton>}
+          <div style={{ display: "flex", width: "20%", justifyContent: "space-around" }}>
+            <SortBox style={{ fontSize: "0.75rem" }}>
+              <p>분류</p>:<SortSelect {...headerGroups[0].headers[1].getSortByToggleProps()}>날짜순</SortSelect>
+            </SortBox>
+            <UploadButton onClick={handleInputOpen}>업로드</UploadButton>
+          </div>
         </TableHeader>
+
         <Table {...getTableProps()}>
           {/* <thead>
-            {headerGroups.map((headerGroup) => (
+            {headerGroups.map((headerGroup, index) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
+                {headerGroup.headers.map((column, index) => (
                   <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
                 ))}
               </tr>
             ))}
           </thead> */}
+
           <Tbody {...getTableBodyProps()}>
             {rows.map((row, index) => {
               prepareRow(row);

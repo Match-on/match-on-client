@@ -109,7 +109,7 @@ const TableComponent = ({ columns, data, handleInputOpen, upload }) => {
           {upload === "" ? <div /> : <UploadButton onClick={handleInputOpen}>{upload}</UploadButton>}
         </TableHeader>
         <Table {...getTableProps()}>
-          {/* <thead>
+          <thead>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
@@ -117,7 +117,7 @@ const TableComponent = ({ columns, data, handleInputOpen, upload }) => {
                 ))}
               </tr>
             ))}
-          </thead> */}
+          </thead>
           <Tbody {...getTableBodyProps()}>
             {rows.map((row, index) => {
               prepareRow(row);
