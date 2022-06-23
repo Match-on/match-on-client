@@ -143,7 +143,7 @@ export default function ProjectDetail() {
     <MyprojectPage>
       <Header>
         <Title onClick={() => handleTabMenu(-1)}>Match-On</Title>
-        <SubTitle>"ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ"</SubTitle>
+        <SubTitle>대학생을 위한 최고의 협업툴 Match-On</SubTitle>
       </Header>
       <MainContent>
         <Tab>

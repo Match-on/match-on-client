@@ -9,7 +9,7 @@ const MemberProfile = () => {
   ];
   return (
     <div>
-      {teamMember.map((mem, index) => (
+      {/* {teamMember.map((mem, index) => (
         <div key={`member-${index}`}>
           <div>
             {mem.name}
@@ -21,7 +21,7 @@ const MemberProfile = () => {
             ))}
           </div>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 };

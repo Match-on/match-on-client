@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
-import { ClassBox } from "../../components/myprojects/components/ProjectClassBox";
+//import { ClassBox } from "../../components/myprojects/components/ProjectClassBox";
 import LeftArrow from "../../public/componentSVG/Arrow/Left_Arrow.svg";
 import RightArrow from "../../public/componentSVG/Arrow/Right_Arrow.svg";
 

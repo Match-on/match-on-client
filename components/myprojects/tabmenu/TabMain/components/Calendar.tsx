@@ -145,8 +145,8 @@ const CalendarTabMain = () => {
         <ScheduleListGroup>
           {todolist.map((v, i) => (
             <ScheduleList key={`list-${i}`}>
-              {v.title}
-              {v.author}
+              {/* {v.title}
+              {v.author} */}
             </ScheduleList>
           ))}
         </ScheduleListGroup>
