@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
@@ -25,44 +25,41 @@ const LoginForm = styled.div`
 `;
 
 const Login: React.FC = () => {
+  const [id, setId] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const login = async (e: any) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Form 안에서 이메일, 패스워드 가져오기
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-
-    const response: any = await signIn("matchOn-credential", {
-      email,
+    // "id-login" matches the id for the credential
+    const response = await signIn("matchOn-credential", {
+      id,
       password,
       redirect: false,
-      callbackUrl: "http://localhost:3000/home",
+      callbackUrl: "https://localhost:3000/",
     });
+    await router.push(response.url);
     console.log("response", response);
-    if (response.url) {
-      await router.push(response.url);
-    } else {
-      alert("로그인에 실패하였습니다.");
-    }
   };
 
   return (
-    <LogIn>
-      <LoginForm>
-        <form onSubmit={login}>
-          <label>
-            이메일:
-            <input type="email" name="email" placeholder="type your email" />
-          </label>
-          <label>
-            비밀번호:
-            <input type="password" name="password" />
-          </label>
-          <button type="submit">로그인</button>
-        </form>
-      </LoginForm>
-    </LogIn>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="id">Id</label>
+        <input id="id" name="id" type="text" placeholder="Id" onChange={(e) => setId(e.target.value)} value={id} />
+      </div>
+      <div>
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+        />
+      </div>
+      <button type="submit">Login</button>
+    </form>
   );
 };
 

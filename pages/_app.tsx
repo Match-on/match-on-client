@@ -7,25 +7,31 @@ import Layout from "../layouts/Layout";
 import "../styles/globals.css";
 import { store } from "../src/redux/store";
 import { useState } from "react";
+import { QueryClientProvider, QueryClient } from "react-query";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
+  const queryClient = new QueryClient();
+
   const [interval, setInterval] = useState(0);
+
   return (
     <Provider store={store}>
-      <SessionProvider session={session} refetchInterval={interval}>
-        {Component.auth ? (
-          <Auth>
+      <QueryClientProvider client={queryClient}>
+        <SessionProvider session={session} refetchInterval={interval}>
+          {Component.auth ? (
+            <Auth>
+              <Layout>
+                <Component {...pageProps} />
+                <RefreshTokenHandler setInterval={setInterval} />
+              </Layout>
+            </Auth>
+          ) : (
             <Layout>
               <Component {...pageProps} />
-              <RefreshTokenHandler setInterval={setInterval} />
             </Layout>
-          </Auth>
-        ) : (
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        )}
-      </SessionProvider>
+          )}
+        </SessionProvider>
+      </QueryClientProvider>
     </Provider>
   );
 }
