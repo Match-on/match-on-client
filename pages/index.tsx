@@ -23,9 +23,6 @@ const Index: NextPage = () => {
         <button onClick={() => signOut()}>Sign out</button>
         <div>-----------session information-------------</div>
         <div>
-          <p>name:{user.name}</p>
-          <p>age:{user.age}</p>
-          <p>email:{user.email}</p>
           <div onClick={() => dispatch(userLogin({ name: "조성훈", age: 25, email: "bbb@bbb.bbb" }))}>버튼</div>
         </div>
       </div>

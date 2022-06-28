@@ -129,7 +129,7 @@ export default function ClassDetail() {
     <MyprojectPage>
       <Header>
         <Title>{class_id}</Title>
-        <SubTitle>"ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ"</SubTitle>
+        <SubTitle>ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</SubTitle>
       </Header>
       <MainContent>
         <Tab>

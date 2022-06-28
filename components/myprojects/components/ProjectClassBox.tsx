@@ -16,6 +16,13 @@ const ClassContainer = styled.div`
   margin-right: calc(20vw - 16.5rem);
 `;
 
+const StudyContainer = styled.div`
+  display: flex;
+  width: 16.5rem;
+  cursor: pointer;
+  margin-right: calc(20vw - 16.5rem);
+`;
+
 const ProjectContent = styled.div`
   width: 93%;
   height: 18.75em;
@@ -24,6 +31,15 @@ const ProjectContent = styled.div`
   padding: 1em;
 `;
 const ClassContent = styled.div<{ selected: boolean }>`
+  width: 93%;
+  height: 18.75em;
+  background-color: white;
+  border-radius: 1.25em;
+  padding: 1em;
+  box-shadow: ${(props) => (props.selected ? "0px 0px 10px rgba(0, 0, 0, 0.3)" : "")};
+`;
+
+const StudyContent = styled.div<{ selected: boolean }>`
   width: 93%;
   height: 18.75em;
   background-color: white;
@@ -96,4 +112,11 @@ export const ClassBox = ({ className, classfication, professor, grade, time, sel
       </ClassContent>
     </ClassContainer>
   );
+};
+
+export const StudyBox = () => {
+  return <StudyContainer>
+
+    <StudyContent selected={true}></StudyContent>
+  </StudyContainer>;
 };
