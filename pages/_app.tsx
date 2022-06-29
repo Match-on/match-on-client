@@ -1,4 +1,4 @@
-import { getSession, SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { Provider } from "react-redux";
@@ -18,18 +18,18 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <SessionProvider session={session} refetchInterval={interval}>
-          {Component.auth ? (
-            <Auth>
+          <Auth>
+            {(pageProps && pageProps.pathname) === "/login" ||
+            (pageProps && pageProps.pathname) === "/" ||
+            (pageProps && pageProps.pathname) === "/register" ? (
+              <Component {...pageProps} />
+            ) : (
               <Layout>
                 <Component {...pageProps} />
                 <RefreshTokenHandler setInterval={setInterval} />
               </Layout>
-            </Auth>
-          ) : (
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          )}
+            )}
+          </Auth>
         </SessionProvider>
       </QueryClientProvider>
     </Provider>
@@ -42,16 +42,14 @@ const Auth = ({ children }) => {
   const hasUser = !!session?.user;
   const router = useRouter();
   useEffect(() => {
-    console.log("ss", session);
-    if (!loading && !hasUser) {
-      router.push("/login");
+    if (loading) {
+      <div>Loading...</div>;
+    }
+    if (!hasUser) {
+      if (router.asPath !== "/") {
+        router.push("/login");
+      }
     }
   }, [loading, hasUser]);
-  if (loading || !hasUser) {
-    return <div>Waiting for session...</div>;
-  }
-  console.log("child", children);
-  console.log("ss", session);
-
   return children;
 };
