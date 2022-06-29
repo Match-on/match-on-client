@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
+import { useAppDispatch, useAppSelector } from "../src/hooks/hooks";
+import { RootState } from "../src/redux/store";
 import { userLogin } from "../src/redux/reducers/user";
-import { AppDispatch } from "../src/redux/store";
-import { useAppDispatch } from "../src/hooks/hooks";
 //main
 const LogIn = styled.div`
   position: fixed;
@@ -28,9 +28,9 @@ const Login: React.FC = () => {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // "id-login" matches the id for the credential
     const response = await signIn("matchOn-credential", {
       id,
       password,
@@ -38,7 +38,6 @@ const Login: React.FC = () => {
       callbackUrl: "https://localhost:3000/",
     });
     await router.push(response.url);
-    console.log("response", response);
   };
 
   return (
