@@ -37,8 +37,8 @@ export default NextAuth({
       id: "matchOn-credential",
       name: "matchOn-credential",
       credentials: {
-        id: { label: "Username", type: "text", placeholder: "test@test.com" },
-        password: { label: "Password", type: "password" },
+        id: { label: "Username", type: "text", placeholder: "ID" },
+        password: { label: "Password", type: "PW" },
       },
       async authorize(credentials: Record<any, any>, req: NextApiRequest) {
         try {
@@ -48,15 +48,11 @@ export default NextAuth({
             id: credentials.id,
             password: credentials.password,
           });
-          console.log("user", user);
-
           if (user.data.isSuccess) {
-            return user.data;
+            return user.data.result;
           }
-
           return null;
         } catch (e) {
-          console.log(e);
           throw new Error(e);
         }
       },
@@ -70,31 +66,28 @@ export default NextAuth({
 
   callbacks: {
     async jwt({ token, user }) {
-      // if (user) {
-      //   // This will only be executed at login. Each next invocation will skip this part.
-      //   token.accessToken = user.data.accessToken;
-      //   token.accessTokenExpiry = user.data.accessTokenExpiry;
-      //   token.refreshToken = user.data.refreshToken;
-      // }
-      // // If accessTokenExpiry is 24 hours, we have to refresh token before 24 hours pass.
+      if (user) {
+        token.accessToken = user.token;
+        token.userIdx = user.userIdx;
+        // token.accessTokenExpiry = user.data.accessTokenExpiry;
+        // token.refreshToken = user.data.refreshToken;
+      }
       // const shouldRefreshTime = Math.round(token.accessTokenExpiry - 60 * 60 * 1000 - Date.now());
-      // // If the token is still valid, just return it.
       // if (shouldRefreshTime > 0) {
       //   return Promise.resolve(token);
       // }
-      // // If the call arrives after 23 hours have passed, we allow to refresh the token.
+      // If the call arrives after 23 hours have passed, we allow to refresh the token.
       // token = refreshAccessToken(token);
-      // return Promise.resolve(token);
 
-      return token;
+      return Promise.resolve(token);
     },
     async session({ session, token }) {
-      // session.accessToken = token.accessToken;
+      session.accessToken = token.accessToken;
+      session.user.userIdx = token.userIdx;
       // session.accessTokenExpiry = token.accessTokenExpiry;
       // session.error = token.error;
 
-      // return Promise.resolve(session);
-      return session;
+      return Promise.resolve(session);
     },
   },
 });
