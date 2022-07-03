@@ -19,6 +19,8 @@ const LoginForm = styled.form`
   margin: auto;
   width: 35%;
   height: 75%;
+  min-width: 400px;
+  min-height: 500px;
   border-radius: 20px;
   box-shadow: 0px 0px 10px #000000;
 `;

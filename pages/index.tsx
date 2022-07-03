@@ -7,7 +7,7 @@ const OnboardingPage = styled.div`
   width: 100%;
 `;
 
-const TobLogo = styled.div`
+const TopLogo = styled.div`
   position: fixed;
   width: 100%;
   height: 8%;
@@ -66,7 +66,7 @@ const Index: NextPage = () => {
   }
   return (
     <OnboardingPage>
-      <TobLogo>Logo 예정</TobLogo>
+      <TopLogo>Logo 예정</TopLogo>
       <Container>
         <MainText>
           <div>협업툴의 모든 것</div>
