@@ -131,7 +131,7 @@ export default function ProjectDetail() {
   const row = useSelector((state: RootState) => state.table.value);
   const dispatch = useAppDispatch();
   //이제 테이블에서 액션 디스패치하면 됨.
-  // dispatch(userLogin({ name: "조성훈", age: 25, email: "bbb@bbb.bbb" }))
+  // 
   const handleTabMenu = (index) => {
     console.log(`${index}clicked`);
     setTab(index + 1);
