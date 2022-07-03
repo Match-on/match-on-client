@@ -41,12 +41,14 @@ const Auth = ({ children }) => {
   const loading = status === "loading";
   const hasUser = !!session?.user;
   const router = useRouter();
+  console.log(router);
+
   useEffect(() => {
     if (loading) {
       <div>Loading...</div>;
     }
     if (!hasUser) {
-      if (router.asPath !== "/") {
+      if (router.pathname !== "/" && router.pathname.startsWith("/register") === false) {
         router.push("/login");
       }
     }
