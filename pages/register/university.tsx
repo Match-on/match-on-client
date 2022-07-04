@@ -29,7 +29,8 @@ const UnivRegisterPage = styled.div`
 const FormContainer = styled.div`
   display: flex;
   width: 60%;
-  height: 80%;
+  height: 90%;
+  min-width: 600px;
   margin: auto;
 `;
 
@@ -45,6 +46,7 @@ const FormRight = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
   padding: 2%;
 `;
 
@@ -54,12 +56,55 @@ const Profile = styled.div`
   background-color: #aaaaaa;
 `;
 
-const RegisterInput = styled.input`
+const RegisterSelect = styled.select`
   width: 100%;
-  height: 7%;
+  height: 5%;
   background: #ffffff;
   border: 1px solid #aaaaaa;
   border-radius: 0.5rem;
+`;
+
+const RegisterInput = styled.input`
+  width: 100%;
+  height: 5%;
+  background: #ffffff;
+  border: 1px solid #aaaaaa;
+  border-radius: 0.5rem;
+`;
+
+const InputButton = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 5%;
+`;
+
+const InputWithButton = styled.input`
+  width: 77%;
+  height: 100%;
+  background: #ffffff;
+  border: 1px solid #aaaaaa;
+  border-radius: 0.5rem;
+`;
+
+const ConfirmButton = styled.button`
+  width: 20%;
+  height: 100%;
+  color: white;
+  background: #47d2d2;
+  border-radius: 0.5rem;
+  font-size: 0.6rem;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  &:hover {
+    font-weight: 700;
+  }
+`;
+
+const Message = styled.span`
+  font-size: 0.8rem;
+  color: #47d2d2;
 `;
 
 const Title = styled.div`
@@ -67,6 +112,8 @@ const Title = styled.div`
   padding-left: 1rem;
   border-left: 0.25rem solid #50d5d5;
 `;
+
+const yearValue = Array.from(new Array(10), (x, i) => Number(new Date().getFullYear()) - i);
 
 const SignUpForm: FC = () => {
   const {
@@ -81,7 +128,6 @@ const SignUpForm: FC = () => {
 
   const [result, setResult] = useState("");
   const onSubmitHandler: SubmitHandler<FormValue> = (data) => {
-    console.log(data);
     setResult(JSON.stringify(data));
   };
   return (
@@ -89,12 +135,23 @@ const SignUpForm: FC = () => {
       <Profile></Profile>
       <FormRight>
         <Title>회원가입</Title>
-        <RegisterInput
+        <div>학교 인증</div>
+        <RegisterSelect
           {...register("enrolledAt", {
             required: true,
           })}
-          placeholder="입학년도 선택 (학번)"
-        />
+          placeholder="입학년도 선택(학번)"
+          defaultValue="none"
+        >
+          <option value="default" disabled hidden>
+            Choose your car
+          </option>
+          {yearValue.map((v, i) => (
+            <option value={v} key={`year${i}`}>
+              {v}
+            </option>
+          ))}
+        </RegisterSelect>
         <RegisterInput
           {...register("university", {
             required: true,
@@ -102,27 +159,40 @@ const SignUpForm: FC = () => {
           type="text"
           placeholder="학교 이름을 검색하세요"
         />
-        <RegisterInput
-          {...register("email", {
-            required: true,
-          })}
-          type="text"
-          placeholder="학교 이메일"
-        />
-        <RegisterInput
-          {...register("emailAgree", {
-            required: true,
-          })}
-          placeholder="인증번호 확인"
-        />
-        <div>이메일 수신 동의</div>
-        <RegisterInput
-          {...register("id", {
-            required: true,
-          })}
-          type="text"
-          placeholder="아이디"
-        />
+        <InputButton>
+          <InputWithButton
+            {...register("email", {
+              required: true,
+            })}
+            type="text"
+            placeholder="학교 이메일"
+          />
+          <ConfirmButton>인증번호 전송</ConfirmButton>
+        </InputButton>
+        <InputButton>
+          <InputWithButton type="text" placeholder="인증번호 확인" />
+          <ConfirmButton>인증번호 확인</ConfirmButton>
+        </InputButton>
+        <div style={{ display: "flex" }}>
+          <input
+            {...register("emailAgree", {})}
+            type="checkbox"
+            placeholder="인증번호 확인"
+            style={{ background: "#47d2d2" }}
+          />
+          <Message>E-mail 수신동의(선택)</Message>
+        </div>
+        <div>정보 입력</div>
+        <InputButton>
+          <InputWithButton
+            {...register("id", {
+              required: true,
+            })}
+            type="text"
+            placeholder="아이디"
+          />
+          <ConfirmButton>중복 확인</ConfirmButton>
+        </InputButton>
         <RegisterInput
           {...register("password", {
             required: true,
@@ -130,25 +200,23 @@ const SignUpForm: FC = () => {
           type="password"
           placeholder="비밀번호"
         />
-        <RegisterInput
-          {...register("password", {
-            required: true,
-          })}
-          type="password"
-          placeholder="비밀번호 확인"
-        />
+        <RegisterInput type="password" placeholder="비밀번호 확인" />
         <RegisterInput
           {...register("name", {
             required: true,
           })}
           placeholder="이름"
         />
-        <RegisterInput
-          {...register("nickname", {
-            required: true,
-          })}
-          placeholder="닉네임"
-        />
+        <InputButton>
+          <InputWithButton
+            {...register("nickname", {
+              required: true,
+            })}
+            type="text"
+            placeholder="닉네임"
+          />
+          <ConfirmButton>중복 확인</ConfirmButton>
+        </InputButton>
         <RegisterInput
           {...register("countryCode", {
             required: true,
@@ -161,13 +229,16 @@ const SignUpForm: FC = () => {
           })}
           placeholder="휴대전화번호"
         />
-        <RegisterInput
+        <RegisterSelect
           {...register("birth", {
             required: true,
           })}
-          placeholder="휴대전화번호"
-        />
-        <RegisterInput {...register("profileUrl", {})} />
+          placeholder="생년월일"
+        >
+          <option>2011</option>
+        </RegisterSelect>
+        <div>약관 동의</div>
+        {/* <RegisterInput {...register("profileUrl", {})} /> */}
         <button type="submit">회원가입</button>
         {result}
       </FormRight>
