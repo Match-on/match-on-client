@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { FC } from "react";
+import CustomCheck from "../../public/componentSVG/register/CustomCheck.svg";
 
 interface FormValue {
   id: string;
@@ -19,18 +20,20 @@ interface FormValue {
 }
 
 const UnivRegisterPage = styled.div`
-  position: fixed;
+  position: absolute;
   width: 100%;
   height: 100%;
+  min-height: 1000px;
   display: flex;
   flex-direction: column;
-`;
+`; //top때문에 flex
 
 const FormContainer = styled.div`
   display: flex;
   width: 60%;
   height: 90%;
-  min-width: 600px;
+  min-width: 700px;
+  min-height: 800px;
   margin: auto;
 `;
 
@@ -39,6 +42,8 @@ const RegisterForm = styled.form`
   width: 100%;
   height: 100%;
   background-color: white;
+  padding: 1%;
+  border-radius: 10px;
 `;
 
 const FormRight = styled.div`
@@ -47,13 +52,11 @@ const FormRight = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  padding: 2%;
 `;
 
 const Profile = styled.div`
   width: 20%;
   height: 100%;
-  background-color: #aaaaaa;
 `;
 
 const RegisterSelect = styled.select`
@@ -80,7 +83,7 @@ const InputButton = styled.div`
 `;
 
 const InputWithButton = styled.input`
-  width: 77%;
+  width: 78%;
   height: 100%;
   background: #ffffff;
   border: 1px solid #aaaaaa;
@@ -93,7 +96,7 @@ const ConfirmButton = styled.button`
   color: white;
   background: #47d2d2;
   border-radius: 0.5rem;
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   text-align: center;
   border: none;
   cursor: pointer;
@@ -102,15 +105,39 @@ const ConfirmButton = styled.button`
   }
 `;
 
+const RegisterButton = styled.button`
+  background-color: #47d2d2;
+  border-radius: 10px;
+  border: none;
+  color: #ffffff;
+  width: 60%;
+  min-width: 700px;
+  height: 5%;
+  margin: auto;
+  cursor: pointer;
+  &:hover {
+    border: 2px solid black;
+  }
+`;
+
+// const CheckBox = styled.div<{ checked: boolean }>`
+//   width: 0.8rem;
+//   height: 0.8rem;
+//   border
+// `;
+
 const Message = styled.span`
   font-size: 0.8rem;
-  color: #47d2d2;
+  color: #aaaaaa;
 `;
 
 const Title = styled.div`
   font-size: 1.5rem;
   padding-left: 1rem;
   border-left: 0.25rem solid #50d5d5;
+`;
+const BoldText = styled.div`
+  font-weight: bold;
 `;
 
 const yearValue = Array.from(new Array(10), (x, i) => Number(new Date().getFullYear()) - i);
@@ -131,20 +158,20 @@ const SignUpForm: FC = () => {
     setResult(JSON.stringify(data));
   };
   return (
-    <RegisterForm onSubmit={handleSubmit(onSubmitHandler)}>
+    <RegisterForm id="register-form" onSubmit={handleSubmit(onSubmitHandler)}>
       <Profile></Profile>
       <FormRight>
         <Title>회원가입</Title>
-        <div>학교 인증</div>
+        <BoldText>학교 인증</BoldText>
         <RegisterSelect
           {...register("enrolledAt", {
             required: true,
           })}
           placeholder="입학년도 선택(학번)"
-          defaultValue="none"
+          defaultValue="default"
         >
           <option value="default" disabled hidden>
-            Choose your car
+            입학년도 선택 (학번)
           </option>
           {yearValue.map((v, i) => (
             <option value={v} key={`year${i}`}>
@@ -173,16 +200,18 @@ const SignUpForm: FC = () => {
           <InputWithButton type="text" placeholder="인증번호 확인" />
           <ConfirmButton>인증번호 확인</ConfirmButton>
         </InputButton>
+        <Message>서비스와 관련된 소식 및 알림 등 다양한 정보를 제공합니다.</Message>
         <div style={{ display: "flex" }}>
-          <input
+          {/* <input
             {...register("emailAgree", {})}
             type="checkbox"
             placeholder="인증번호 확인"
             style={{ background: "#47d2d2" }}
-          />
-          <Message>E-mail 수신동의(선택)</Message>
+          /> */}
+          <CustomCheck fill="#47d2d2" />
+          <Message style={{ color: "#47d2d2", marginLeft: "1%" }}>E-mail 수신동의(선택)</Message>
         </div>
-        <div>정보 입력</div>
+        <BoldText>정보 입력</BoldText>
         <InputButton>
           <InputWithButton
             {...register("id", {
@@ -237,9 +266,9 @@ const SignUpForm: FC = () => {
         >
           <option>2011</option>
         </RegisterSelect>
-        <div>약관 동의</div>
+        <BoldText>약관 동의</BoldText>
         {/* <RegisterInput {...register("profileUrl", {})} /> */}
-        <button type="submit">회원가입</button>
+        {/* <RegisterButton type="submit">회원가입</RegisterButton> */}
         {result}
       </FormRight>
     </RegisterForm>
@@ -252,10 +281,13 @@ const UnivRegister = () => {
       <FormContainer>
         <SignUpForm />
       </FormContainer>
+      <RegisterButton type="submit" form="register-form">
+        회원가입
+      </RegisterButton>
     </UnivRegisterPage>
   );
 };
-UnivRegister.getInitialProps = async (ctx) => {
+UnivRegister.getInitialProps = async () => {
   const pathname = "/register";
   return { pathname };
 };
