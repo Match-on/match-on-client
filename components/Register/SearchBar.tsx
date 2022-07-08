@@ -14,11 +14,9 @@ interface univData {
 const customStyles = {
   overlay: {
     width: "40%",
-    height: "80%",
-    top: "5%",
-    bottom: "5%",
-    left: "30%",
-    right: "30%",
+    minWidth: "600px",
+    height: "85%",
+    margin: "auto",
     backgroundColor: "white",
     borderRadius: "10px",
     border: "3px solid #47d2d2",
@@ -28,51 +26,110 @@ const customStyles = {
     left: "4%", //30px
     right: "4%",
     top: "1%",
-    bottom: "1%",
+    bottom: "3%",
   },
 };
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 8%;
+  min-height: 30px;
+  div {
+    font-weight: 600;
+  }
+`;
 const SearchContainer = styled.div`
   width: 100%;
   height: 5%;
-  position: relative;
-  border: 0;
+  min-height: 30px;
   display: flex;
-  align-items: center;
-  svg {
-    position: absolute;
-    right: 1%;
-  }
+  justify-content: space-between;
+  margin-bottom: 3%;
 `;
 
 const Search = styled.input`
-  border: 0;
+  border: 0.5px solid #aaaaaa;
   padding-left: 10px;
-  background-color: #eaeaea;
-  width: 100%;
+  width: 82%;
   height: 100%;
   outline: none;
+  border-radius: 8px;
+`;
+
+const SearchButton = styled.button`
+  width: 16%;
+  font-size: 0.8rem;
+  color: white;
+  background-color: #47d2d2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 `;
 
 const SearchResult = styled.div`
   width: 100%;
-  height: 90%;
-  border: 1px solid black;
-  border-top: none;
+  height: 78%;
+  border-radius: 8px;
+  border: 0.5px solid #aaaaaa;
+  padding: 2%;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const ResultHeader = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  font-size: 0.8rem;
+  color: #aaaaaa;
+  line-height: 2rem;
+  border-bottom: 0.5px solid #aaaaaa;
+`;
+const RowGroup = styled.div`
+  overflow-y: scroll;
+  width: 100%;
+  height: calc(98% - 2rem);
+`;
+const ResultRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  grid-template-rows: 20px;
+  font-size: 0.9rem;
+  margin: 5px;
+  &:hover {
+    cursor: pointer;
+    color: #47d2d2;
+  }
 `;
 
 const CloseButton = styled.div`
   position: relative;
-  width: 100%;
   height: 5%;
   text-align: right;
   svg {
     cursor: pointer;
   }
 `;
+
+const ConfirmButton = styled.button`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16%;
+  height: 5%;
+  font-size: 0.8rem;
+  color: white;
+  background-color: #47d2d2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+`;
 const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
   const [keyword, setKeyword] = useState<string>("");
   const onChangeKeyword = (e: React.FormEvent<HTMLInputElement>) => {
-    fetchData();
     setKeyword(e.currentTarget.value);
   };
   const [keyItems, setKeyItems] = useState<univData[]>([]);
@@ -89,18 +146,38 @@ const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
       });
   };
   useEffect(() => {
-    console.log("res", data1);
+    const debounce = setTimeout(() => {
+      if (keyword) fetchData();
+    }, 300);
+    return () => {
+      clearTimeout(debounce);
+    };
+  }, [keyword]);
+  useEffect(() => {
+    console.log(data1);
   }, [data1]);
   return (
     <Modal isOpen={isOpen} onRequesClose={handleOpen} ariaHideApp={false} style={customStyles}>
-      <CloseButton>
-        <Close onClick={handleOpen} />
-      </CloseButton>
+      <ModalHeader>
+        <div style={{ fontWeight: 600 }}>학교 검색</div>
+        <CloseButton>
+          <Close onClick={handleOpen} />
+        </CloseButton>
+      </ModalHeader>
       <SearchContainer>
         <Search onChange={onChangeKeyword} />
-        <SearchIcon />
+        <SearchButton>학교 검색</SearchButton>
+        {/*기능 추가해야 함 fetch하면 될듯*/}
       </SearchContainer>
-      <SearchResult>{keyword}</SearchResult>
+      <SearchResult>
+        <ResultHeader>
+          <div>이름</div>
+          <div>지역</div>
+          <div>주소</div>
+        </ResultHeader>
+        <RowGroup></RowGroup>
+      </SearchResult>
+      <ConfirmButton onClick={handleOpen}>확인</ConfirmButton>
     </Modal>
   );
 };
