@@ -10,9 +10,10 @@ const RegisterPage = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
-  flex-direction: row;
+  justify-content: space-evenly;
   width: 100%;
   height: 100%;
+  margin: auto;
 `;
 const Container = styled.div<{ selected: boolean }>`
   width: 25%;
@@ -25,7 +26,6 @@ const Container = styled.div<{ selected: boolean }>`
   background-color: ${(props) => (props.selected ? "#ffffff" : "#ecf9f4")};
   box-shadow: 0px 0px 5px #000000;
   border-radius: 20px;
-  margin: auto;
   padding: 1%;
 `;
 const Contents = styled.div`

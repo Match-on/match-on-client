@@ -166,7 +166,7 @@ const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
       </ModalHeader>
       <SearchContainer>
         <Search onChange={onChangeKeyword} />
-        <SearchButton onClick={setUniversity("ccc")}>학교 검색</SearchButton>
+        <SearchButton onClick={() => setUniversity("ccc")}>학교 검색</SearchButton>
         {/*기능 추가해야 함 fetch하면 될듯*/}
       </SearchContainer>
       <SearchResult>

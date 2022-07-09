@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { FC } from "react";
 import CustomCheck from "../../public/componentSVG/register/CustomCheck.svg";
+import UniversitySearchBar from "../../components/Register/SearchBar";
 
 interface FormValue {
   id: string;
@@ -65,6 +66,7 @@ const RegisterSelect = styled.select`
   background: #ffffff;
   border: 1px solid #aaaaaa;
   border-radius: 0.5rem;
+  font-size: 1rem;
 `;
 
 const RegisterInput = styled.input`
@@ -73,6 +75,19 @@ const RegisterInput = styled.input`
   background: #ffffff;
   border: 1px solid #aaaaaa;
   border-radius: 0.5rem;
+  font-size: 1rem;
+`;
+
+const RegisterDiv = styled.div`
+  width: 100%;
+  height: 5%;
+  background: #ffffff;
+  border: 1px solid #aaaaaa;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
 `;
 
 const InputButton = styled.div`
@@ -155,8 +170,15 @@ const SignUpForm: FC = () => {
 
   const [result, setResult] = useState("");
   const onSubmitHandler: SubmitHandler<FormValue> = (data) => {
+    data["university"] = university;
     setResult(JSON.stringify(data));
   };
+  const [university, setUniversity] = useState<string>("");
+  const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const handleSearchOpen = () => {
+    setSearchOpen(!searchOpen);
+  };
+
   return (
     <RegisterForm id="register-form" onSubmit={handleSubmit(onSubmitHandler)}>
       <Profile></Profile>
@@ -179,13 +201,9 @@ const SignUpForm: FC = () => {
             </option>
           ))}
         </RegisterSelect>
-        <RegisterInput
-          {...register("university", {
-            required: true,
-          })}
-          type="text"
-          placeholder="학교 이름을 검색하세요"
-        />
+        <RegisterDiv onClick={handleSearchOpen}>
+          {university === "" ? "학교 이름을 검색하세요." : <div>{university}</div>}
+        </RegisterDiv>
         <InputButton>
           <InputWithButton
             {...register("email", {
@@ -246,18 +264,24 @@ const SignUpForm: FC = () => {
           />
           <ConfirmButton>중복 확인</ConfirmButton>
         </InputButton>
-        <RegisterInput
-          {...register("countryCode", {
-            required: true,
-          })}
-          placeholder="+82"
-        />
-        <RegisterInput
-          {...register("phone", {
-            required: true,
-          })}
-          placeholder="휴대전화번호"
-        />
+        <InputButton>
+          <RegisterSelect
+            {...register("countryCode", {
+              required: true,
+            })}
+            defaultValue="default"
+            style={{ width: "15%", height: "100%" }}
+          >
+            <option value="default">+82</option>
+          </RegisterSelect>
+          <RegisterInput
+            {...register("phone", {
+              required: true,
+            })}
+            placeholder="휴대전화번호"
+            style={{ width: "84%", height: "100%" }}
+          />
+        </InputButton>
         <RegisterSelect
           {...register("birth", {
             required: true,
@@ -267,10 +291,11 @@ const SignUpForm: FC = () => {
           <option>2011</option>
         </RegisterSelect>
         <BoldText>약관 동의</BoldText>
-        {/* <RegisterInput {...register("profileUrl", {})} /> */}
-        {/* <RegisterButton type="submit">회원가입</RegisterButton> */}
         {result}
       </FormRight>
+      {searchOpen && (
+        <UniversitySearchBar isOpen={searchOpen} handleOpen={handleSearchOpen} setUniversity={setUniversity} />
+      )}
     </RegisterForm>
   );
 };

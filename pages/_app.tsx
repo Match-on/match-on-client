@@ -41,7 +41,6 @@ const Auth = ({ children }) => {
   const loading = status === "loading";
   const hasUser = !!session?.user;
   const router = useRouter();
-  console.log(router);
 
   useEffect(() => {
     if (loading) {
