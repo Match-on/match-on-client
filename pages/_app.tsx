@@ -1,4 +1,4 @@
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { Provider } from "react-redux";
@@ -8,7 +8,10 @@ import "../styles/globals.css";
 import { store } from "../src/redux/store";
 import { useState } from "react";
 import { QueryClientProvider, QueryClient } from "react-query";
-
+import { useAppDispatch } from "../src/hooks/hooks";
+import { userLogin } from "../src/redux/reducers/user";
+import axios from "axios";
+import { API_URL } from "../components/api/API";
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
   const queryClient = new QueryClient();
 
@@ -38,9 +41,11 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
 
 const Auth = ({ children }) => {
   const { data: session, status } = useSession();
+  const [userInfo, setUserInfo] = useState({});
   const loading = status === "loading";
   const hasUser = !!session?.user;
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (loading) {
@@ -51,6 +56,30 @@ const Auth = ({ children }) => {
         router.push("/login");
       }
     }
+    if (hasUser) {
+      axios
+        .get(API_URL + `users/${session.user.userIdx}`, {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        })
+        .then((res) => {
+          console.log(res.data.result);
+
+          dispatch(userLogin(res.data.result));
+        })
+        .catch((err) => {
+          alert("로그인 정보를 불러오는 데 실패했습니다.");
+          signOut();
+        });
+    }
   }, [loading, hasUser]);
+
+  // useEffect(() => {
+  //   console.log(userInfo);
+
+  //   //dispatch(userLogin({ userInfo }));
+  // }, [userInfo]);
+
   return children;
 };
