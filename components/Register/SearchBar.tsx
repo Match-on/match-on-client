@@ -135,11 +135,10 @@ const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
   const [keyItems, setKeyItems] = useState<univData[]>([]);
   const [data1, setData1] = useState("");
   const fetchData = () => {
-    const params = { keyword: keyword };
     axios
       .get(API_URL + "univs/search", { params: { keyword: keyword } })
       .then((res) => {
-        setData1(JSON.stringify(res));
+        setKeyItems(res.data.result);
       })
       .catch((err) => {
         console.log("err", err);
@@ -154,8 +153,13 @@ const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
     };
   }, [keyword]);
   useEffect(() => {
-    console.log(data1);
-  }, [data1]);
+    console.log(keyItems);
+  }, [keyItems]);
+
+  const UniversitySelect = (university) => {
+    setUniversity(university);
+    handleOpen();
+  };
   return (
     <Modal isOpen={isOpen} onRequesClose={handleOpen} ariaHideApp={false} style={customStyles}>
       <ModalHeader>
@@ -175,7 +179,18 @@ const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
           <div>지역</div>
           <div>주소</div>
         </ResultHeader>
-        <RowGroup></RowGroup>
+        <RowGroup>
+          {keyItems.length === 0 ? (
+            <div>등록되어 있지 않은 학교입니다.</div>
+          ) : (
+            keyItems.map((univ, i) => (
+              <ResultRow key={`searchUniv-${i}`} onClick={() => UniversitySelect(univ.name)}>
+                {univ.name}
+              </ResultRow>
+            ))
+          )}
+          {}
+        </RowGroup>
       </SearchResult>
       <ConfirmButton onClick={handleOpen}>확인</ConfirmButton>
     </Modal>
