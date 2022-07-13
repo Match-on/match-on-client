@@ -4,6 +4,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { FC } from "react";
 import CustomCheck from "../../public/componentSVG/register/CustomCheck.svg";
 import UniversitySearchBar from "../../components/Register/SearchBar";
+import axios from "axios";
+import { API_URL } from "../../components/api/API";
+import { storage } from "../../components/Register/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Image from "next/image";
 
 interface FormValue {
   id: string;
@@ -32,6 +37,8 @@ const UnivRegisterPage = styled.div`
 const FormContainer = styled.div`
   display: flex;
   width: 60%;
+  max-width: 1000px;
+
   height: 90%;
   min-width: 700px;
   min-height: 800px;
@@ -48,7 +55,8 @@ const RegisterForm = styled.form`
 `;
 
 const FormRight = styled.div`
-  width: 80%;
+  width: 70%;
+
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -56,7 +64,9 @@ const FormRight = styled.div`
 `;
 
 const Profile = styled.div`
-  width: 20%;
+  display: flex;
+  flex-direction: column;
+  width: 30%;
   height: 100%;
 `;
 
@@ -126,6 +136,7 @@ const RegisterButton = styled.button`
   border: none;
   color: #ffffff;
   width: 60%;
+  max-width: 1000px;
   min-width: 700px;
   height: 5%;
   margin: auto;
@@ -135,15 +146,25 @@ const RegisterButton = styled.button`
   }
 `;
 
-// const CheckBox = styled.div<{ checked: boolean }>`
-//   width: 0.8rem;
-//   height: 0.8rem;
-//   border
-// `;
+const ProfileInput = styled.input`
+  width: 100px;
+  height: 50px;
+`;
 
-const Message = styled.span`
+const ProfileImg = styled.img`
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+`;
+
+const Message = styled.span<{ agree: boolean }>`
   font-size: 0.8rem;
-  color: #aaaaaa;
+  color: ${(props) => (props.agree ? "#47d2d2" : "#aaaaaa")};
+  cursor: pointer;
+`;
+const ErrorMessage = styled.p`
+  font-size: 0.8rem;
+  color: red;
 `;
 
 const Title = styled.div`
@@ -175,13 +196,87 @@ const SignUpForm: FC = () => {
   };
   const [university, setUniversity] = useState<string>("");
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
+
+  const [email, setEmail] = useState<string>("");
+  const [verify, setVerify] = useState<string>("");
+
+  const [emailAgree, setEmailAgree] = useState<boolean>(false);
+  const [serviceAgree, setServiceAgree] = useState<boolean>(false);
+  const [privacyAgree, setPrivacyAgree] = useState<boolean>(false);
+
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
   };
+  const SendCertification = () => {
+    document.getElementById("sendEmail").setAttribute("readOnly", "readOnly");
+    axios
+      .post(API_URL + "users/code", { email: email })
+      .then((res) => {
+        console.log("res", res);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+  const VerifyCertification = () => {
+    axios
+      .post(API_URL + "users/verify", { email: email, code: verify })
+      .then((res) => {
+        console.log("res", res);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+  const[attachment,setAttachment]
+  //https://nomadcoders.co/nwitter/lectures/1926
+  const onImageChange = (event) => {
+    const {
+      target: { files },
+    } = event;
+    const theImage = files[0];
+    const reader = new FileReader();
+    reader.onloadend=(finishedEvent)=>{}
+    reader.readAsDataURL(theImage);
+  };
+  // const [image, setImage] = useState(null);
+  // const [imageURL, setImageURL] = useState(null);
+  // const handleImageChange = (e) => {
+  //   if (e.target.files[0]) {
+  //     setImage(e.target.files[0]);
+  //   }
+  // };
+  // const handleImageSubmit = () => {
+  //   const imageRef = ref(storage, "image");
+  //   uploadBytes(imageRef, image)
+  //     .then(() => {
+  //       getDownloadURL(imageRef)
+  //         .then((url) => {
+  //           setImageURL(url);
+  //         })
+  //         .catch((err) => {
+  //           console.log(err.message, "image error");
+  //         });
+  //       setImage(null);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message, "image error");
+  //     });
+  // };
+  // const onClearImage = () => {
+  //   setImageURL(null);
+  //   setImage(null);
+  // };
 
   return (
     <RegisterForm id="register-form" onSubmit={handleSubmit(onSubmitHandler)}>
-      <Profile></Profile>
+      <Profile>
+        {/* <ProfileImg src={imageURL} />
+        <ProfileInput type="file" accept="image/*" onChange={handleImageChange} />
+        <button onClick={handleImageSubmit}>submit</button>
+        <button onClick={onClearImage}>clear</button> */}
+        <input type="file" accept="image/*" onChange={onImageChange} />
+      </Profile>
       <FormRight>
         <Title>회원가입</Title>
         <BoldText>학교 인증</BoldText>
@@ -204,30 +299,39 @@ const SignUpForm: FC = () => {
         <RegisterDiv onClick={handleSearchOpen}>
           {university === "" ? "학교 이름을 검색하세요." : <div>{university}</div>}
         </RegisterDiv>
+        {university === "" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
         <InputButton>
           <InputWithButton
             {...register("email", {
               required: true,
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "이메일 형식에 맞춰주세요",
+              },
             })}
+            id="sendEmail"
             type="text"
             placeholder="학교 이메일"
+            onChange={(e) => setEmail(e.currentTarget.value)}
           />
-          <ConfirmButton>인증번호 전송</ConfirmButton>
+          <ConfirmButton onClick={SendCertification}>인증번호 전송</ConfirmButton>
         </InputButton>
+        {errors.email && errors.email.type === "required" && (
+          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+        )}
+        {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
         <InputButton>
-          <InputWithButton type="text" placeholder="인증번호 확인" />
-          <ConfirmButton>인증번호 확인</ConfirmButton>
+          <InputWithButton type="text" placeholder="인증번호 확인" onChange={(e) => setVerify(e.currentTarget.value)} />
+          <ConfirmButton onClick={VerifyCertification}>인증번호 확인</ConfirmButton>
         </InputButton>
-        <Message>서비스와 관련된 소식 및 알림 등 다양한 정보를 제공합니다.</Message>
-        <div style={{ display: "flex" }}>
-          {/* <input
-            {...register("emailAgree", {})}
-            type="checkbox"
-            placeholder="인증번호 확인"
-            style={{ background: "#47d2d2" }}
-          /> */}
-          <CustomCheck fill="#47d2d2" />
-          <Message style={{ color: "#47d2d2", marginLeft: "1%" }}>E-mail 수신동의(선택)</Message>
+        <Message style={{ cursor: "default" }} agree={false}>
+          서비스와 관련된 소식 및 알림 등 다양한 정보를 제공합니다.
+        </Message>
+        <div style={{ display: "flex" }} onClick={() => setEmailAgree(!emailAgree)}>
+          <CustomCheck fill={emailAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
+          <Message style={{ marginLeft: "1%" }} agree={emailAgree}>
+            E-mail 수신동의(선택)
+          </Message>
         </div>
         <BoldText>정보 입력</BoldText>
         <InputButton>
@@ -240,6 +344,7 @@ const SignUpForm: FC = () => {
           />
           <ConfirmButton>중복 확인</ConfirmButton>
         </InputButton>
+        {errors.id && errors.id.type === "required" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
         <RegisterInput
           {...register("password", {
             required: true,
@@ -247,6 +352,9 @@ const SignUpForm: FC = () => {
           type="password"
           placeholder="비밀번호"
         />
+        {errors.password && errors.password.type === "required" && (
+          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+        )}
         <RegisterInput type="password" placeholder="비밀번호 확인" />
         <RegisterInput
           {...register("name", {
@@ -254,6 +362,9 @@ const SignUpForm: FC = () => {
           })}
           placeholder="이름"
         />
+        {errors.name && errors.name.type === "required" && (
+          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+        )}
         <InputButton>
           <InputWithButton
             {...register("nickname", {
@@ -264,6 +375,9 @@ const SignUpForm: FC = () => {
           />
           <ConfirmButton>중복 확인</ConfirmButton>
         </InputButton>
+        {errors.nickname && errors.nickname.type === "required" && (
+          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+        )}
         <InputButton>
           <RegisterSelect
             {...register("countryCode", {
@@ -282,15 +396,29 @@ const SignUpForm: FC = () => {
             style={{ width: "84%", height: "100%" }}
           />
         </InputButton>
-        <RegisterSelect
+        <RegisterInput
           {...register("birth", {
             required: true,
           })}
+          type="date"
           placeholder="생년월일"
-        >
-          <option>2011</option>
-        </RegisterSelect>
+        ></RegisterInput>
+        {errors.birth && errors.birth.type === "required" && (
+          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+        )}
         <BoldText>약관 동의</BoldText>
+        <div style={{ display: "flex" }} onClick={() => setServiceAgree(!serviceAgree)}>
+          <CustomCheck fill={serviceAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
+          <Message style={{ marginLeft: "1%" }} agree={serviceAgree}>
+            서비스 이용 약관 동의 (필수)
+          </Message>
+        </div>
+        <div style={{ display: "flex" }} onClick={() => setPrivacyAgree(!privacyAgree)}>
+          <CustomCheck fill={privacyAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
+          <Message style={{ marginLeft: "1%" }} agree={privacyAgree}>
+            개인정보 수집 및 이용 동의
+          </Message>
+        </div>
         {result}
       </FormRight>
       {searchOpen && (
