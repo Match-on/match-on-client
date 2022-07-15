@@ -16,8 +16,9 @@ const RegisterPage = styled.div`
   margin: auto;
 `;
 const Container = styled.div<{ selected: boolean }>`
-  width: 25%;
+  width: 30%;
   min-width: 350px;
+  max-width: 450px;
   height: 58%;
   min-height: 400px;
   display: flex;

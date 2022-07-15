@@ -7,8 +7,13 @@ import UniversitySearchBar from "../../components/Register/SearchBar";
 import axios from "axios";
 import { API_URL } from "../../components/api/API";
 import { storage } from "../../components/Register/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadString, getDownloadURL, uploadBytesResumable, uploadBytes, deleteObject } from "firebase/storage";
 import Image from "next/image";
+import { v4 as uuidv4 } from "uuid";
+import { Avatar } from "primereact/avatar";
+import ChangeImg from "../../public/register/changeImg.svg";
+import DeleteImg from "../../public/register/deleteImg.svg";
+import BasicProfile from "../../public/basicProfileImg.jpg";
 
 interface FormValue {
   id: string;
@@ -66,8 +71,14 @@ const FormRight = styled.div`
 const Profile = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
   width: 30%;
-  height: 100%;
+  height: 30%;
+  margin-top: 5%;
+  input::file-selector-button {
+    display: none;
+  }
 `;
 
 const RegisterSelect = styled.select`
@@ -152,9 +163,10 @@ const ProfileInput = styled.input`
 `;
 
 const ProfileImg = styled.img`
-  width: 200px;
-  height: 200px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
+  border: 2px solid black;
 `;
 
 const Message = styled.span<{ agree: boolean }>`
@@ -204,6 +216,9 @@ const SignUpForm: FC = () => {
   const [serviceAgree, setServiceAgree] = useState<boolean>(false);
   const [privacyAgree, setPrivacyAgree] = useState<boolean>(false);
 
+  const [imageUpload, setImageUpload] = useState(null);
+  const [displayImage, setDisplayImage] = useState<string>(null);
+  const [imageRef, setImageRef] = useState(null);
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
   };
@@ -228,54 +243,72 @@ const SignUpForm: FC = () => {
         console.log("err", err);
       });
   };
-  const[attachment,setAttachment]
-  //https://nomadcoders.co/nwitter/lectures/1926
-  const onImageChange = (event) => {
-    const {
-      target: { files },
-    } = event;
-    const theImage = files[0];
-    const reader = new FileReader();
-    reader.onloadend=(finishedEvent)=>{}
-    reader.readAsDataURL(theImage);
+  const storeImage = async () => {
+    if (imageUpload === null) return;
+    const imageRef = ref(storage, `profile/${uuidv4()}`);
+    await setImageRef(imageRef);
+    uploadBytes(imageRef, imageUpload).then(() => {
+      getDownloadURL(imageRef).then((url) => {
+        setDisplayImage(url);
+      }); //그냥 올리고 store안하고 삭제하면 오류 뜸.
+    });
   };
-  // const [image, setImage] = useState(null);
-  // const [imageURL, setImageURL] = useState(null);
-  // const handleImageChange = (e) => {
-  //   if (e.target.files[0]) {
-  //     setImage(e.target.files[0]);
-  //   }
-  // };
-  // const handleImageSubmit = () => {
-  //   const imageRef = ref(storage, "image");
-  //   uploadBytes(imageRef, image)
-  //     .then(() => {
-  //       getDownloadURL(imageRef)
-  //         .then((url) => {
-  //           setImageURL(url);
-  //         })
-  //         .catch((err) => {
-  //           console.log(err.message, "image error");
-  //         });
-  //       setImage(null);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err.message, "image error");
-  //     });
-  // };
-  // const onClearImage = () => {
-  //   setImageURL(null);
-  //   setImage(null);
-  // };
+  const onImageChange = (event) => {
+    if (imageRef) {
+      clearImage();
+    }
+    if (event.target.value) {
+      const {
+        target: { files },
+      } = event;
+      const theImage = files[0];
+      setImageUpload(theImage);
+      const reader: FileReader = new FileReader();
+      reader.onloadend = () => {
+        const fileUrl = reader.result.toString();
+        setDisplayImage(fileUrl);
+      };
+      reader.readAsDataURL(theImage);
+    }
+  };
+  const clearImage = () => {
+    setImageUpload(null);
+    setDisplayImage(null);
 
+    deleteObject(imageRef).catch((err) => {
+      alert("이미지 삭제 실패");
+    });
+  };
+
+  useEffect(() => {
+    storeImage();
+  }, [imageUpload]);
+
+  //https://codingsalon.tistory.com/62 스타일 지정
   return (
     <RegisterForm id="register-form" onSubmit={handleSubmit(onSubmitHandler)}>
       <Profile>
-        {/* <ProfileImg src={imageURL} />
-        <ProfileInput type="file" accept="image/*" onChange={handleImageChange} />
-        <button onClick={handleImageSubmit}>submit</button>
-        <button onClick={onClearImage}>clear</button> */}
-        <input type="file" accept="image/*" onChange={onImageChange} />
+        <BoldText>프로필 사진</BoldText>
+        <div>
+          <ProfileImg src={displayImage !== null ? displayImage : "/basicProfileImg.jpg"} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-evenly", width: "30%" }}>
+          <div>
+            <label htmlFor="profile_image">
+              <ChangeImg />
+            </label>
+            <input
+              type="file"
+              id="profile_image"
+              accept="image/*"
+              style={{ position: "absolute", clip: "rect(0,0,0,0)" }}
+              onChange={onImageChange}
+            />
+          </div>
+          <div onClick={imageUpload && clearImage}>
+            <DeleteImg />
+          </div>
+        </div>
       </Profile>
       <FormRight>
         <Title>회원가입</Title>
