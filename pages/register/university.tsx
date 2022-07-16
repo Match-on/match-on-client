@@ -7,13 +7,10 @@ import UniversitySearchBar from "../../components/Register/SearchBar";
 import axios from "axios";
 import { API_URL } from "../../components/api/API";
 import { storage } from "../../components/Register/firebase";
-import { ref, uploadString, getDownloadURL, uploadBytesResumable, uploadBytes, deleteObject } from "firebase/storage";
-import Image from "next/image";
+import { ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
-import { Avatar } from "primereact/avatar";
 import ChangeImg from "../../public/register/changeImg.svg";
 import DeleteImg from "../../public/register/deleteImg.svg";
-import BasicProfile from "../../public/basicProfileImg.jpg";
 
 interface FormValue {
   id: string;
@@ -141,17 +138,17 @@ const ConfirmButton = styled.button`
   }
 `;
 
-const RegisterButton = styled.button`
-  background-color: #47d2d2;
+const RegisterButton = styled.button<{ agree: boolean }>`
+  background-color: ${(props) => (props.agree ? "#47d2d2" : "#aaaaaa")};
   border-radius: 10px;
   border: none;
   color: #ffffff;
-  width: 60%;
+  width: 100%;
   max-width: 1000px;
   min-width: 700px;
   height: 5%;
   margin: auto;
-  cursor: pointer;
+  cursor: ${(props) => (props.agree ? "pointer" : "arrow")};
   &:hover {
     border: 2px solid black;
   }
@@ -204,6 +201,7 @@ const SignUpForm: FC = () => {
   const [result, setResult] = useState("");
   const onSubmitHandler: SubmitHandler<FormValue> = (data) => {
     data["university"] = university;
+    data["profileUrl"] = displayImage;
     setResult(JSON.stringify(data));
   };
   const [university, setUniversity] = useState<string>("");
@@ -211,6 +209,10 @@ const SignUpForm: FC = () => {
 
   const [email, setEmail] = useState<string>("");
   const [verify, setVerify] = useState<string>("");
+  const [emailAuth, setEmailAuth] = useState<boolean>(false);
+
+  const [firstPW, setFirstPW] = useState<string>("");
+  const [secondPW, setSecondPW] = useState<string>("");
 
   const [emailAgree, setEmailAgree] = useState<boolean>(false);
   const [serviceAgree, setServiceAgree] = useState<boolean>(false);
@@ -237,7 +239,10 @@ const SignUpForm: FC = () => {
     axios
       .post(API_URL + "users/verify", { email: email, code: verify })
       .then((res) => {
-        console.log("res", res);
+        if (res.data.isSuccess) {
+          setEmailAuth(true);
+          alert("인증되었습니다.");
+        }
       })
       .catch((err) => {
         console.log("err", err);
@@ -254,210 +259,242 @@ const SignUpForm: FC = () => {
     });
   };
   const onImageChange = (event) => {
-    if (imageRef) {
+    if (imageRef !== null) {
+      console.log("imageRef", imageRef);
       clearImage();
     }
     if (event.target.value) {
       const {
         target: { files },
       } = event;
+      console.log("files", files);
+
       const theImage = files[0];
       setImageUpload(theImage);
       const reader: FileReader = new FileReader();
       reader.onloadend = () => {
         const fileUrl = reader.result.toString();
         setDisplayImage(fileUrl);
+        console.log(fileUrl);
       };
       reader.readAsDataURL(theImage);
     }
   };
-  const clearImage = () => {
+  const clearImage = async () => {
     setImageUpload(null);
     setDisplayImage(null);
-
-    deleteObject(imageRef).catch((err) => {
+    await deleteObject(imageRef).catch((err) => {
       alert("이미지 삭제 실패");
     });
+    setImageRef(null);
   };
 
   useEffect(() => {
     storeImage();
   }, [imageUpload]);
 
+  useEffect(() => {
+    console.log("err", errors);
+  }, [errors]);
+
   //https://codingsalon.tistory.com/62 스타일 지정
   return (
-    <RegisterForm id="register-form" onSubmit={handleSubmit(onSubmitHandler)}>
-      <Profile>
-        <BoldText>프로필 사진</BoldText>
-        <div>
-          <ProfileImg src={displayImage !== null ? displayImage : "/basicProfileImg.jpg"} />
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-evenly", width: "30%" }}>
+    <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+      <RegisterForm id="register-form" onSubmit={handleSubmit(onSubmitHandler)}>
+        <Profile>
+          <BoldText>프로필 사진</BoldText>
           <div>
-            <label htmlFor="profile_image">
-              <ChangeImg />
-            </label>
-            <input
-              type="file"
-              id="profile_image"
-              accept="image/*"
-              style={{ position: "absolute", clip: "rect(0,0,0,0)" }}
-              onChange={onImageChange}
-            />
+            <ProfileImg src={displayImage !== null ? displayImage : "/basicProfileImg.jpg"} />
           </div>
-          <div onClick={imageUpload && clearImage}>
-            <DeleteImg />
+          <div style={{ display: "flex", justifyContent: "space-evenly", width: "30%" }}>
+            <div>
+              <label htmlFor="profile_image">
+                <ChangeImg />
+              </label>
+              <input
+                type="file"
+                id="profile_image"
+                accept="image/*"
+                style={{ position: "absolute", clip: "rect(0,0,0,0)" }}
+                onChange={onImageChange}
+              />
+            </div>
+            <div onClick={imageUpload && clearImage}>
+              <DeleteImg />
+            </div>
           </div>
-        </div>
-      </Profile>
-      <FormRight>
-        <Title>회원가입</Title>
-        <BoldText>학교 인증</BoldText>
-        <RegisterSelect
-          {...register("enrolledAt", {
-            required: true,
-          })}
-          placeholder="입학년도 선택(학번)"
-          defaultValue="default"
-        >
-          <option value="default" disabled hidden>
-            입학년도 선택 (학번)
-          </option>
-          {yearValue.map((v, i) => (
-            <option value={v} key={`year${i}`}>
-              {v}
-            </option>
-          ))}
-        </RegisterSelect>
-        <RegisterDiv onClick={handleSearchOpen}>
-          {university === "" ? "학교 이름을 검색하세요." : <div>{university}</div>}
-        </RegisterDiv>
-        {university === "" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
-        <InputButton>
-          <InputWithButton
-            {...register("email", {
-              required: true,
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "이메일 형식에 맞춰주세요",
-              },
-            })}
-            id="sendEmail"
-            type="text"
-            placeholder="학교 이메일"
-            onChange={(e) => setEmail(e.currentTarget.value)}
-          />
-          <ConfirmButton onClick={SendCertification}>인증번호 전송</ConfirmButton>
-        </InputButton>
-        {errors.email && errors.email.type === "required" && (
-          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
-        )}
-        {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
-        <InputButton>
-          <InputWithButton type="text" placeholder="인증번호 확인" onChange={(e) => setVerify(e.currentTarget.value)} />
-          <ConfirmButton onClick={VerifyCertification}>인증번호 확인</ConfirmButton>
-        </InputButton>
-        <Message style={{ cursor: "default" }} agree={false}>
-          서비스와 관련된 소식 및 알림 등 다양한 정보를 제공합니다.
-        </Message>
-        <div style={{ display: "flex" }} onClick={() => setEmailAgree(!emailAgree)}>
-          <CustomCheck fill={emailAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
-          <Message style={{ marginLeft: "1%" }} agree={emailAgree}>
-            E-mail 수신동의(선택)
-          </Message>
-        </div>
-        <BoldText>정보 입력</BoldText>
-        <InputButton>
-          <InputWithButton
-            {...register("id", {
-              required: true,
-            })}
-            type="text"
-            placeholder="아이디"
-          />
-          <ConfirmButton>중복 확인</ConfirmButton>
-        </InputButton>
-        {errors.id && errors.id.type === "required" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
-        <RegisterInput
-          {...register("password", {
-            required: true,
-          })}
-          type="password"
-          placeholder="비밀번호"
-        />
-        {errors.password && errors.password.type === "required" && (
-          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
-        )}
-        <RegisterInput type="password" placeholder="비밀번호 확인" />
-        <RegisterInput
-          {...register("name", {
-            required: true,
-          })}
-          placeholder="이름"
-        />
-        {errors.name && errors.name.type === "required" && (
-          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
-        )}
-        <InputButton>
-          <InputWithButton
-            {...register("nickname", {
-              required: true,
-            })}
-            type="text"
-            placeholder="닉네임"
-          />
-          <ConfirmButton>중복 확인</ConfirmButton>
-        </InputButton>
-        {errors.nickname && errors.nickname.type === "required" && (
-          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
-        )}
-        <InputButton>
+        </Profile>
+        <FormRight>
+          <Title>회원가입</Title>
+          <BoldText>학교 인증</BoldText>
           <RegisterSelect
-            {...register("countryCode", {
+            {...register("enrolledAt", {
               required: true,
             })}
+            placeholder="입학년도 선택(학번)"
             defaultValue="default"
-            style={{ width: "15%", height: "100%" }}
           >
-            <option value="default">+82</option>
+            <option value="default" disabled hidden>
+              입학년도 선택 (학번)
+            </option>
+            {yearValue.map((v, i) => (
+              <option value={v} key={`year${i}`}>
+                {v}
+              </option>
+            ))}
           </RegisterSelect>
+          <RegisterDiv onClick={handleSearchOpen}>
+            {university === "" ? "학교 이름을 검색하세요." : <div>{university}</div>}
+          </RegisterDiv>
+          {university === "" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
+          <InputButton>
+            <InputWithButton
+              {...register("email", {
+                required: true,
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "이메일 형식에 맞춰주세요",
+                },
+              })}
+              id="sendEmail"
+              type="text"
+              placeholder="학교 이메일"
+              autoComplete="off"
+              onChange={(e) => setEmail(e.currentTarget.value)}
+            />
+            {"email" in errors || !email ? (
+              <ConfirmButton style={{ background: "#aaaaaa" }}>인증번호 전송</ConfirmButton>
+            ) : (
+              <ConfirmButton onClick={SendCertification}>인증번호 전송</ConfirmButton>
+            )}
+            {/* <ConfirmButton onClick={SendCertification}>인증번호 전송</ConfirmButton> */}
+          </InputButton>
+          {errors.email && errors.email.type === "required" && (
+            <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+          )}
+          {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
+          <InputButton>
+            <InputWithButton
+              type="text"
+              placeholder="인증번호 확인"
+              onChange={(e) => setVerify(e.currentTarget.value)}
+            />
+            <ConfirmButton onClick={VerifyCertification}>인증번호 확인</ConfirmButton>
+          </InputButton>
+          <Message style={{ cursor: "default" }} agree={false}>
+            서비스와 관련된 소식 및 알림 등 다양한 정보를 제공합니다.
+          </Message>
+          <div style={{ display: "flex" }} onClick={() => setEmailAgree(!emailAgree)}>
+            <CustomCheck fill={emailAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
+            <Message style={{ marginLeft: "1%" }} agree={emailAgree}>
+              E-mail 수신동의(선택)
+            </Message>
+          </div>
+          <BoldText>정보 입력</BoldText>
+          <InputButton>
+            <InputWithButton
+              {...register("id", {
+                required: true,
+              })}
+              type="text"
+              placeholder="아이디"
+            />
+            <ConfirmButton>중복 확인</ConfirmButton>
+          </InputButton>
+          {errors.id && errors.id.type === "required" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
           <RegisterInput
-            {...register("phone", {
+            {...register("password", {
               required: true,
             })}
-            placeholder="휴대전화번호"
-            style={{ width: "84%", height: "100%" }}
+            type="password"
+            placeholder="비밀번호"
+            autoComplete="new-password"
+            onChange={(e) => setFirstPW(e.target.value)}
           />
-        </InputButton>
-        <RegisterInput
-          {...register("birth", {
-            required: true,
-          })}
-          type="date"
-          placeholder="생년월일"
-        ></RegisterInput>
-        {errors.birth && errors.birth.type === "required" && (
-          <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+          {errors.password && errors.password.type === "required" && (
+            <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+          )}
+          <RegisterInput type="password" placeholder="비밀번호 확인" onChange={(e) => setSecondPW(e.target.value)} />
+          {secondPW !== "" && firstPW !== secondPW && <ErrorMessage>비밀번호가 다릅니다.</ErrorMessage>}
+          <RegisterInput
+            {...register("name", {
+              required: true,
+            })}
+            placeholder="이름"
+          />
+          {errors.name && errors.name.type === "required" && (
+            <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+          )}
+          <InputButton>
+            <InputWithButton
+              {...register("nickname", {
+                required: true,
+              })}
+              type="text"
+              placeholder="닉네임"
+            />
+            <ConfirmButton>중복 확인</ConfirmButton>
+          </InputButton>
+          {errors.nickname && errors.nickname.type === "required" && (
+            <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+          )}
+          <InputButton>
+            <RegisterSelect
+              {...register("countryCode", {
+                required: true,
+              })}
+              defaultValue="default"
+              style={{ width: "15%", height: "100%" }}
+            >
+              <option value="default">+82</option>
+            </RegisterSelect>
+            <RegisterInput
+              {...register("phone", {
+                required: true,
+              })}
+              placeholder="휴대전화번호"
+              style={{ width: "84%", height: "100%" }}
+            />
+          </InputButton>
+          <RegisterInput
+            {...register("birth", {
+              required: true,
+            })}
+            type="date"
+            placeholder="생년월일"
+          ></RegisterInput>
+          {errors.birth && errors.birth.type === "required" && (
+            <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
+          )}
+          <BoldText>약관 동의</BoldText>
+          <div style={{ display: "flex" }} onClick={() => setServiceAgree(!serviceAgree)}>
+            <CustomCheck fill={serviceAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
+            <Message style={{ marginLeft: "1%" }} agree={serviceAgree}>
+              서비스 이용 약관 동의 (필수)
+            </Message>
+          </div>
+          <div style={{ display: "flex" }} onClick={() => setPrivacyAgree(!privacyAgree)}>
+            <CustomCheck fill={privacyAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
+            <Message style={{ marginLeft: "1%" }} agree={privacyAgree}>
+              개인정보 수집 및 이용 동의 (필수)
+            </Message>
+          </div>
+          {result}
+        </FormRight>
+        {searchOpen && (
+          <UniversitySearchBar isOpen={searchOpen} handleOpen={handleSearchOpen} setUniversity={setUniversity} />
         )}
-        <BoldText>약관 동의</BoldText>
-        <div style={{ display: "flex" }} onClick={() => setServiceAgree(!serviceAgree)}>
-          <CustomCheck fill={serviceAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
-          <Message style={{ marginLeft: "1%" }} agree={serviceAgree}>
-            서비스 이용 약관 동의 (필수)
-          </Message>
-        </div>
-        <div style={{ display: "flex" }} onClick={() => setPrivacyAgree(!privacyAgree)}>
-          <CustomCheck fill={privacyAgree ? "#47d2d2" : "#aaaaaa"} style={{ cursor: "pointer" }} />
-          <Message style={{ marginLeft: "1%" }} agree={privacyAgree}>
-            개인정보 수집 및 이용 동의
-          </Message>
-        </div>
-        {result}
-      </FormRight>
-      {searchOpen && (
-        <UniversitySearchBar isOpen={searchOpen} handleOpen={handleSearchOpen} setUniversity={setUniversity} />
-      )}
-    </RegisterForm>
+      </RegisterForm>
+      <RegisterButton
+        type="submit"
+        form="register-form"
+        // disabled={!privacyAgree || !serviceAgree || Boolean(Object.keys(errors).length)}
+        agree={privacyAgree && serviceAgree && !Object.keys(errors).length}
+        onClick={() => console.log(email)}
+      >
+        회원가입
+      </RegisterButton>
+    </div>
   );
 };
 
@@ -467,12 +504,10 @@ const UnivRegister = () => {
       <FormContainer>
         <SignUpForm />
       </FormContainer>
-      <RegisterButton type="submit" form="register-form">
-        회원가입
-      </RegisterButton>
     </UnivRegisterPage>
   );
 };
+
 UnivRegister.getInitialProps = async () => {
   const pathname = "/register";
   return { pathname };
