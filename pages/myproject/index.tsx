@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { NextPage } from "next";
 import Link from "next/link";
 import React from "react";
-import { ProjectBox } from "../../components/myprojects/components/ProjectClassBox";
+import { ProjectBox } from "../../components/myprojects/components/BoxContainer";
 
 const MyprojectPage = styled.div`
   width: calc(100% - 8%);
@@ -15,7 +15,7 @@ const MyprojectTitle = styled.div`
   font-size: 1.5rem;
   font-weight: 400;
   border-left: 0.25rem solid #50d5d5;
-  text-align: center;
+  padding-left: 5px;
 `;
 
 const SubTitle = styled.div`
