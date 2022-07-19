@@ -17,7 +17,6 @@ const CalendarContainer = styled.div`
   width: 60%;
   height: 83%;
   background-color: #f8fbfb;
-  border-radius: 0.625rem;
   .react-calendar {
     width: 100%;
     height: 100%;
@@ -26,13 +25,22 @@ const CalendarContainer = styled.div`
     display: flex;
     margin-bottom: 5%;
     .react-calendar__navigation__label {
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       font-weight: bold;
+      &:hover {
+        color: #47d2d2;
+        border: none;
+      }
     }
 
     .react-calendar__navigation__arrow {
-      font-size: 1.563rem;
+      font-size: 1.5rem;
       flex-grow: 0.333;
+      &:hover {
+        font-weight: bold;
+        color: #47d2d2;
+        border: none;
+      }
     }
   }
   .react-calendar__viewContainer {
@@ -42,19 +50,38 @@ const CalendarContainer = styled.div`
   .react-calendar__month-view {
     width: 100%;
     height: 100%;
+    > div {
+      height: 10%;
+    }
+    div > div {
+      height: 100%;
+    }
   }
   .react-calendar__month-view__weekdays {
     text-align: center;
-  } //요일
+    border: none;
+    height: 50px;
+    div > abbr {
+      text-decoration: none;
+    }
+  }
+  .react-calendar__month-view__weekdays {
+    border: none;
+  }
   button {
     background-color: #f8fbfb;
     border: 0;
-    border-radius: 0.188rem;
     color: black;
-    padding: 0.313rem 0;
+    height: 100%;
+    > abbr {
+      font-size: 1.5rem;
+      @media screen and (max-width: 760px) {
+        font-size: 1rem;
+      }
+    }
     cursor: pointer;
     &:hover {
-      border-bottom: 0.25rem solid #47d2d2;
+      border-bottom: 1px solid #47d2d2;
     }
 
     &:active {
@@ -62,13 +89,9 @@ const CalendarContainer = styled.div`
     }
   }
   .react-calendar__month-view__days {
-    display: grid !important;
     height: 80%;
-    grid-template-columns: 14.2% 14.2% 14.2% 14.2% 14.2% 14.2% 14.2%;
-    grid-template-rows: repeat(5, 50%);
     .react-calendar__tile {
       font-size: 1rem;
-      font-weight: 400;
       max-width: initial !important;
     }
   }
@@ -81,13 +104,19 @@ const CalendarContainer = styled.div`
   .react-calendar__tile--range {
     color: #47d2d2;
   }
+  @media screen and (max-width: 760px) {
+    width: 100%;
+  }
 `;
 
 const ScheduleContainer = styled.div`
-  width: 33%; //450
-  height: 92%; //594
+  width: 33%;
+  height: 92%;
   background-color: #f8fbfb;
   border-radius: 0.625rem;
+  @media screen and (max-width: 760px) {
+    display: none;
+  }
 `;
 
 const ScheduleDate = styled.div`
@@ -144,9 +173,10 @@ const CalendarTab = () => {
           onChange={setValue}
           calendarType="US"
           value={value}
-          locale="en-EN"
+          locale="kor"
           maxDetail="month"
           minDetail="month"
+          formatDay={(locale, date) => format(date, "dd")}
           navigationLabel={null}
           onClickDay={clickDay}
         />
@@ -172,3 +202,5 @@ const CalendarTab = () => {
 //https://blog.logrocket.com/react-calendar-tutorial-build-customize-calendar/
 //https://dev.to/fitzgeraldkd/react-calendar-with-custom-styles-30c9
 export default CalendarTab;
+
+//highlight https://breathtaking-life.tistory.com/147?category=835829
