@@ -12,7 +12,9 @@ import { useAppDispatch } from "../src/hooks/hooks";
 import { userLogin } from "../src/redux/reducers/user";
 import axios from "axios";
 import { API_URL } from "../components/api/API";
-export default function App({ Component, pageProps: { session, ...pageProps } }) {
+import { GetServerSidePropsContext } from "next";
+
+export default function App({ Component, data, pageProps: { session, ...pageProps } }) {
   const queryClient = new QueryClient();
 
   const [interval, setInterval] = useState(0);
@@ -41,18 +43,20 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
 
 const Auth = ({ children }) => {
   const { data: session, status } = useSession();
-  const [userInfo, setUserInfo] = useState({});
   const loading = status === "loading";
   const hasUser = !!session?.user;
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    console.log("load", loading);
+    console.log("hasuser", hasUser);
+
     if (loading) {
       <div>Loading...</div>;
     }
-    if (!hasUser) {
-      if (router.pathname !== "/" && router.pathname.startsWith("/register") === false) {
+    if (!hasUser && !loading) {
+      if (router.pathname !== "/" && !router.pathname.startsWith("/register")) {
         router.push("/login");
       }
     }
@@ -64,8 +68,6 @@ const Auth = ({ children }) => {
           },
         })
         .then((res) => {
-          console.log(res.data.result);
-
           dispatch(userLogin(res.data.result));
         })
         .catch((err) => {
@@ -75,11 +77,11 @@ const Auth = ({ children }) => {
     }
   }, [loading, hasUser]);
 
-  // useEffect(() => {
-  //   console.log(userInfo);
-
-  //   //dispatch(userLogin({ userInfo }));
-  // }, [userInfo]);
-
   return children;
 };
+
+// Auth.getInitialProps = ({ req }) => {
+//   const cookies =
+// };
+//https://velog.io/@bigbrothershin/Next.js-SSR-cookie-%EB%84%A3%EC%96%B4%EC%A3%BC%EA%B8%B0
+//https://develogger.kro.kr/blog/LKHcoding/133
