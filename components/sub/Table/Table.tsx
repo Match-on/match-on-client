@@ -69,8 +69,10 @@ const UploadButton = styled.div`
 const RowComponent = ({ row, index, select, handleRow }) => {
   return (
     <Tablerow {...row.getRowProps()} onClick={() => handleRow(index)} selected={index === select}>
-      {row.cells.map((cell) => (
-        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+      {row.cells.map((cell, i) => (
+        <td {...cell.getCellProps()} key={`row--${i}`}>
+          {cell.render("Cell")}
+        </td>
       ))}
     </Tablerow>
   );
@@ -110,10 +112,12 @@ const TableComponent = ({ columns, data, handleInputOpen, upload }) => {
         </TableHeader>
         <Table {...getTableProps()}>
           <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>{column.render("Header")}</th>
+            {headerGroups.map((headerGroup, idx) => (
+              <tr {...headerGroup.getHeaderGroupProps()} key={`row-${idx}`}>
+                {headerGroup.headers.map((column, index) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} key={`row-${idx}-${index}`}>
+                    {column.render("Header")}
+                  </th>
                 ))}
               </tr>
             ))}

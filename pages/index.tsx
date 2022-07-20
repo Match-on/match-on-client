@@ -64,6 +64,7 @@ const Index: NextPage = () => {
   if (session && status === "authenticated") {
     router.push("/main");
   }
+
   return (
     <OnboardingPage>
       <TopLogo>Logo 예정</TopLogo>

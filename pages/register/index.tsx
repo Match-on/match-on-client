@@ -82,6 +82,7 @@ const genDescription = [
 const Register: NextPage = () => {
   const [univSelected, setUnivSelected] = useState<boolean>(true);
   const [genSelected, setGenSelected] = useState<boolean>(false);
+  
   return (
     <RegisterPage>
       <Container

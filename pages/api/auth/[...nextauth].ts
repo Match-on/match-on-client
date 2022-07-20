@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { NextApiRequest } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -42,14 +42,12 @@ export default NextAuth({
       },
       async authorize(credentials: Record<any, any>, req: NextApiRequest) {
         try {
-          //console.log(credentials);
-
-          const user = await axios.post(API_URL + "auth/login", {
+          const res = await axios.post(API_URL + "auth/login", {
             id: credentials.id,
             password: credentials.password,
           });
-          if (user.data.isSuccess) {
-            return user.data.result;
+          if (res.data.isSuccess) {
+            return res.data.result;
           }
           return null;
         } catch (e) {

@@ -12,7 +12,6 @@ import { useAppDispatch } from "../src/hooks/hooks";
 import { userLogin } from "../src/redux/reducers/user";
 import axios from "axios";
 import { API_URL } from "../components/api/API";
-import { GetServerSidePropsContext } from "next";
 
 export default function App({ Component, data, pageProps: { session, ...pageProps } }) {
   const queryClient = new QueryClient();
@@ -23,18 +22,18 @@ export default function App({ Component, data, pageProps: { session, ...pageProp
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <SessionProvider session={session} refetchInterval={interval}>
-          <Auth>
-            {(pageProps && pageProps.pathname) === "/login" ||
-            (pageProps && pageProps.pathname) === "/" ||
-            (pageProps && pageProps.pathname) === "/register" ? (
+          {/* <Auth> */}
+          {(pageProps && pageProps.pathname) === "/login" ||
+          (pageProps && pageProps.pathname) === "/" ||
+          (pageProps && pageProps.pathname) === "/register" ? (
+            <Component {...pageProps} />
+          ) : (
+            <Layout>
               <Component {...pageProps} />
-            ) : (
-              <Layout>
-                <Component {...pageProps} />
-                <RefreshTokenHandler setInterval={setInterval} />
-              </Layout>
-            )}
-          </Auth>
+              <RefreshTokenHandler setInterval={setInterval} />
+            </Layout>
+          )}
+          {/* </Auth> */}
         </SessionProvider>
       </QueryClientProvider>
     </Provider>

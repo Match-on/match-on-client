@@ -73,7 +73,7 @@ const Login: NextPage = () => {
       redirect: false,
       callbackUrl: "https://localhost:3000/",
     });
-    if (response.url) {
+    if (response.status === 200) {
       await router.push(response.url);
     } else {
       alert("로그인 실패");

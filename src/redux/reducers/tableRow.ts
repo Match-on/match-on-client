@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialStateValue = { class: "", index: -1, id: "" };
 
 export const tableSlice = createSlice({
-  name: "user",
+  name: "table",
   initialState: { value: initialStateValue },
   reducers: {
     selectRow: (state, action) => {
