@@ -1,8 +1,22 @@
 import styled from "@emotion/styled";
+import axios from "axios";
 import { NextPage } from "next";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { API_URL } from "../../components/api/API";
 import { ProjectBox } from "../../components/myprojects/components/BoxContainer";
+
+interface teamImfo {
+  teamIdx: number;
+  name: string;
+  type: string;
+  description: string;
+  memberCount: string;
+  favorite: boolean;
+  createdAt: string;
+  deadline: string;
+}
 
 const MyprojectPage = styled.div`
   width: calc(100% - 8%);
@@ -25,111 +39,59 @@ const SubTitle = styled.div`
   color: #aaaaaa;
 `;
 
-const BookmarksContainer = styled.div`
+const ProjectContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-content: space-between;
 `;
 
-const ProjectContainer = styled.div``;
-
-const data = [
-  {
-    title: "Match-On",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "1234567",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "2123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "3123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "4123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "5123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "6123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "7123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "8123456",
-  },
-  {
-    title: "밥조",
-    subject: "정보서비스디자인01",
-    describe: "세상의 모든 이동 mobility",
-    deadline: "2022-12-31",
-    id: "9123456",
-  },
-];
-
 const myproject: NextPage = () => {
+  const [teamData, setTeamData] = useState<teamImfo[]>([]);
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (session?.user) {
+      axios
+        .get(API_URL + "teams", {
+          params: { userIdx: session.user.userIdx },
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        })
+        .then((res) => {
+          setTeamData(res.data.result.teams);
+          console.log(res);
+        })
+        .catch((err) => alert("팀 데이터 로딩 실패"));
+    }
+  }, [session]);
   return (
     <MyprojectPage>
       <MyprojectTitle>내 프로젝트</MyprojectTitle>
       <SubTitle>즐겨찾기</SubTitle>
-      <BookmarksContainer>
-        {data.map((v, i) => (
-          <Link href={`/myproject/${v.id}`} key={`favorite-${i}`}>
-            <a>
-              <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
-            </a>
-          </Link>
-        ))}
-      </BookmarksContainer>
+      <ProjectContainer>
+        {teamData
+          .filter((p) => p.favorite)
+          .map((v, i) => (
+            <Link href={`/myproject/${v.teamIdx}`} key={`favorite-${i}`}>
+              <a>
+                <ProjectBox {...v} />
+              </a>
+            </Link>
+          ))}
+      </ProjectContainer>
       <SubTitle>내 프로젝트</SubTitle>
-      <BookmarksContainer>
-        {data.map((v, i) => (
-          <Link href={`/myproject/${v.id}`} key={`project-${i}`}>
-            <a>
-              <ProjectBox title={v.title} subject={v.subject} describe={v.describe} deadline={v.deadline} />
-            </a>
-          </Link>
-        ))}
-      </BookmarksContainer>
+      <ProjectContainer>
+        {teamData
+          .filter((p) => !p.favorite)
+          .map((v, i) => (
+            <Link href={`/myproject/${v.teamIdx}`} key={`project-${i}`}>
+              <a>
+                <ProjectBox {...v} />
+              </a>
+            </Link>
+          ))}
+      </ProjectContainer>
     </MyprojectPage>
   );
 };
