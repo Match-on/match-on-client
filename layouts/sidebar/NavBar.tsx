@@ -5,6 +5,7 @@ import styled from "@emotion/styled";
 
 import Logo, { LogoName } from "./logo";
 import sidebarData from "./data";
+import { useRouter } from "next/router";
 //1536 864
 const Nav = styled.div`
   position: fixed;
@@ -34,14 +35,16 @@ const NavList = styled.li`
   }
 `;
 
-const NavMenu = styled.a`
+const NavMenu = styled.a<{ selected: boolean }>`
   width: 100%;
   font-size: 1rem;
   cursor: pointer;
+  color: ${(props) => (props.selected ? "#46d2d3" : "#aaaaaa")};
   &:hover {
     color: #46d2d3;
   }
   svg {
+    stroke: ${(props) => (props.selected ? "#46d2d3" : "#aaaaaa")};
     &:hover {
       stroke: #46d2d3;
     }
@@ -82,6 +85,11 @@ const NavDetailList = styled.li`
 const NavBar: React.FC = () => {
   // const router = useRouter(); //router.pathname()이 query 붙었을 때 어떻게 되는지 확인하고 작업
   const [isHover, setIsHover] = useState<boolean>(false);
+  const router = useRouter();
+  const [currentPath, setCurrentPath] = useState<string>("");
+  useEffect(() => {
+    setCurrentPath(router.pathname.split("/")[1]);
+  }, [router.pathname]);
 
   return (
     <div onMouseOver={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
@@ -90,8 +98,8 @@ const NavBar: React.FC = () => {
         <NavListWrapper>
           {sidebarData.map((v, i) => (
             <NavList key={`sidebar-${i}`}>
-              <Link href={v.link}>
-                <NavMenu>{v.icon}</NavMenu>
+              <Link href={`/${v.link}`}>
+                <NavMenu selected={currentPath === v.link}>{v.icon}</NavMenu>
               </Link>
             </NavList>
           ))}
@@ -103,8 +111,8 @@ const NavBar: React.FC = () => {
           <NavDetailWrapper>
             {sidebarData.map((v, i) => (
               <NavDetailList key={`sidebardetail-${i}`}>
-                <Link href={v.link}>
-                  <NavMenu>{v.text}</NavMenu>
+                <Link href={`/${v.link}`}>
+                  <NavMenu selected={currentPath === v.link}>{v.text}</NavMenu>
                 </Link>
               </NavDetailList>
             ))}
