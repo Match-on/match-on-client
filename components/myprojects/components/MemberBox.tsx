@@ -4,10 +4,10 @@ import styled from "@emotion/styled";
 //17.875em 17.438em
 
 const Container = styled.div`
-  width: 21%;
-  height: 43%;
+  width: 16.8rem;
+  height: 16.5rem;
+  margin: 1.8rem 1.5rem;
   padding: 2%;
-  margin: 0 2% 0 2%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -15,6 +15,9 @@ const Container = styled.div`
   box-shadow: 0px 0px 0.625em rgba(0, 0, 0, 0.25);
   border-radius: 1.25rem;
   cursor: pointer;
+  @media screen and (max-width: 768px) {
+    margin: 1rem 1rem;
+  }
 `;
 
 const Identity = styled.div`
