@@ -19,6 +19,25 @@ import { unSelectRow } from "../../src/redux/reducers/tableRow";
 import MeetingOutput from "../../components/myprojects/tabmenu/TabContents/Output/MeetingOutput";
 import VoteOutput from "../../components/myprojects/tabmenu/TabContents/Output/VoteOutput";
 import NoticeOutput from "../../components/myprojects/tabmenu/TabContents/Output/NoticeOutput";
+import axios from "axios";
+import { API_URL } from "../../components/api/API";
+import { useSession } from "next-auth/react";
+
+interface MemberInformation {
+  memberIdx: number;
+  name: string;
+  role: string;
+  status: string;
+}
+interface teamInformation {
+  createdAt: string;
+  deadline: string;
+  description: string;
+  id: string;
+  members: MemberInformation[];
+  name: string;
+  teamIdx: number;
+}
 
 const MyprojectPage = styled.div`
   position: absolute;
@@ -125,25 +144,50 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
 };
 
 export default function ProjectDetail() {
+  const [teamInfo, setTeamInfo] = useState<teamInformation>({
+    createdAt: "",
+    deadline: "",
+    description: "",
+    id: "",
+    members: [],
+    name: "",
+    teamIdx: null,
+  });
+
+  const { data: session, status } = useSession();
+
   const [tab, setTab] = useState(0);
   const router = useRouter();
   const { project_id } = router.query;
   const row = useSelector((state: RootState) => state.table.value);
   const dispatch = useAppDispatch();
-  //이제 테이블에서 액션 디스패치하면 됨.
-  // 
   const handleTabMenu = (index) => {
-    console.log(`${index}clicked`);
     setTab(index + 1);
-    console.log(row);
     dispatch(unSelectRow());
   };
+
+  useEffect(() => {
+    if (session?.user) {
+      axios
+        .get(API_URL + `teams/${project_id}`, {
+          params: { type: "profile" },
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        })
+        .then((res) => {
+          console.log(res.data.result);
+          setTeamInfo(res.data.result);
+        })
+        .catch((err) => alert("팀 데이터 로딩 실패"));
+    }
+  }, [session]);
 
   return (
     <MyprojectPage>
       <Header>
-        <Title onClick={() => handleTabMenu(-1)}>Match-On</Title>
-        <SubTitle>대학생을 위한 최고의 협업툴 Match-On</SubTitle>
+        <Title onClick={() => handleTabMenu(-1)}>{teamInfo.name}</Title>
+        <SubTitle>{teamInfo.description}</SubTitle>
       </Header>
       <MainContent>
         <Tab>
@@ -162,6 +206,7 @@ export default function ProjectDetail() {
           {tab === 5 && row.class === "" && <Notice />}
           {tab === 5 && row.class === "notice" && <NoticeOutput id={row.id} />}
           {tab === 6 && <CalendarTab />}
+          {/* {tab === 7 && <TeamMember teamIdx={teamInfo.teamIdx} member={teamInfo.members} />} */}
           {tab === 7 && <TeamMember />}
         </Container>
       </MainContent>
