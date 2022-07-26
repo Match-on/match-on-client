@@ -7,21 +7,25 @@ import styled from "@emotion/styled";
 import LeftArrow from "../../public/componentSVG/Arrow/Left_Arrow.svg";
 import RightArrow from "../../public/componentSVG/Arrow/Right_Arrow.svg";
 
+const ArrowDiv = styled.div<{ possible: boolean }>`
+  cursor: ${(props) => (props.possible ? "pointer" : "arrow")};
+`;
+
 const NextArrow = (props) => {
   const { onClick } = props;
   return (
-    <div onClick={onClick}>
-      <RightArrow />
-    </div>
+    <ArrowDiv onClick={props.possible ? onClick : null} possible={props.possible}>
+      <RightArrow fill={props.possible ? "#47d2d2" : "#aaaaaa"} />
+    </ArrowDiv>
   );
 };
 
 const PrevArrow = (props) => {
   const { onClick } = props;
   return (
-    <div onClick={onClick}>
-      <LeftArrow />
-    </div>
+    <ArrowDiv onClick={props.possible ? onClick : null} possible={props.possible}>
+      <LeftArrow fill={props.possible ? "#47d2d2" : "#aaaaaa"} />
+    </ArrowDiv>
   );
 };
 
@@ -41,14 +45,15 @@ export const SlideButton = ({ slideRef, select, setSelect, length }) => {
           await setSelect(select === 0 ? select : select - 1);
           slideRef?.slickPrev();
         }}
-        // onClick={slideRef?.slickPrev}
+        possible={select !== 0}
       />
       <NextArrow
         onClick={async () => {
           await setSelect(select === length - 1 ? select : select + 1);
           slideRef?.slickNext();
+          console.log("selce", select);
         }}
-        // onClick={slideRef?.slickNext}
+        possible={select !== length - 1}
       />
     </div>
   );
