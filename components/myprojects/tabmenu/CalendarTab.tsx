@@ -15,7 +15,7 @@ const Container = styled.div`
 
 const CalendarContainer = styled.div`
   width: 60%;
-  height: 83%;
+  height: 92%;
   background-color: #f8fbfb;
   .react-calendar {
     width: 100%;
@@ -23,19 +23,39 @@ const CalendarContainer = styled.div`
   }
   .react-calendar__navigation {
     display: flex;
-    margin-bottom: 5%;
+    /* margin-bottom: 5%; */
+    justify-content: space-evenly;
+    height: 15%;
     .react-calendar__navigation__label {
-      font-size: 1.5rem;
-      font-weight: bold;
+      font-size: 1.125rem;
+      font-weight: 400;
       &:hover {
         color: #47d2d2;
         border: none;
       }
     }
-
+    .react-calendar__navigation__next2-button {
+      display: none;
+    }
+    .react-calendar__navigation__next-button {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100%;
+    }
+    .react-calendar__navigation__prev-button {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 100%;
+    }
+    .react-calendar__navigation__prev2-button {
+      display: none;
+    }
     .react-calendar__navigation__arrow {
-      font-size: 1.5rem;
-      flex-grow: 0.333;
+      font-size: 2rem;
+      flex-grow: 1;
+      color: #c4c4c4;
       &:hover {
         font-weight: bold;
         color: #47d2d2;
@@ -43,9 +63,12 @@ const CalendarContainer = styled.div`
       }
     }
   }
+
   .react-calendar__viewContainer {
     width: 100%;
-    height: 100%;
+    height: 85%;
+    border: 0.5px solid #aaaaaa;
+    padding: 5%;
   }
   .react-calendar__month-view {
     width: 100%;
@@ -74,7 +97,7 @@ const CalendarContainer = styled.div`
     color: black;
     height: 100%;
     > abbr {
-      font-size: 1.5rem;
+      font-size: 0.875rem;
       @media screen and (max-width: 760px) {
         font-size: 1rem;
       }
@@ -89,14 +112,15 @@ const CalendarContainer = styled.div`
     }
   }
   .react-calendar__month-view__days {
-    height: 80%;
+    height: 90%;
     .react-calendar__tile {
       font-size: 1rem;
       max-width: initial !important;
+      height: 150%;
     }
   }
   .react-calendar__month-view__days__day--neighboringMonth {
-    opacity: 0.5;
+    opacity: 0.2;
   }
   .react-calendar__month-view__days__day--weekend {
     color: red;
@@ -121,10 +145,11 @@ const ScheduleContainer = styled.div`
 
 const ScheduleDate = styled.div`
   width: 100%;
-  height: 5%;
-  font-size: 1.563rem;
-  font-weight: bold;
-  text-align: center;
+  height: 10%;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ScheduleListGroup = styled.div`
@@ -156,7 +181,7 @@ const todolist = [
 
 const CalendarTab = () => {
   const [value, setValue] = useState(new Date());
-  const [clickedDay, setClickedDay] = useState("");
+  const [clickedDay, setClickedDay] = useState(format(new Date(), "MMMM dd"));
   const [isOpen, setIsOpen] = useState(false);
   const clickDay = (value) => {
     console.log(value);
@@ -173,12 +198,13 @@ const CalendarTab = () => {
           onChange={setValue}
           calendarType="US"
           value={value}
-          locale="kor"
+          locale="en-EN"
           maxDetail="month"
           minDetail="month"
           formatDay={(locale, date) => format(date, "dd")}
           navigationLabel={null}
           onClickDay={clickDay}
+          showNeighboringMonth={true}
         />
       </CalendarContainer>
       <ScheduleContainer>
