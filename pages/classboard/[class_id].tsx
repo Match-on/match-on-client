@@ -112,9 +112,11 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
 };
 
 export default function ClassDetail() {
-  const [tab, setTab] = useState(0);
   const router = useRouter();
-  const { class_id } = router.query; //class_id로 쿼리 던져서 정보 얻기
+  const { lectureIdx, tabnum } = router.query; //class_id로 쿼리 던져서 정보 얻기
+  const [tab, setTab] = useState(Number(tabnum));
+  console.log("query", tabnum);
+
   const row = useSelector((state: RootState) => state.table.value);
   const dispatch = useAppDispatch();
   //이제 테이블에서 액션 디스패치하면 됨.
@@ -128,7 +130,7 @@ export default function ClassDetail() {
   return (
     <MyprojectPage>
       <Header>
-        <Title>{class_id}</Title>
+        <Title>{lectureIdx}</Title>
         <SubTitle>ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</SubTitle>
       </Header>
       <MainContent>
