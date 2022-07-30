@@ -76,8 +76,10 @@ const SortSelect = styled.div`
 const RowComponent = ({ row, index, select, handleRow }) => {
   return (
     <Tablerow {...row.getRowProps()} onClick={() => handleRow(index)} selected={index === select}>
-      {row.cells.map((cell) => (
-        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+      {row.cells.map((cell, idx) => (
+        <td {...cell.getCellProps()} key={idx}>
+          {cell.render("Cell")}
+        </td>
       ))}
     </Tablerow>
   );
