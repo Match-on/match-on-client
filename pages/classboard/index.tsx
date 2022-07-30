@@ -12,6 +12,7 @@ import { RootState } from "../../src/redux/store";
 import CustomCheck from "../../public/componentSVG/register/CustomCheck.svg";
 
 import useIntersectionObserver from "../../src/hooks/useIntersectionObserver";
+import ResultRow from "../../components/ClassBoard/components/ResultRow";
 interface FavoriteClass {
   credit: number;
   instructor: string;
@@ -113,10 +114,11 @@ const SelectTitle = styled.div`
 
 const SelectOption = styled.ul`
   position: absolute;
-  width: 13.1%;
+  width: 12.5%;
   border-radius: 0.625rem;
   background: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+  margin-top: 2.3rem;
   > li {
     top: 3rem;
     display: flex;
@@ -147,9 +149,11 @@ const SearchButton = styled.button`
 
 const SearchResult = styled.div`
   width: 100%;
+  min-width: 768px;
   background: #ffffff;
   min-height: 280px;
   margin: 1rem 0;
+  padding: 1rem 0;
   border-radius: 0.625rem;
 `;
 
@@ -157,29 +161,6 @@ interface Props {
   isLastItem: boolean;
   onFetchMorePassengers: () => void;
 }
-
-// const Class: React.FC<Props> = ({ children, isLastItem, onFetchMorePassengers }) => {
-//   const ref = useRef<HTMLDivElement | null>(null); // 감시할 엘리먼트
-//   const entry = useIntersectionObserver(ref, {});
-//   const isIntersecting = !!entry?.isIntersecting; // 겹치는 영역이 존재하는 지 여부
-
-//   useEffect(() => {
-//     isLastItem && isIntersecting && onFetchMorePassengers(); // 목록의 마지막에 도달했을 때, 리스트를 더 불러오도록 요청한다.
-//   }, [isLastItem, isIntersecting]);
-
-//   return (
-//     <div
-//       ref={ref}
-//       style={{
-//         minHeight: "100vh",
-//         display: "flex",
-//         border: "1px dashed #000",
-//       }}
-//     >
-//       <div style={{ margin: "auto" }}>{children}</div>
-//     </div>
-//   );
-// };
 
 const ClassBoard: NextPage = () => {
   const [slideRef, setSlideRef] = useState(null);
@@ -196,7 +177,7 @@ const ClassBoard: NextPage = () => {
     grade: null,
     type: "",
   });
-  const [searchResult, setSearchResult] = useState<Lecture[]>([]);
+  const [searchResult, setSearchResult] = useState([]);
   const getFavoriteClass = async () => {
     try {
       const response = await axios.get(API_URL + "lectures/favorites", {
@@ -217,7 +198,7 @@ const ClassBoard: NextPage = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      await setFilters(response.data.result);
+      setFilters(response.data.result);
     } catch (err) {
       alert("검색 필터 로딩 실패");
     }
@@ -230,37 +211,6 @@ const ClassBoard: NextPage = () => {
     }
   }, [session]);
 
-  //=========infinite scroll==========
-  // const [searchClass, setSearchClass] = useState([]);
-  // const [page, setPage] = useState<number>(0);
-  // const [isLast, setIsLast] = useState<boolean>(false);
-
-  // const getPassengers = async () => {
-  //   const params = { page, size: 30 };
-
-  //   try {
-  //     const response = await axios.get("",{params});
-
-  //     const searchClass = response.data.data;
-  //     const isLast = response.data.totalPages === page;
-
-  //     setSearchClass((prev) => [...prev, ...searchClass]);
-  //     setIsLast(isLast);
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // };
-  //=================================
-  // {passengers.map((passenger, idx) => (
-  //   <Item key={passenger._id} isLastItem={passengers.length - 1 === idx} onFetchMorePassengers={() => setPage((prev) => prev + 1)}>
-  //     {passenger.name}
-  //   </Item>
-  // ))}
-  //=====================================================
-  // useEffect(() => {
-  //   !isLast && getPassengers();
-  // }, [page]);
-  //=====================filter============================
   const [isFilterOpen, setIsFilterOpen] = useState({ year: false, semester: false, grade: false, type: false });
   const onFilterOpen = (type) => {
     if (type === "year")
@@ -290,11 +240,13 @@ const ClassBoard: NextPage = () => {
     });
   };
   const getSearchResult = async () => {
+    await setSearchResult([]);
     const params = {
       keyword: selectedFilters.keyword,
       type: selectedFilters.type,
       grade: selectedFilters.grade,
-      when: `${selectedFilters.year}-0${selectedFilters.semester}`,
+      year: selectedFilters.year,
+      semester: selectedFilters.semester,
       offset: 0,
     };
     try {
@@ -304,11 +256,16 @@ const ClassBoard: NextPage = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      setSearchResult(response.data.result);
+      const searchedClass = response.data.result;
+      console.log(response.data.result);
+
+      setSearchResult((prev) => [...prev, ...searchedClass]);
     } catch (err) {
       alert("수업 데이터 로딩 실패");
     }
   };
+  const [page, setPage] = useState<number>(1);
+
   return (
     <ClassPage>
       <ClassTitle>{univName}</ClassTitle>
@@ -323,15 +280,17 @@ const ClassBoard: NextPage = () => {
         <SubTitle>즐겨찾기</SubTitle>
         <SlideButton slideRef={slideRef} select={select} setSelect={setSelect} length={favoriteClass.length} />
       </div>
-      <Carousel setSlideRef={setSlideRef}>
-        {favoriteClass.map((v, i) => (
-          <Link href={`/classboard/${v.lectureIdx}?tabnum=0`} key={`favoriteClass-${i}`}>
-            <a>
-              <ClassBox {...v} select={i === select} />
-            </a>
-          </Link>
-        ))}
-      </Carousel>
+      <div style={{ height: "18.75rem" }}>
+        <Carousel setSlideRef={setSlideRef}>
+          {favoriteClass.map((v, i) => (
+            <Link href={`/classboard/${v.lectureIdx}?tabnum=0`} key={`favoriteClass-${i}`}>
+              <a>
+                <ClassBox {...v} select={i === select} />
+              </a>
+            </Link>
+          ))}
+        </Carousel>
+      </div>
       <ClassSearch>
         <FilterContainer>
           <InputFilter type="text" placeholder="수업명을 검색하세요" onChange={onKeywordChange} />
@@ -402,9 +361,33 @@ const ClassBoard: NextPage = () => {
           <SearchButton onClick={getSearchResult}>검색</SearchButton>
         </FilterContainer>
       </ClassSearch>
-      <SearchResult></SearchResult>
+      <SearchResult>
+        {searchResult.map((v, idx) => (
+          <ResultRow
+            {...v}
+            isLastItem={searchResult.length - 1 === idx}
+            filter={selectedFilters}
+            setSearchResult={setSearchResult}
+            key={v.lectureIdx}
+            setPage={() => setPage((prev) => prev + 1)}
+            page={page}
+          />
+        ))}
+      </SearchResult>
     </ClassPage>
   );
 };
 
 export default ClassBoard;
+
+// credit: 2
+// department: null
+// favorite: 0
+// grade: 0
+// instructor: "도선재"
+// lectureIdx: 1615
+// name: "ACT"
+// semester: 1
+// time: "월5,6"
+// type: "교양"
+// year: 2022
