@@ -1,7 +1,22 @@
 import styled from "@emotion/styled";
-import { useMemo, useState } from "react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useEffect, useMemo, useState } from "react";
+import { API_URL } from "../../api/API";
 import ClassTable from "../components/ClassTable";
 import UploadModal from "../components/Modal/UploadModal";
+
+interface Post {
+  lecturePostIdx: number;
+  title: string;
+  body: string;
+  createdAt: string;
+  writer: string;
+  profileUrl: string | null;
+  hitCount: string;
+  commentCount: string;
+  cursor: string;
+}
 
 const Container = styled.div`
   width: 100%;
@@ -12,7 +27,7 @@ const Container = styled.div`
   background-color: #ffffff;
 `;
 
-const FreeBoard = () => {
+const FreeBoard = ({ lectureIdx }) => {
   const columns = useMemo(
     () => [
       {
@@ -34,88 +49,38 @@ const FreeBoard = () => {
     ],
     []
   );
-  const data = [
-    {
-      class: "freeboard",
-      id: "freeboard-125345",
-      name: "abc",
-      contents: ["안녕하세요ㅇㅇㅇㅇㅇㅇㅇ", <br />, "hihihihi", <br />, "안녕하세용ㅇㅇㅇ"],
-      date: "2022-06-02",
-      seen: 15,
-      comments: 3,
-    },
-    {
-      class: "freeboard",
-      id: "freeboard-1234215",
-      name: "abc",
-      contents: ["안녕하세요ㅇㅇㅇㅇㅇㅇㅇ", <br />, "hihihihi", <br />, "안녕하세용ㅇㅇㅇ"],
-      date: "2022-06-21",
-      seen: 15,
-      comments: 3,
-    },
-    {
-      class: "freeboard",
-      id: "freeboard-1234445",
-      name: "abc",
-      contents: ["안녕하세요ㅇㅇㅇㅇㅇㅇㅇ", <br />, "hihihihi", <br />, "안녕하세용ㅇㅇㅇ"],
-      date: "2022-06-21",
-      seen: 15,
-      comments: 3,
-    },
-    {
-      class: "freeboard",
-      id: "freeboard-1254345",
-      name: "abc",
-      contents: ["안녕하세요ㅇㅇㅇㅇㅇㅇㅇ", <br />, "hihihihi", <br />, "안녕하세용ㅇㅇㅇ"],
-      date: "2022-06-06",
-      seen: 15,
-      comments: 3,
-    },
-    {
-      class: "freeboard",
-      id: "freeboard-1236545",
-      name: "abc",
-      contents: ["안녕하세요ㅇㅇㅇㅇㅇㅇㅇ", <br />, "hihihihi", <br />, "안녕하세용ㅇㅇㅇ"],
-      date: "2022-06-08",
-      seen: 15,
-      comments: 3,
-    },
-    {
-      class: "freeboard",
-      id: "freeboard-12365445",
-      name: "abc",
-      contents: ["안녕하세요ㅇㅇㅇㅇㅇㅇㅇ", <br />, "hihihihi", <br />, "안녕하세용ㅇㅇㅇ"],
-      date: "2022-06-09",
-      seen: 15,
-      comments: 3,
-    },
-    {
-      class: "freeboard",
-      id: "freeboard-1234845",
-      name: "abcd",
-      contents: ["안녕하세요ㅇㅇㅇㅇㅇㅇㅇ", <br />, "hihihihi", <br />, "안녕하세용ㅇㅇㅇ"],
-      date: "2022-06-10",
-      seen: 15,
-      comments: 3,
-    },
-    {
-      class: "freeboard",
-      id: "freeboard-1237845",
-      name: "abcde",
-      contents: ["안녕하세요ㅇㅇㅇㅇㅇㅇㅇ", <br />, "hihihihi", <br />, "안녕하세용ㅇㅇㅇ"],
-      date: "2022-06-11",
-      seen: 15,
-      comments: 3,
-    },
-  ];
+  const { data: session, status } = useSession();
+
+  const [postList, setPostList] = useState<Post[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleModalOpen = () => {
     setIsOpen(!isOpen);
   };
+
+  const getPostList = async () => {
+    const params = {
+      type: "free",
+      sort: "latest",
+    };
+    try {
+      const response = await axios.get(API_URL + `lectures/${lectureIdx}/posts`, {
+        params: params,
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      setPostList(response.data.result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getPostList();
+  }, []);
   return (
     <Container>
-      <ClassTable columns={columns} data={data} handleInputOpen={handleModalOpen} />
+      <ClassTable columns={columns} data={postList} handleInputOpen={handleModalOpen} lectureIdx={lectureIdx} />
       {isOpen && <UploadModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );
