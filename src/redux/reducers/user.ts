@@ -10,6 +10,7 @@ const initialStateValue = {
   nickname: "",
   phone: "",
   profileUrl: "" || null,
+  univName: "" || null,
   userIdx: null,
 };
 
