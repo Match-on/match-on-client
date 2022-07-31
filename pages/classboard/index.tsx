@@ -153,7 +153,7 @@ const SearchResult = styled.div`
   background: #ffffff;
   min-height: 280px;
   margin: 1rem 0;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
   border-radius: 0.625rem;
 `;
 
@@ -363,15 +363,18 @@ const ClassBoard: NextPage = () => {
       </ClassSearch>
       <SearchResult>
         {searchResult.map((v, idx) => (
-          <ResultRow
-            {...v}
-            isLastItem={searchResult.length - 1 === idx}
-            filter={selectedFilters}
-            setSearchResult={setSearchResult}
-            key={v.lectureIdx}
-            setPage={() => setPage((prev) => prev + 1)}
-            page={page}
-          />
+          <Link href={`/classboard/${v.lectureIdx}?tabnum=0`} key={v.lectureIdx}>
+            <a>
+              <ResultRow
+                {...v}
+                isLastItem={searchResult.length - 1 === idx}
+                filter={selectedFilters}
+                setSearchResult={setSearchResult}
+                setPage={() => setPage((prev) => prev + 1)}
+                page={page}
+              />
+            </a>
+          </Link>
         ))}
       </SearchResult>
     </ClassPage>
