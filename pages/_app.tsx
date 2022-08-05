@@ -22,18 +22,18 @@ export default function App({ Component, data, pageProps: { session, ...pageProp
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <SessionProvider session={session} refetchInterval={interval}>
-          {/* <Auth> */}
-          {(pageProps && pageProps.pathname) === "/login" ||
-          (pageProps && pageProps.pathname) === "/" ||
-          (pageProps && pageProps.pathname) === "/register" ? (
-            <Component {...pageProps} />
-          ) : (
-            <Layout>
+          <Auth>
+            {(pageProps && pageProps.pathname) === "/login" ||
+            (pageProps && pageProps.pathname) === "/" ||
+            (pageProps && pageProps.pathname) === "/register" ? (
               <Component {...pageProps} />
-              <RefreshTokenHandler setInterval={setInterval} />
-            </Layout>
-          )}
-          {/* </Auth> */}
+            ) : (
+              <Layout>
+                <Component {...pageProps} />
+                <RefreshTokenHandler setInterval={setInterval} />
+              </Layout>
+            )}
+          </Auth>
         </SessionProvider>
       </QueryClientProvider>
     </Provider>
@@ -54,11 +54,11 @@ const Auth = ({ children }) => {
     if (loading) {
       <div>Loading...</div>;
     }
-    if (!hasUser && !loading) {
-      if (router.pathname !== "/" && !router.pathname.startsWith("/register")) {
-        router.push("/login");
-      }
-    }
+    // if (!hasUser && !loading) {
+    //   if (router.pathname !== "/" && !router.pathname.startsWith("/register")) {
+    //     router.push("/login");
+    //   }
+    // }
     if (hasUser) {
       axios
         .get(API_URL + `users/${session.user.userIdx}`, {
@@ -67,6 +67,7 @@ const Auth = ({ children }) => {
           },
         })
         .then((res) => {
+          console.log("user", res);
           dispatch(userLogin(res.data.result));
         })
         .catch((err) => {

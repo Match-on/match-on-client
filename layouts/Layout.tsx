@@ -12,15 +12,15 @@ type LayoutProps = {
 };
 
 const LayoutContainer = styled.div`
-  display: gird;
+  display: grid;
 `;
 
 const MainContent = styled.div`
   position: fixed;
   width: calc(100% - 5em);
-  height: calc(100% - 3.125em);
+  height: calc(100% - 2.5rem);
   left: 5em;
-  top: 3.125em;
+  top: 2.5rem;
   overflow: auto;
 `;
 

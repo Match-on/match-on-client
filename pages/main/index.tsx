@@ -1,4 +1,6 @@
 import styled from "@emotion/styled";
+import { useSelector } from "react-redux";
+import { RootState } from "../../src/redux/store";
 
 const MainPage = styled.div`
   width: 100%;
@@ -54,6 +56,9 @@ const SubTitle = styled.div`
 `;
 
 const Main = () => {
+  const user = useSelector((state: RootState) => state.user.value);
+  console.log("redux user", user);
+
   return (
     <MainPage>
       <Greeting>안녕하세요</Greeting>

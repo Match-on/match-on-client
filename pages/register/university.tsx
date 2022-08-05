@@ -154,11 +154,6 @@ const RegisterButton = styled.button<{ agree: boolean }>`
   }
 `;
 
-const ProfileInput = styled.input`
-  width: 100px;
-  height: 50px;
-`;
-
 const ProfileImg = styled.img`
   width: 120px;
   height: 120px;
@@ -200,12 +195,15 @@ const SignUpForm: FC = () => {
 
   const [result, setResult] = useState("");
   const onSubmitHandler: SubmitHandler<FormValue> = (data) => {
-    data["university"] = university;
+    data["university"] = university.idx;
     data["profileUrl"] = displayImage;
     setResult(JSON.stringify(data));
   };
-  const [university, setUniversity] = useState<string>("");
+  const [university, setUniversity] = useState({ name: "", idx: null });
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
+
+  const [id, setId] = useState<string>("");
+  const [nickname, setNickname] = useState<string>("");
 
   const [email, setEmail] = useState<string>("");
   const [verify, setVerify] = useState<string>("");
@@ -248,6 +246,36 @@ const SignUpForm: FC = () => {
         console.log("err", err);
       });
   };
+  const CheckOverlap = ({ type }) => {
+    if (type === "id") {
+      axios.get(API_URL + "users/check", { params: { id: id } }).then((res) => {
+        if (res.data.isSuccess) {
+          alert("처음 ");
+        } else {
+          alert("중복된 아이디입니다.");
+        }
+      });
+    }
+    if (type === "nickname") {
+      axios.get(API_URL + "users/check", { params: { nickname: nickname } }).then((res) => {
+        if (res.data.isSuccess) {
+          alert("처음 ");
+        } else {
+          alert("중복된 아이디입니다.");
+        }
+      });
+    }
+  };
+
+  const onInputChange = ({ target, event }) => {
+    if (target === "id") {
+      setId(event.target.value);
+    }
+    if (target === "nickname") {
+      setNickname(event.target.value);
+    }
+  };
+
   const storeImage = async () => {
     if (imageUpload === null) return;
     const imageRef = ref(storage, `profile/${uuidv4()}`);
@@ -284,7 +312,7 @@ const SignUpForm: FC = () => {
     setImageUpload(null);
     setDisplayImage(null);
     await deleteObject(imageRef).catch((err) => {
-      alert("이미지 삭제 실패");
+      alert(err);
     });
     setImageRef(null);
   };
@@ -344,9 +372,9 @@ const SignUpForm: FC = () => {
             ))}
           </RegisterSelect>
           <RegisterDiv onClick={handleSearchOpen}>
-            {university === "" ? "학교 이름을 검색하세요." : <div>{university}</div>}
+            {university.name === "" ? "학교 이름을 검색하세요." : <div>{university.name}</div>}
           </RegisterDiv>
-          {university === "" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
+          {university.name === "" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
           <InputButton>
             <InputWithButton
               {...register("email", {
@@ -398,8 +426,9 @@ const SignUpForm: FC = () => {
               })}
               type="text"
               placeholder="아이디"
+              onChange={(e) => onInputChange({ target: "id", event: e })}
             />
-            <ConfirmButton>중복 확인</ConfirmButton>
+            <ConfirmButton onClick={() => CheckOverlap({ type: "id" })}>중복 확인</ConfirmButton>
           </InputButton>
           {errors.id && errors.id.type === "required" && <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>}
           <RegisterInput
@@ -432,8 +461,9 @@ const SignUpForm: FC = () => {
               })}
               type="text"
               placeholder="닉네임"
+              onChange={(e) => onInputChange({ target: "nickname", event: e })}
             />
-            <ConfirmButton>중복 확인</ConfirmButton>
+            <ConfirmButton onClick={() => CheckOverlap({ type: "nickname" })}>중복 확인</ConfirmButton>
           </InputButton>
           {errors.nickname && errors.nickname.type === "required" && (
             <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
@@ -482,7 +512,12 @@ const SignUpForm: FC = () => {
           {result}
         </FormRight>
         {searchOpen && (
-          <UniversitySearchBar isOpen={searchOpen} handleOpen={handleSearchOpen} setUniversity={setUniversity} />
+          <UniversitySearchBar
+            isOpen={searchOpen}
+            handleOpen={handleSearchOpen}
+            university={university}
+            setUniversity={setUniversity}
+          />
         )}
       </RegisterForm>
       <RegisterButton

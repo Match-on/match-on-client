@@ -9,7 +9,7 @@ import RecruitBoard from "../../../components/ClassBoard/TabContents/RecruitBoar
 const MyprojectPage = styled.div`
   position: absolute;
   width: calc(100% - 8%);
-  height: 92%;
+  height: 100%;
   margin-left: 4%;
   /* height: 100%; */
 `;
@@ -38,13 +38,13 @@ const SubTitle = styled.div`
 
 const MainContent = styled.div`
   width: 100%;
-  height: 90%;
+  height: 92%;
   font-size: 1rem;
 `;
 
 const Container = styled.div`
   width: 100%;
-  height: 100%;
+  height: 94%;
   margin-top: -1%;
   padding-top: 1%;
 `;
@@ -107,6 +107,8 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
 
 export default function ClassDetail() {
   const router = useRouter();
+  console.log("router", router.query);
+
   const { lectureIdx, tabnum } = router.query; //class_id로 쿼리 던져서 정보 얻기
   const [tab, setTab] = useState(Number(tabnum) || 0);
 
@@ -127,8 +129,8 @@ export default function ClassDetail() {
         </Tab>
         <Container>
           {tab === 0 && <FreeBoard lectureIdx={lectureIdx} />}
-          {tab === 1 && <InfoBoard />}
-          {tab === 2 && <RecruitBoard />}
+          {tab === 1 && <InfoBoard lectureIdx={lectureIdx} />}
+          {tab === 2 && <RecruitBoard lectureIdx={lectureIdx} />}
         </Container>
       </MainContent>
     </MyprojectPage>

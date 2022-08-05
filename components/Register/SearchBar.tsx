@@ -127,7 +127,7 @@ const ConfirmButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
 `;
-const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
+const UniversitySearchBar = ({ isOpen, handleOpen, university, setUniversity }) => {
   const [keyword, setKeyword] = useState<string>("");
   const onChangeKeyword = (e: React.FormEvent<HTMLInputElement>) => {
     setKeyword(e.currentTarget.value);
@@ -152,12 +152,10 @@ const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
       clearTimeout(debounce);
     };
   }, [keyword]);
-  useEffect(() => {
-    console.log(keyItems);
-  }, [keyItems]);
 
-  const UniversitySelect = (university) => {
-    setUniversity(university);
+  const UniversitySelect = (name, idx) => {
+    university["name"] = name;
+    university["idx"] = idx;
     handleOpen();
   };
   return (
@@ -184,7 +182,7 @@ const UniversitySearchBar = ({ isOpen, handleOpen, setUniversity }) => {
             <div>등록되어 있지 않은 학교입니다.</div>
           ) : (
             keyItems.map((univ, i) => (
-              <ResultRow key={`searchUniv-${i}`} onClick={() => UniversitySelect(univ.name)}>
+              <ResultRow key={`searchUniv-${i}`} onClick={() => UniversitySelect(univ.name, univ.univIdx)}>
                 {univ.name}
               </ResultRow>
             ))

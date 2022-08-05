@@ -21,6 +21,7 @@ const ContestTitle = styled.div`
 const SubTitle = styled.div`
   font-size: 1rem;
   font-weight: 400;
+  margin: 2.5em 0 1em 0;
   color: #aaaaaa;
 `;
 const ContestContainer = styled.div`

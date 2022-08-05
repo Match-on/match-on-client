@@ -240,7 +240,7 @@ const ClassBoard: NextPage = () => {
     });
   };
   const getSearchResult = async () => {
-    await setSearchResult([]);
+    setSearchResult([]);
     const params = {
       keyword: selectedFilters.keyword,
       type: selectedFilters.type,
@@ -274,7 +274,7 @@ const ClassBoard: NextPage = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          margin: "4% 0 2% 0",
+          margin: "2% 0 2% 0",
         }}
       >
         <SubTitle>즐겨찾기</SubTitle>

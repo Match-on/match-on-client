@@ -1,10 +1,11 @@
 import styled from "@emotion/styled";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { API_URL } from "../../api/API";
-import ClassTable from "../components/ClassTable";
 import UploadModal from "../components/Modal/UploadModal";
+import PostResultRow from "../components/PostResultRow";
 
 interface Post {
   lecturePostIdx: number;
@@ -20,7 +21,7 @@ interface Post {
 
 const Container = styled.div`
   width: 100%;
-  height: 90%;
+  height: 95%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -107,16 +108,29 @@ const SortOption = styled.div`
   }
 `;
 
+const Table = styled.div`
+  width: 100%;
+  height: 90%;
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+  ::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+`;
+
 const InfoBoard = ({ lectureIdx }) => {
   const { data: session, status } = useSession();
 
   const [postList, setPostList] = useState<Post[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [filter, setFilter] = useState<string>("latest");
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<string>("latest");
+  const [keyword, setKeyword] = useState<string>("");
+  const [params, setParams] = useState({ type: "info", sort: "latest", keyword: "", cursor: null });
 
   const handleModalOpen = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
   };
 
   const returnIcon = () => {
@@ -129,30 +143,39 @@ const InfoBoard = ({ lectureIdx }) => {
   };
 
   const getPostList = async () => {
-    const params = {
-      type: "info",
-      sort: filter,
-    };
     try {
+      const params = { type: "info", sort: filter, keyword: keyword, cursor: null };
+
       const response = await axios.get(API_URL + `lectures/${lectureIdx}/posts`, {
         params: params,
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      setPostList(response.data.result);
-      console.log("mres", response);
+      const list = response.data.result;
+      // setPostList((prev) => [...prev, ...list]);
+      setPostList(list);
+      console.log("postlist", response.data.result);
     } catch (err) {
       console.log(err);
     }
   };
   useEffect(() => {
     getPostList();
-  }, [session, isOpen]);
+  }, [session, isOpen, filter]);
   return (
     <Container>
       <TopSection>
-        <InputFilter type="text" placeholder="수업명을 검색하세요" />
+        <InputFilter
+          type="text"
+          placeholder="수업명을 검색하세요"
+          onChange={(e) => setKeyword(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              getPostList();
+            }
+          }}
+        />
         <div className="right-section">
           <SortSelect onClick={() => setFilterOpen((prev) => !prev)}>
             <span>분류 :</span>
@@ -174,7 +197,22 @@ const InfoBoard = ({ lectureIdx }) => {
           </div>
         </div>
       </TopSection>
-      <ClassTable data={postList} lectureIdx={lectureIdx} typeIdx={1} />
+      <Table>
+        {postList.map((post, idx) => (
+          <Link href={`/classboard/${lectureIdx}/${post.lecturePostIdx}?tabnum=0&type=free`} key={post.lecturePostIdx}>
+            <a>
+              <PostResultRow
+                {...post}
+                lectureIdx={lectureIdx}
+                setPostList={setPostList}
+                isLastItem={postList.length - 1 === idx}
+                params={params}
+                setParams={() => setParams({ ...params, cursor: postList[postList.length - 1].cursor })}
+              />
+            </a>
+          </Link>
+        ))}
+      </Table>
       {isOpen && <UploadModal isOpen={isOpen} handleOpen={handleModalOpen} lectureIdx={lectureIdx} type="info" />}
     </Container>
   );

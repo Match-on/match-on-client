@@ -8,27 +8,27 @@ import Survey from "../../public/sidebarSVG/side_survey.svg";
 
 const sidebarData = [
   {
-    link: "/myproject",
+    link: "myproject",
     text: "My Project",
     icon: <Myproject stroke="#aaaaaa" />,
   },
   {
-    link: "/classboard",
+    link: "classboard",
     text: "Class Board",
     icon: <Classboard stroke="#aaaaaa" />,
   },
   {
-    link: "/contest",
+    link: "contest",
     text: "Contest",
     icon: <Contest stroke="#aaaaaa" />,
   },
   {
-    link: "/study",
+    link: "study",
     text: "Study",
     icon: <Study stroke="#aaaaaa" />,
   },
   {
-    link: "/survey",
+    link: "survey",
     text: "Survey",
     icon: <Survey stroke="#aaaaaa" />,
   },

@@ -19,8 +19,7 @@ const Top = styled.div`
   align-items: center;
   width: 94%;
   min-width: 200px;
-  height: 3.5rem;
-  min-height: 40px;
+  height: 2.5rem;
   right: 0;
 `;
 

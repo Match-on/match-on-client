@@ -1,62 +1,41 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
-
-import SurveyBoard from "../../components/Survey/SurveyBoard";
-import MySurvey from "../../components/Survey/MySurvey";
-import { useSelector } from "react-redux";
-import { RootState } from "../../src/redux/store";
-import { useAppDispatch } from "../../src/hooks/hooks";
-import { unSelectRow } from "../../src/redux/reducers/tableRow";
-import SurveyPost from "../../components/Survey/Output/SurveyPost";
+import SurveyBoard from "../../components/Survey/TabContents/SurveyBoard";
+import MySurvey from "../../components/Survey/TabContents/MySurvey";
 
 const SurveyPage = styled.div`
   position: absolute;
   width: calc(100% - 8%);
   height: 100%;
   margin-left: 4%;
-  /* height: 100%; */
-`;
-
-const Header = styled.div`
-  width: 100%;
-  height: 2.75em;
-  display: flex;
-  align-items: center;
-  margin-bottom: 5em;
 `;
 
 const Title = styled.div`
-  padding: 0 0.625em 0 0.625em;
+  width: 9.6em;
   font-size: 1.5rem;
   font-weight: 400;
-  border-left: 0.25em solid #50d5d5;
-  text-align: center;
-  cursor: pointer;
-`;
-
-const SubTitle = styled.div`
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: #aaaaaa;
+  border-left: 0.25rem solid #50d5d5;
+  padding-left: 5px;
+  margin-bottom: 3%;
 `;
 
 const MainContent = styled.div`
   width: 100%;
-  height: 100%;
+  height: 92%;
   font-size: 1rem;
 `;
 
 const Container = styled.div`
   width: 100%;
-  height: 70%;
+  height: 94%;
   margin-top: -1%;
   padding-top: 1%;
 `;
 
 const Tab = styled.div`
   width: 100%;
-  height: 2.5em;
+  height: 6%;
   font-size: 1rem;
   display: flex;
   flex-direction: row;
@@ -73,7 +52,9 @@ const Tab = styled.div`
 const TabMenu = styled.div<{ clicked: boolean }>`
   width: calc(100% / 2);
   height: 100%;
-  line-height: 2.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
   font-size: 1em;
   font-weight: 400;
@@ -111,19 +92,13 @@ const survey: React.FC = () => {
   const [tab, setTab] = useState(0);
   const router = useRouter();
 
-  const row = useSelector((state: RootState) => state.table.value);
-  const dispatch = useAppDispatch();
   const handleTabMenu = (index) => {
-    console.log(`${index}clicked`);
     setTab(index);
-    dispatch(unSelectRow());
   };
 
   return (
     <SurveyPage>
-      <Header>
-        <Title onClick={() => handleTabMenu(0)}>설문조사 게시판</Title>
-      </Header>
+      <Title onClick={() => handleTabMenu(0)}>설문조사 게시판</Title>
       <MainContent>
         <Tab>
           {tabContArr.map((v, index) => (
@@ -131,10 +106,8 @@ const survey: React.FC = () => {
           ))}
         </Tab>
         <Container>
-          {tab === 0 && row.class === "" && <SurveyBoard />}
-          {tab === 0 && row.class === "survey" && <SurveyPost id={row.id} />}
-          {tab === 1 && row.class === "" && <MySurvey />}
-          {tab === 1 && row.class === "survey" && <SurveyPost id={row.id} />}
+          {tab === 0 && <SurveyBoard />}
+          {tab === 1 && <MySurvey />}
         </Container>
       </MainContent>
     </SurveyPage>

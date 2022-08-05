@@ -17,8 +17,8 @@ const RegisterPage = styled.div`
 `;
 const Container = styled.div<{ selected: boolean }>`
   width: 30%;
-  min-width: 350px;
-  max-width: 450px;
+  min-width: 450px;
+  max-width: 500px;
   height: 58%;
   min-height: 400px;
   display: flex;
@@ -82,7 +82,7 @@ const genDescription = [
 const Register: NextPage = () => {
   const [univSelected, setUnivSelected] = useState<boolean>(true);
   const [genSelected, setGenSelected] = useState<boolean>(false);
-  
+
   return (
     <RegisterPage>
       <Container

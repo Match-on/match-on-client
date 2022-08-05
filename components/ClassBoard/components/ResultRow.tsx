@@ -13,6 +13,7 @@ const Row = styled.div`
   background: #ffffff;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 0 1%;
   &:hover {
     border-left: 3px solid #47d2d2;
