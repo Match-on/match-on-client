@@ -74,7 +74,7 @@ const MeetingInputModal = ({ isOpen, handleOpen }) => {
       <Contents>
         {/* <ContentBox></ContentBox>
         <ContetnInput placeholder="dd"></ContetnInput> */}
-        <EditorForm />
+        {/* <EditorForm /> */}
       </Contents>
     </Modal>
   );
