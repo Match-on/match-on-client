@@ -199,7 +199,7 @@ const InfoBoard = ({ lectureIdx }) => {
       </TopSection>
       <Table>
         {postList.map((post, idx) => (
-          <Link href={`/classboard/${lectureIdx}/${post.lecturePostIdx}?tabnum=0&type=free`} key={post.lecturePostIdx}>
+          <Link href={`/classboard/${lectureIdx}/${post.lecturePostIdx}?tabnum=1&type=info`} key={post.lecturePostIdx}>
             <a>
               <PostResultRow
                 {...post}
