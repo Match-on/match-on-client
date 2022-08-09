@@ -169,7 +169,7 @@ const PatchPostModal = ({ isOpen, handleOpen }) => {
       </Header>
       <Contents>
         <ContentInput placeholder="제목" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <EditorForm setBody={setBody} data={ogBody} />
+        <EditorForm setBody={(body) => setBody(body)} data={ogBody} />
       </Contents>
       <div className="bottom">
         <UploadButton
