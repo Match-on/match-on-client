@@ -48,9 +48,6 @@ const Auth = ({ children }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log("load", loading);
-    console.log("hasuser", hasUser);
-
     if (loading) {
       <div>Loading...</div>;
     }
@@ -67,7 +64,6 @@ const Auth = ({ children }) => {
           },
         })
         .then((res) => {
-          console.log("user", res);
           dispatch(userLogin(res.data.result));
         })
         .catch((err) => {

@@ -55,7 +55,7 @@ const NavDetail = styled.div`
   position: fixed;
   background: white;
   top: 0;
-  left: -5em;
+  left: -5rem;
   width: 7.75rem;
   height: 100%;
   background-color: white;

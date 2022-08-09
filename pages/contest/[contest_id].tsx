@@ -3,10 +3,6 @@ import { useRouter } from "next/router";
 
 import styled from "@emotion/styled";
 
-import { useSelector } from "react-redux";
-import { RootState } from "../../src/redux/store";
-import { useAppDispatch } from "../../src/hooks/hooks";
-import { unSelectRow } from "../../src/redux/reducers/tableRow";
 import Introduction from "../../components/Contest/TabContents/Introduction";
 import RecruitContest from "../../components/Contest/TabContents/RecruitContest";
 import Comments from "../../components/Contest/TabContents/Comments";
@@ -114,14 +110,10 @@ export default function ContestDetail() {
   const [tab, setTab] = useState(0);
   const router = useRouter();
   const { contest_id } = router.query; //class_id로 쿼리 던져서 정보 얻기
-  const row = useSelector((state: RootState) => state.table.value);
-  const dispatch = useAppDispatch();
   //이제 테이블에서 액션 디스패치하면 됨.
   // dispatch(userLogin({ name: "조성훈", age: 25, email: "bbb@bbb.bbb" }))
   const handleTabMenu = (index) => {
-    console.log(`${index}clicked`);
     setTab(index);
-    dispatch(unSelectRow());
   };
 
   return (

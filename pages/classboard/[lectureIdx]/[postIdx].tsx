@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostContent from "../../../components/ClassBoard/components/PostContent";
+import RecruitPostContent from "../../../components/ClassBoard/components/RecruitList";
 
 const MyprojectPage = styled.div`
   position: absolute;
@@ -104,7 +105,10 @@ const PostDetail = () => {
   const { lectureIdx, postIdx, tabnum } = router.query;
   console.log(router.query);
 
-  const [tab, setTab] = useState(Number(tabnum) || 0);
+  const [tab, setTab] = useState(0);
+  useEffect(() => {
+    setTab(Number(tabnum));
+  }, [tabnum]);
 
   const handleTabMenu = (index) => {
     router.push(`/classboard/${lectureIdx}?tabnum=${index}`);
@@ -121,6 +125,7 @@ const PostDetail = () => {
           ))}
         </Tab>
         <Container>
+          {/* {tabnum === "2" ? <RecruitPostContent postIdx={postIdx} /> : <PostContent postIdx={postIdx} />} */}
           <PostContent postIdx={postIdx} />
         </Container>
       </MainContent>

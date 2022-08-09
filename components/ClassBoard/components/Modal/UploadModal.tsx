@@ -145,10 +145,13 @@ const UploadModal = ({ isOpen, handleOpen, lectureIdx, type }) => {
         <EditorForm setBody={setBody} />
       </Contents>
       <div className="bottom">
-        <Anonymous onClick={() => setAnonymous((prev) => !prev)}>
-          익명
-          <CustomCheck fill={anonymous ? "#47d2d2" : "#aaaaaa"} />
-        </Anonymous>
+        {type !== "team" && (
+          <Anonymous onClick={() => setAnonymous((prev) => !prev)}>
+            익명
+            <CustomCheck fill={anonymous ? "#47d2d2" : "#aaaaaa"} />
+          </Anonymous>
+        )}
+
         <UploadButton
           onClick={title.length !== 0 && body.length !== 8 ? postBoard : undefined}
           possible={title.length !== 0 && body.length > 7}

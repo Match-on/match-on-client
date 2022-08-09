@@ -11,6 +11,10 @@ import Seen from "../../../public/componentSVG/table/seen.svg";
 import Comment from "../../../public/componentSVG/table/comment.svg";
 import ShowComment from "../../sub/ShowComment";
 import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "../../../src/hooks/hooks";
+import { RootState } from "../../../src/redux/store";
+import { unCommentAction } from "../../../src/redux/reducers/comment";
+import PostMenu from "../../sub/PostMenu";
 
 interface ChildComment {
   comment: string;
@@ -45,28 +49,35 @@ interface Detail {
   title: string;
   writer: string;
 }
-
 const Container = styled.div`
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
+  background-color: #ffffff;
+`;
+
+const LeftContainer = styled.div<{ type: string | string[]; isMe: string }>`
+  width: ${(props) => (props.type === "team" && props.isMe === "1" ? "68%" : "100%")};
+  height: 100%;
   display: flex;
+  /* border: ${(props) => (props.type === "team" && props.isMe === "1" ? "1px solid black" : "")}; */
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   background-color: #ffffff;
-  padding: 3%;
+  padding: 3% 3% 0 3%;
+`;
+
+const Content = styled.div`
+  width: 100%;
+  height: calc(100% - 5rem);
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
   ::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
-`;
-
-const Content = styled.div`
-  width: 100%;
-  border-bottom: 0.5px solid #dcdcdc;
-  padding-bottom: 1rem;
   .icon {
     display: flex;
     width: 15%;
@@ -81,6 +92,7 @@ const Content = styled.div`
   .lower {
     display: flex;
     justify-content: space-between;
+    margin-top: 1rem;
   }
 `;
 
@@ -89,6 +101,10 @@ const Detail = styled.div`
   height: 5rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  .left {
+    display: flex;
+  }
 `;
 
 const ProfileImg = styled.div`
@@ -112,9 +128,16 @@ const Info = styled.div`
   }
 `;
 
+const HtmlBody = styled.div`
+  width: 100%;
+  > p {
+    height: 1.5rem;
+  }
+`;
+
 const Comments = styled.div`
   width: 100%;
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
 `;
 
 const BackToList = styled.a`
@@ -127,15 +150,13 @@ const BackToList = styled.a`
 `;
 
 const WriteComment = styled.div`
-  position: absolute;
-  bottom: -2%;
-  width: 95%;
-  height: 4.5rem;
+  width: 100%;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   background: #ffffff;
   border-top: 1px solid #dcdcdc;
+  padding: 0.8rem 0;
 `;
 
 const InputComment = styled.input`
@@ -171,10 +192,14 @@ const WriteButton = styled.div`
   }
 `;
 
+const MentionBox = styled.div`
+  border: 1px solid black;
+`;
+
 const PostContent = ({ postIdx }) => {
   const router = useRouter();
-  const { lectureIdx, type } = router.query;
-  console.log("query", router.query);
+  const { lectureIdx, type, tabnum } = router.query;
+  console.log("type", router.query);
 
   const { data: session, status } = useSession();
   const [detail, setDetail] = useState<Detail>({
@@ -190,6 +215,10 @@ const PostContent = ({ postIdx }) => {
     writer: "",
   });
   const [reply, setReply] = useState<string>("");
+  const [parentIdx, setParentIdx] = useState<number>(null);
+
+  const commentState = useAppSelector((state: RootState) => state.comment.value);
+  const dispatch = useAppDispatch();
   const getPostContent = async () => {
     try {
       const response = await axios.get(API_URL + `lectures/posts/${postIdx}`, {
@@ -197,8 +226,12 @@ const PostContent = ({ postIdx }) => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      setDetail(response.data.result);
-      console.log(response);
+      if (response.data.code === 1000) {
+        console.log(response.data.result);
+
+        setDetail(response.data.result);
+        dispatch(unCommentAction());
+      }
     } catch (err) {
       console.log(err);
     }
@@ -207,7 +240,7 @@ const PostContent = ({ postIdx }) => {
     try {
       const response = await axios.post(
         API_URL + `lectures/posts/${postIdx}/comments`,
-        { type: type, comment: reply },
+        { type: type, comment: reply, parentIdx: parentIdx },
         {
           headers: {
             Authorization: `Bearer ${session.accessToken}`,
@@ -216,7 +249,30 @@ const PostContent = ({ postIdx }) => {
       );
       if (response.data.code === 1000) {
         setReply("");
+        setParentIdx(null);
         getPostContent();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const patchComment = async () => {
+    try {
+      const res = await axios.patch(
+        API_URL + `lectures/posts/comments/${commentState.idx}`,
+        {
+          comment: reply,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+      if (res.data.code === 1000) {
+        getPostContent();
+      } else {
+        alert("수정에 실패하였습니다.");
       }
     } catch (err) {
       console.log(err);
@@ -229,135 +285,76 @@ const PostContent = ({ postIdx }) => {
 
   return (
     <Container>
-      <Content>
-        <Detail>
-          <ProfileImg></ProfileImg>
-          <Info>
-            <div className="nickname">{detail.writer}</div>
-            <div className="created">
-              {typeof detail.createdAt === "string" && format(parseISO(detail.createdAt), "yyyy-MM-dd")}
+      <LeftContainer type={type} isMe={detail.isMe}>
+        <Content>
+          <Detail>
+            <div className="left">
+              <ProfileImg></ProfileImg>
+              <Info>
+                <div className="nickname">{detail.writer}</div>
+                <div className="created">
+                  {typeof detail.createdAt === "string" && format(parseISO(detail.createdAt), "yyyy-MM-dd")}
+                </div>
+              </Info>
             </div>
-          </Info>
-        </Detail>
-        <span className="body" dangerouslySetInnerHTML={{ __html: detail.body }} />
-        <div className="lower">
-          <div className="icon">
-            <div className="icon_wrapper">
-              <Seen />
-              {detail.hitCount}
+            {detail.isMe === "1" && <PostMenu postIdx={postIdx} lectureIdx={lectureIdx} tabnum={tabnum} />}
+          </Detail>
+          <HtmlBody dangerouslySetInnerHTML={{ __html: detail.body }} />
+          <div className="lower">
+            <div className="icon">
+              <div className="icon_wrapper">
+                <Seen />
+                {detail.hitCount}
+              </div>
+              <div className="icon_wrapper">
+                <Comment />
+                {detail.commentCount}
+              </div>
             </div>
-            <div className="icon_wrapper">
-              <Comment />
-              {detail.commentCount}
-            </div>
+            <Link href={`/classboard/${lectureIdx}?tabnum=${tabnum}`}>
+              <BackToList>목록으로 돌아가기</BackToList>
+            </Link>
           </div>
-          <Link href={`/classboard/${lectureIdx}`}>
-            <BackToList>목록으로 돌아가기</BackToList>
-          </Link>
-        </div>
-      </Content>
-      <Comments>
-        <ShowComment commentList={detail.comments} />
-      </Comments>
-      <WriteComment>
-        <InputComment
-          type="text"
-          id="input_comment"
-          value={reply}
-          placeholder="댓글을 작성하세요."
-          onChange={(e) => setReply(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              postComment();
-            }
-          }}
-        ></InputComment>
-        <WriteButton onClick={reply.length !== 0 ? postComment : undefined}>댓글 쓰기</WriteButton>
-      </WriteComment>
+          <Comments>
+            <ShowComment commentList={detail.comments} setParentIdx={setParentIdx} getPost={getPostContent} />
+          </Comments>
+        </Content>
+        <WriteComment>
+          <div>
+            {commentState.idx}에게{commentState.state}
+          </div>
+          <InputComment
+            type="text"
+            id="input_comment"
+            value={reply}
+            placeholder="댓글을 작성하세요."
+            onChange={(e) => setReply(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                if (commentState.state === "patch") {
+                  patchComment();
+                } else {
+                  postComment();
+                }
+              }
+            }}
+          ></InputComment>
+          <WriteButton
+            id="button_comment"
+            onClick={reply.length !== 0 ? (commentState.state !== "patch" ? postComment : patchComment) : undefined}
+          >
+            {commentState.state === null ? (
+              <p>댓글쓰기</p>
+            ) : commentState.state === "reply" ? (
+              <p>답글달기</p>
+            ) : (
+              <p>수정하기</p>
+            )}
+          </WriteButton>
+        </WriteComment>
+      </LeftContainer>
     </Container>
   );
 };
 
 export default PostContent;
-
-// body: "<p>sdf</p>\n<p>sdf</p>\n<p>sd</p>\n<p>f</p>\n<p>s</p>\n<p>sdfsdfdfsdfsdfsdf</p>\n<p>s</p>\n<p>ss</p>\n<p></p>\n<p>s</p>\n<p>s</p>\n"
-// commentCount: "7"
-// comments: Array(4)
-// 0:
-// childComments: Array(3)
-// 0:
-// comment: "대댓글 테스트22222 id ccccc1234"
-// commentIdx: 5
-// createdAt: "2022-08-02T10:11:41.749Z"
-// isMe: "0"
-// isWriter: "0"
-// name: "익명 2"
-// profileUrl: null
-// [[Prototype]]: Object
-// 1:
-// comment: "대댓글 테스트 id ccccc1234"
-// commentIdx: 4
-// createdAt: "2022-08-02T10:11:37.042Z"
-// isMe: "0"
-// isWriter: "0"
-// name: "익명 2"
-// profileUrl: null
-// [[Prototype]]: Object
-// 2:
-// comment: "대댓글 테스트 id bbbbb1234"
-// commentIdx: 3
-// createdAt: "2022-08-02T10:10:53.055Z"
-// isMe: "0"
-// isWriter: "0"
-// name: "익명 1"
-// profileUrl: null
-// [[Prototype]]: Object
-// length: 3
-// [[Prototype]]: Array(0)
-// comment: "댓글 테스트 id bbbbb1234"
-// commentIdx: 1
-// createdAt: "2022-08-02T10:10:11.854Z"
-// isMe: "0"
-// isWriter: "0"
-// name: "익명 1"
-// profileUrl: null
-// [[Prototype]]: Object
-// 1:
-// childComments: []
-// comment: "2번째 댓글 테스트 id bbbbb1234"
-// commentIdx: 2
-// createdAt: "2022-08-02T10:10:26.507Z"
-// isMe: "0"
-// isWriter: "0"
-// name: "익명 1"
-// profileUrl: null
-// [[Prototype]]: Object
-// 2:
-// childComments: []
-// comment: "댓글 테스트 id ccccc1234"
-// commentIdx: 6
-// createdAt: "2022-08-02T10:11:50.249Z"
-// isMe: "0"
-// isWriter: "0"
-// name: "익명 2"
-// profileUrl: null
-// [[Prototype]]: Object
-// 3:
-// childComments: []
-// comment: "댓글 테스트 id ccccc1234"
-// commentIdx: 7
-// createdAt: "2022-08-02T10:12:43.481Z"
-// isMe: "0"
-// isWriter: "0"
-// name: "익명 2"
-// profileUrl: null
-// [[Prototype]]: Object
-// length: 4
-// [[Prototype]]: Array(0)
-// createdAt: "2022-08-02T09:25:22.777Z"
-// hitCount: "1"
-// isMe: "1"
-// lecturePostIdx: 20
-// profileUrl: null
-// title: "sdfsd"
-// writer: "테스터"

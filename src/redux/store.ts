@@ -1,12 +1,12 @@
 import { configureStore, combineReducers, Action, ThunkAction } from "@reduxjs/toolkit";
 import userReducer from "./reducers/user";
-import tableReducer from "./reducers/tableRow";
+import commentReducer from "./reducers/comment";
 export const store = configureStore({
   reducer: {
     //
     //
     user: userReducer,
-    table: tableReducer,
+    comment: commentReducer,
   },
 });
 

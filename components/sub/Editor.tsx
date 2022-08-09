@@ -3,8 +3,9 @@ import dynamic from "next/dynamic";
 import { Editor, EditorProps } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import styled from "@emotion/styled";
-import { EditorState, convertToRaw } from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 
 const EditorContainer = styled.div`
   height: calc(100% - 2rem);
@@ -28,12 +29,19 @@ const EditorContainer = styled.div`
 //ReferenceError: window is not defined 해결법?
 const Editor = dynamic<EditorProps>(() => import("react-draft-wysiwyg").then((mod) => mod.Editor), { ssr: false });
 
-const EditorForm = ({ setBody }) => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+const EditorForm = ({ setBody, data }) => {
+  const blocksFromHTML = htmlToDraft(data);
+  const { contentBlocks, entityMap } = blocksFromHTML;
+  const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+  const initialState = data ? EditorState.createWithContent(contentState) : EditorState.createEmpty();
+  const [editorState, setEditorState] = useState<EditorState>(initialState);
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
   };
+  useEffect(() => {
+    setEditorState(initialState);
+  }, [data]);
   //이미지를 html태그로 변환시킴
   const editorToHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
 

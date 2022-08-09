@@ -86,8 +86,9 @@ const ResColumn = styled(Column)`
   .icon_wrapper {
     display: flex;
     justify-content: space-evenly;
-    width: 20%;
+    width: 30%;
     min-width: 2rem;
+    max-width: 3rem;
   }
 `;
 

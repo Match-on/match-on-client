@@ -1,7 +1,5 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { useAppDispatch } from "../../../src/hooks/hooks";
-import { unSelectRow } from "../../../src/redux/reducers/tableRow";
 
 const BackTo = styled.div`
   font-size: 0.75rem;
@@ -11,12 +9,7 @@ const BackTo = styled.div`
 `;
 
 const BackToTable = () => {
-  const dispatch = useAppDispatch();
-  return (
-    <BackTo onClick={() => dispatch(unSelectRow())} style={{ cursor: "pointer" }}>
-      목록으로 돌아가기
-    </BackTo>
-  );
+  return <BackTo style={{ cursor: "pointer" }}>목록으로 돌아가기</BackTo>;
 };
 
 export default BackToTable;

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import Child from "../../public/componentSVG/ChildComment.svg";
-import Menu from "../../public/componentSVG/Menu.svg";
+import { ChildRow, ParentRow } from "./CommentRow";
 
 const ParentComment = styled.div`
   width: 100%;
@@ -22,119 +22,22 @@ const ChildComment = styled.div`
   }
 `;
 
-const Content = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem;
-  background: #f2f6f6;
-  font-size: 0.875rem;
-  border-radius: 10px;
-`;
-const ChildContent = styled.div`
-  width: 100%;
-  min-height: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem;
-  background: #f2f6f6;
-  font-size: 0.875rem;
-  border-radius: 10px;
-`;
-
-const LeftSide = styled.div`
-  width: 92%;
-`;
-const RightSide = styled.div`
-  width: 6%;
-  min-width: 3rem;
-  min-height: 4rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  max-width: 50px;
-`;
-
-const Comment = styled.div`
-  width: 100%;
-  min-width: 500px;
-  font-size: 0.875rem;
-`;
-
-const AppendChild = styled.div`
-  font-size: 0.625rem;
-  color: #ababab;
-  cursor: pointer;
-`;
-
-const Profile = styled.div`
-  height: 1.25rem;
-  display: flex;
-  align-items: center;
-  .img {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 50%;
-    background-color: #aaaaaa;
-    margin-right: 0.3rem;
-  }
-  .nickname {
-    font-size: 0.75rem;
-    color: #000000;
-    .writer {
-      color: #47d2d2;
-    }
-  }
-`;
-
-const ShowComment = ({ commentList }) => {
-  const onClickReply = () => {
-    document.getElementById("input_comment").focus();
-  };
+const ShowComment = ({ commentList, setParentIdx, getPost }) => {
   return (
     <div>
       {commentList.map((parent, i) => {
         return (
-          <>
-            {/* <ParentComment key={`parent-${i}`}>{parent.comment}</ParentComment> */}
-            <ParentComment key={`parent-${i}`}>
-              <Content>
-                <LeftSide>
-                  <Profile>
-                    <div className="img" />
-                    <div className="nickname">
-                      {parent.isWriter === "1" ? <span className="writer">글쓴이</span> : <span>{parent.name}</span>}
-                    </div>
-                  </Profile>
-                  <Comment>{parent.comment}</Comment>
-                </LeftSide>
-                <RightSide>
-                  {parent.isMe === "1" ? <Menu /> : <div style={{ width: "50%" }}>hi</div>}
-                  <AppendChild onClick={onClickReply}>답글 달기</AppendChild>
-                </RightSide>
-              </Content>
+          <div key={parent.commentIdx}>
+            <ParentComment>
+              <ParentRow {...parent} setParentIdx={setParentIdx} getPost={getPost} />
             </ParentComment>
             {parent.childComments.map((child, idx) => (
-              <ChildComment key={`child-${idx}`}>
+              <ChildComment key={child.commentIdx}>
                 <Child />
-                <ChildContent>
-                  <LeftSide>
-                    <Profile>
-                      <div className="img" />
-                      <div className="nickname">
-                        {child.isWriter === "1" ? <span className="writer">글쓴이</span> : <span>{parent.name}</span>}
-                      </div>
-                    </Profile>
-                    <Comment>{child.comment}</Comment>
-                  </LeftSide>
-                  <RightSide>{child.isMe === "1" ? <Menu /> : <div />}</RightSide>
-                </ChildContent>
+                <ChildRow {...child} getPost={getPost} />
               </ChildComment>
             ))}
-          </>
+          </div>
         );
       })}
     </div>

@@ -4,11 +4,6 @@ import { useTable, useGlobalFilter, useSortBy } from "react-table";
 import Search from "./Search";
 
 import styled from "@emotion/styled";
-import MeetingOutputModal from "../../myprojects/tabmenu/TabContents/Output/MeetingOutput";
-import NoticeOutputModal from "../../myprojects/tabmenu/TabContents/Output/NoticeOutput";
-import VoteOutputModal from "../../myprojects/tabmenu/TabContents/Output/VoteOutput";
-import { useAppDispatch } from "../../../src/hooks/hooks";
-import { selectRow } from "../../../src/redux/reducers/tableRow";
 
 //pagination 추가
 
@@ -84,11 +79,8 @@ const TableComponent = ({ columns, data, handleInputOpen, upload }) => {
     useGlobalFilter,
     useSortBy
   );
-  const dispatch = useAppDispatch();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const [rowInfo, setRowInfo] = useState({ class: "", index: -1, id: "" });
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
@@ -96,12 +88,7 @@ const TableComponent = ({ columns, data, handleInputOpen, upload }) => {
 
   const handleClickedRow = (row, index) => {
     handleOpen();
-    setRowInfo({ class: row.original.class, index: index, id: row.original.id });
   };
-  useEffect(() => {
-    dispatch(selectRow(rowInfo));
-    console.log(rowInfo);
-  }, [rowInfo]);
 
   return (
     <>
@@ -129,7 +116,7 @@ const TableComponent = ({ columns, data, handleInputOpen, upload }) => {
                 <RowComponent
                   row={row}
                   index={index}
-                  select={rowInfo.index}
+                  select={true}
                   handleRow={() => handleClickedRow(row, index)}
                   key={`row-${index}`}
                 />

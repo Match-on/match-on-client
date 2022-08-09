@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
-import { RootState } from "../../src/redux/store";
 
 import styled from "@emotion/styled";
 
@@ -13,12 +11,7 @@ import Vote from "../../components/myprojects/tabmenu/Vote";
 import Notice from "../../components/myprojects/tabmenu/Notice";
 import CalendarTab from "../../components/myprojects/tabmenu/CalendarTab";
 import TeamMember from "../../components/myprojects/tabmenu/TeamMember";
-import { useAppDispatch } from "../../src/hooks/hooks";
-import BackToTable from "../../components/sub/Table/BackToTable";
-import { unSelectRow } from "../../src/redux/reducers/tableRow";
-import MeetingOutput from "../../components/myprojects/tabmenu/TabContents/Output/MeetingOutput";
-import VoteOutput from "../../components/myprojects/tabmenu/TabContents/Output/VoteOutput";
-import NoticeOutput from "../../components/myprojects/tabmenu/TabContents/Output/NoticeOutput";
+
 import axios from "axios";
 import { API_URL } from "../../components/api/API";
 import { useSession } from "next-auth/react";
@@ -159,11 +152,8 @@ export default function ProjectDetail() {
   const [tab, setTab] = useState(0);
   const router = useRouter();
   const { project_id } = router.query;
-  const row = useSelector((state: RootState) => state.table.value);
-  const dispatch = useAppDispatch();
   const handleTabMenu = (index) => {
     setTab(index + 1);
-    dispatch(unSelectRow());
   };
 
   useEffect(() => {
@@ -197,14 +187,11 @@ export default function ProjectDetail() {
         </Tab>
         <Container>
           {tab === 0 && <TabMain />}
-          {tab === 1 && row.class === "" && <MeetingLog />}
-          {tab === 1 && row.class === "meeting" && <MeetingOutput id={row.id} />}
+          {tab === 1 && <MeetingLog />}
           {tab === 2 && <VedioConference />}
           {tab === 3 && <Drive />}
-          {tab === 4 && row.class === "" && <Vote />}
-          {tab === 4 && row.class === "vote" && <VoteOutput id={row.id} />}
-          {tab === 5 && row.class === "" && <Notice />}
-          {tab === 5 && row.class === "notice" && <NoticeOutput id={row.id} />}
+          {tab === 4 && <Vote />}
+          {tab === 5 && <Notice />}
           {tab === 6 && <CalendarTab />}
           {/* {tab === 7 && <TeamMember teamIdx={teamInfo.teamIdx} member={teamInfo.members} />} */}
           {tab === 7 && <TeamMember />}

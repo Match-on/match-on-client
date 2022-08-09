@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../../src/hooks/hooks";
 import { RootState } from "../../src/redux/store";
 
 const MainPage = styled.div`
@@ -56,7 +56,7 @@ const SubTitle = styled.div`
 `;
 
 const Main = () => {
-  const user = useSelector((state: RootState) => state.user.value);
+  const user = useAppSelector((state: RootState) => state.user.value);
   console.log("redux user", user);
 
   return (
