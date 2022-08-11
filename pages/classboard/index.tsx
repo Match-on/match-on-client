@@ -46,7 +46,27 @@ interface Lecture {
 const ClassPage = styled.div`
   width: calc(100% - 8%);
   margin-left: 4%;
-  height: 100%;
+  .fixedBox {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    z-index: 1;
+    padding: 10px;
+    background: lightseagreen;
+    border-radius: 6px;
+    color: #fff;
+    border: 1px solid rgb(23, 122, 117);
+    text-align: left;
+  }
+
+  .fixedBox.fixed {
+    width: 100%;
+    top: 0;
+    right: 0;
+    font-size: 22px;
+    border-radius: 0;
+    text-align: center;
+  }
 `;
 
 const ClassTitle = styled.div`
@@ -64,9 +84,11 @@ const SubTitle = styled.div`
   color: #aaaaaa;
 `;
 
-const ClassSearch = styled.div`
+const ClassSearch = styled.div<{ scroll: boolean }>`
   width: 100%;
-  margin-top: 5%;
+  margin-top: ${(props) => (props.scroll ? "2.5rem" : "5%")};
+  position: ${(props) => (props.scroll ? "fixed" : "relative")};
+  top: ${(props) => (props.scroll ? "0" : "0")};
 `;
 
 const FilterContainer = styled.div`
@@ -177,7 +199,25 @@ const ClassBoard: NextPage = () => {
     grade: null,
     type: "",
   });
-  const [searchResult, setSearchResult] = useState([]);
+  const [searchResult, setSearchResult] = useState<Lecture[]>([]);
+
+  const [scroll, setScroll] = useState(false);
+
+  const handleScroll = () => {
+    if (document.getElementById("main").scrollTop >= 350) {
+      setScroll(true);
+    } else {
+      // 스크롤이 50px 미만일경우 false를 넣어줌
+      setScroll(false);
+    }
+  };
+  useEffect(() => {
+    document.getElementById("main").addEventListener("scroll", handleScroll);
+    return () => {
+      document.getElementById("main").removeEventListener("scroll", handleScroll); //clean up
+    };
+  });
+
   const getFavoriteClass = async () => {
     try {
       const response = await axios.get(API_URL + "lectures/favorites", {
@@ -291,7 +331,7 @@ const ClassBoard: NextPage = () => {
           ))}
         </Carousel>
       </div>
-      <ClassSearch>
+      <ClassSearch scroll={scroll} id="class_search">
         <FilterContainer>
           <InputFilter type="text" placeholder="수업명을 검색하세요" onChange={onKeywordChange} />
           <InputSelect>
