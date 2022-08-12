@@ -20,7 +20,6 @@ function useIntersectionObserver(
     const target = targetRef?.current; // DOM Ref
 
     if (isIntersecting || !target) return;
-
     const observer = new IntersectionObserver(updateEntry, options);
 
     observer.observe(target);
