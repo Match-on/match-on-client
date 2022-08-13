@@ -10,7 +10,7 @@ import { ClassBox, StudyBox } from "../../components/myprojects/components/BoxCo
 import Carousel, { SlideButton } from "../../components/sub/Carousel";
 import { RootState } from "../../src/redux/store";
 import CustomCheck from "../../public/componentSVG/register/CustomCheck.svg";
-
+import qs from "qs";
 import ResultRow from "../../components/ClassBoard/components/ResultRow";
 interface FavortieStudy {
   studyIdx: number;
@@ -138,20 +138,25 @@ const SelectOption = styled.ul`
   background: #ffffff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
   margin-top: 2.3rem;
-  > li {
-    top: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    height: 2rem;
-    font-size: 0.75rem;
-    padding: 5%;
-    cursor: pointer;
-    &:hover {
-      color: #47d2d2;
-      > svg {
-        fill: #47d2d2;
-      }
+`;
+
+const OptionList = styled.li<{ selected: boolean }>`
+  top: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 2rem;
+  font-size: 0.75rem;
+  padding: 5%;
+  color: ${(props) => (props.selected ? "#47d2d2" : "#aaaaaa")};
+  > svg {
+    fill: ${(props) => (props.selected ? "#47d2d2" : "#aaaaaa")};
+  }
+  cursor: pointer;
+  &:hover {
+    color: #47d2d2;
+    > svg {
+      fill: #47d2d2;
     }
   }
 `;
@@ -191,6 +196,7 @@ const Category = styled.div<{ selected: boolean }>`
   background-color: ${(props) => (props.selected ? "#f2f6f6" : "#ffffff")};
   color: ${(props) => (props.selected ? "#47d2d2" : "#000000")};
   border-radius: 3rem;
+  cursor: pointer;
   &:hover {
     background-color: #f2f6f6;
     color: #47d2d2;
@@ -203,19 +209,19 @@ interface Props {
 }
 
 const Study: NextPage = () => {
+  const { data: session, status } = useSession();
   const [slideRef, setSlideRef] = useState(null);
   const [select, setSelect] = useState(0);
+
   const [favoriteStudy, setFavoriteStudy] = useState<FavortieStudy[]>([]);
-  const { data: session, status } = useSession();
 
   const [filters, setFilters] = useState<Filter>({ categories: [], regions: [] });
-  const [selectedFilters, setSelectedFilters] = useState({
-    keyword: "",
-    category: [{ name: "", idx: null }],
-    region: { name: "", idx: null },
-    sort: "latest",
-    cursor: "",
-  });
+
+  const [keyword, setKeyword] = useState<string>("");
+  const [sort, setSort] = useState<string>("latest");
+  const [region, setRegion] = useState<Region[]>([]);
+  const [category, setCategory] = useState<Category[]>([]);
+
   const [searchResult, setSearchResult] = useState<Study[]>([]);
 
   const [scroll, setScroll] = useState(false);
@@ -255,8 +261,6 @@ const Study: NextPage = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      console.log("filter", response.data.result);
-
       setFilters(response.data.result);
     } catch (err) {
       alert("검색 필터 로딩 실패");
@@ -271,9 +275,7 @@ const Study: NextPage = () => {
   }, [session]);
 
   const onKeywordChange = (e) => {
-    setSelectedFilters((prev) => {
-      return { ...prev, keyword: e.target.value };
-    });
+    setKeyword(e.target.value);
   };
 
   const [isFilterOpen, setIsFilterOpen] = useState({ region: false, sort: false });
@@ -287,49 +289,42 @@ const Study: NextPage = () => {
         return { ...prev, sort: !isFilterOpen[type] };
       });
   };
-  const setFilterValue = (name, idx, type) => {
-    if (type !== "sort") {
-      selectedFilters[type].name = name;
-      selectedFilters[type].idx = idx;
-    } else {
-      selectedFilters[type] = name;
-    }
-    onFilterOpen(type);
+  const setSortValue = (value) => {
+    setSort(value);
+    onFilterOpen("sort");
   };
-  const setCategory = (name, idx) => {
-    if (selectedFilters.category.some((category) => category.idx === idx)) {
-      setSelectedFilters((prev) => {
-        return { ...prev, category: [...selectedFilters.category.filter((category) => category.idx !== idx)] };
+  const setRegionValue = (name, idx) => {
+    setRegion([...region, { regionIdx: idx, region: name }]);
+    onFilterOpen("region");
+  };
+  const setCategoryValue = (name, idx) => {
+    setCategory([...category, { categoryIdx: idx, category: name }]);
+  };
+  const getSearchResult = async () => {
+    setSearchResult([]);
+    const params = {
+      sort: sort,
+      cursor: 0,
+      keyword: keyword,
+      regionIdx: region.map((v, i) => v.regionIdx),
+      categoryIdx: category.map((v, i) => v.categoryIdx),
+    };
+    try {
+      const response = await axios.get(API_URL + "studies", {
+        params: params,
+        paramsSerializer: (params) => {
+          return qs.stringify(params, { arrayFormat: "repeat" });
+        },
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
       });
-    } else {
-      setSelectedFilters((prev) => {
-        return { ...prev, category: [...selectedFilters.category.concat({ name: name, idx: idx })] };
-      });
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+      alert("수업 데이터 로딩 실패");
     }
   };
-  // const getSearchResult = async () => {
-  //   setSearchResult([]);
-  //   const params = {
-  //     sort: selectedFilters.keyword,
-  //     cursor: selectedFilters.cursor,
-  //     keyword: selectedFilters.keyword,
-  //     regionIdx: selectedFilters.region,
-  //     catetoryIdx: selectedFilters.category,
-  //   };
-  //   try {
-  //     const response = await axios.get(API_URL + "studies", {
-  //       params: params,
-  //       headers: {
-  //         Authorization: `Bearer ${session.accessToken}`,
-  //       },
-  //     });
-  //     const searchedClass = response.data.result;
-  //     setSearchResult((prev) => [...prev, ...searchedClass]);
-  //   } catch (err) {
-  //     alert("수업 데이터 로딩 실패");
-  //   }
-  // };
-  const [page, setPage] = useState<number>(1);
 
   return (
     <StudyPage>
@@ -345,17 +340,17 @@ const Study: NextPage = () => {
         <SubTitle>즐겨찾기</SubTitle>
         <SlideButton slideRef={slideRef} select={select} setSelect={setSelect} length={favoriteStudy.length} />
       </div>
-      {/* <div style={{ height: "18.75rem" }}>
+      <div style={{ height: "18.75rem" }}>
         <Carousel setSlideRef={setSlideRef}>
           {favoriteStudy.map((v, i) => (
-            <Link href={`/classboard/${v.lectureIdx}?`} key={`favoriteStudy-${i}`}>
+            <Link href={`/classboard/${v.studyIdx}?`} key={`favoriteStudy-${i}`}>
               <a>
                 <StudyBox {...v} select={i === select} />
               </a>
             </Link>
           ))}
         </Carousel>
-      </div> */}
+      </div>
       <ClassSearch scroll={scroll} id="class_search">
         <FilterContainer>
           <div className="upper">
@@ -364,8 +359,11 @@ const Study: NextPage = () => {
               <SelectTitle onClick={() => onFilterOpen("region")}>
                 <span>지역 선택</span>
                 <div>
-                  {selectedFilters.region.idx ? (
-                    <span className="selected">{selectedFilters.region.name}</span>
+                  {region.length ? (
+                    <span className="selected">
+                      {region[0].region}
+                      {region.length > 1 && `+${region.length - 1}`}
+                    </span>
                   ) : (
                     <span></span>
                   )}
@@ -374,15 +372,16 @@ const Study: NextPage = () => {
               </SelectTitle>
               {isFilterOpen.region && (
                 <SelectOption>
-                  {filters.regions.map((region, idx) => (
-                    <li
+                  {filters.regions.map((v, idx) => (
+                    <OptionList
+                      onClick={() => setRegionValue(v.region, v.regionIdx)}
                       key={`region-${idx}`}
-                      value={region.regionIdx}
-                      onClick={() => setFilterValue(region.region, region.regionIdx, "region")}
+                      value={v.regionIdx}
+                      selected={region.some((region) => region.regionIdx === v.regionIdx)}
                     >
                       <CustomCheck fill="#aaaaaa" />
-                      {region.region}
-                    </li>
+                      {v.region}
+                    </OptionList>
                   ))}
                 </SelectOption>
               )}
@@ -391,7 +390,7 @@ const Study: NextPage = () => {
               <SelectTitle onClick={() => onFilterOpen("sort")}>
                 <span>분류</span>
                 <div>
-                  {selectedFilters.sort === "latest" ? (
+                  {sort === "latest" ? (
                     <span className="selected">최신순</span>
                   ) : (
                     <span className="selected">인기순</span>
@@ -401,24 +400,25 @@ const Study: NextPage = () => {
               </SelectTitle>
               {isFilterOpen.sort && (
                 <SelectOption>
-                  <li value={"latest"} onClick={() => setFilterValue("latest", null, "sort")}>
+                  <OptionList value={"latest"} onClick={() => setSortValue("latest")} selected={sort === "latest"}>
                     <CustomCheck fill="#aaaaaa" />
                     최신순
-                  </li>
-                  <li value={"popular"} onClick={() => setFilterValue("popular", null, "sort")}>
+                  </OptionList>
+                  <OptionList value={"popular"} onClick={() => setSortValue("popular")} selected={sort === "popular"}>
                     <CustomCheck fill="#aaaaaa" />
                     인기순
-                  </li>
+                  </OptionList>
                 </SelectOption>
               )}
             </InputSelect>
+            <SearchButton onClick={getSearchResult}>검색</SearchButton>
             <SearchButton>글쓰기</SearchButton>
           </div>
           <CategoryContainer>
             {filters.categories.map((v, idx) => (
               <Category
-                onClick={() => setCategory(v.category, v.categoryIdx)}
-                selected={selectedFilters.category.some((category) => category.idx === v.categoryIdx)}
+                onClick={() => setCategoryValue(v.category, v.categoryIdx)}
+                selected={category.some((category) => category.categoryIdx === v.categoryIdx)}
                 key={idx}
               >
                 {v.category}
@@ -428,20 +428,20 @@ const Study: NextPage = () => {
         </FilterContainer>
       </ClassSearch>
       <SearchResult>
-        {/* {searchResult.map((v, idx) => (
-          <Link href={`/classboard/${v.lectureIdx}?tabnum=0`} key={v.lectureIdx}>
+        {searchResult.map((v, idx) => (
+          <Link href={`/study/${v.studyIdx}?tabnum=0`} key={v.studyIdx}>
             <a>
-              <ResultRow
+              {/* <ResultRow
                 {...v}
                 isLastItem={searchResult.length - 1 === idx}
                 filter={selectedFilters}
                 setSearchResult={setSearchResult}
                 setPage={() => setPage((prev) => prev + 1)}
                 page={page}
-              />
+              /> */}
             </a>
           </Link>
-        ))} */}
+        ))}
       </SearchResult>
     </StudyPage>
   );
