@@ -4,6 +4,8 @@ import { differenceInCalendarDays, format, parseISO } from "date-fns";
 
 import TeamMember from "../../../public/myprojectSVG/TeamMember.svg";
 import Favorite from "../../../public/myprojectSVG/Favorite.svg";
+import Comment from "../../../public/componentSVG/table/comment.svg";
+import Seen from "../../../public/componentSVG/table/seen.svg";
 import { API_URL } from "../../api/API";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -67,14 +69,51 @@ const ContentsBox = styled.div<{ selected: boolean }>`
   &:hover {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
   }
-  .study_top {
+  .title {
+    display: flex;
+    align-items: center;
+    width: 100%;
     height: 15%;
+    border-bottom: 0.5px solid #dcdcdc;
+  }
+  .study_top {
+    height: 12%;
     width: 100%;
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     .icon {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
       cursor: pointer;
+    }
+  }
+  .study_content {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    font-size: 0.875rem;
+    .info_row {
+      display: flex;
+      .row_title {
+        color: #a6a6a6;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+  .study_info {
+    width: 100%;
+    height: 23%;
+    display: flex;
+    align-items: center;
+    > span {
+      font-size: 0.75rem;
+      margin-left: 0.4rem;
+      margin-right: 0.9rem;
     }
   }
 `;
@@ -103,7 +142,7 @@ const Describe = styled.div`
   font-weight: 400;
   background: #eaeaea;
   border-radius: 0.625em;
-  .study_info {
+  .study_content {
     width: 100%;
     display: flex;
     .descriptionTitle {
@@ -137,6 +176,26 @@ const Board = styled.div`
     }
   }
 `;
+const TagWrapper = styled.div`
+  height: 2rem;
+  display: flex;
+  align-items: center;
+`;
+const Tag = styled.div<{ background: string }>`
+  min-width: 3rem;
+  height: 1.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0.3rem;
+  padding: 0 0.2rem;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 300;
+  border-radius: 1rem;
+  background: ${(props) => props.background};
+`;
+
 const memberColor = ["#ffe8ea", "#f2c7f9", "#c7c7c7", "#9be5e5"];
 
 export const ProjectBox = (props) => {
@@ -247,15 +306,15 @@ export const ClassBox = (props) => {
         />
       </div>
       <Describe>
-        <div className="study_info">
+        <div className="study_content">
           <span className="descriptionTitle">교수님</span>
           <span className="descriptionDetail">{props.instructor}</span>
         </div>
-        <div className="study_info">
+        <div className="study_content">
           <span className="descriptionTitle">학점</span>
           <span className="descriptionDetail">{props.credit}</span>
         </div>
-        <div className="study_info">
+        <div className="study_content">
           <span className="descriptionTitle">시간</span>
           <span className="descriptionDetail">{props.time}</span>
         </div>
@@ -299,5 +358,71 @@ export const ContestBox = ({ title, category, deadline, seen, comments, imgsrc, 
 };
 
 export const StudyBox = (props) => {
-  return <ContentsBox selected={props.selected}></ContentsBox>;
+  const [favorite, setFavorite] = useState<boolean>(true);
+  const { data: session, status } = useSession();
+
+  const appendFavorite = async (e) => {
+    await e.preventDefault();
+    try {
+      const res = await axios.post(
+        API_URL + "studies/favorites",
+        { studyIdx: props.studyIdx },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+      setFavorite(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const deleteFavorite = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.delete(API_URL + `studies/favorites/${props.studyIdx}`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      setFavorite(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  return (
+    <ContentsBox selected={props.selected}>
+      <div className="study_top">
+        <TagWrapper>
+          <Tag background="#47d2d2">모집중</Tag>
+          <Tag background="#c4c4c4">{props.category}</Tag>
+        </TagWrapper>
+        <div className="icon" onClick={favorite ? deleteFavorite : appendFavorite}>
+          <Favorite fill={favorite ? "#47d2d2" : "white"} stroke={favorite ? "#47d2d2" : "#aaaaaa"} />
+        </div>
+      </div>
+      <div className="title">{props.title}</div>
+      <div className="study_content">
+        <div className="info_row">
+          <span className="row_title">분야</span>
+          <span>{props.category}</span>
+        </div>
+        <div className="info_row">
+          <span className="row_title">지역</span>
+          <span>{props.region}</span>
+        </div>
+        <div className="info_row">
+          <span className="row_title">인원</span>
+          <span>{props.count}명</span>
+        </div>
+      </div>
+      <div className="study_info">
+        <Seen />
+        <span>{props.hitCount}</span>
+        <Comment />
+        <span>{props.commentCount}</span>
+      </div>
+    </ContentsBox>
+  );
 };
