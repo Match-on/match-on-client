@@ -53,11 +53,14 @@ const Prefix = styled.span`
 
 const ResultRow = (props) => {
   const { data: session, status } = useSession();
-  const [favorite, setFavorite] = useState(props.favorite);
+  const [favorite, setFavorite] = useState(0);
   const ref = useRef<HTMLDivElement | null>(null); // 감시할 엘리먼트
   const entry = useIntersectionObserver(ref, {});
   const isIntersecting = !!entry?.isIntersecting;
-
+  console.log("test props", props);
+  useEffect(() => {
+    setFavorite(props.favorite);
+  }, []);
   const appendFavorite = async (e) => {
     await e.preventDefault();
     axios
@@ -119,8 +122,8 @@ const ResultRow = (props) => {
       <Column width={4}>
         <FavoriteIcon
           onClick={favorite ? deleteFavorite : appendFavorite}
-          fill={favorite ? "#47d2d2" : "white"}
-          stroke={favorite ? "#47d2d2" : "#aaaaaa"}
+          fill={favorite === 1 ? "#47d2d2" : "white"}
+          stroke={favorite === 1 ? "#47d2d2" : "#aaaaaa"}
         />
       </Column>
       <Column width={21} style={{ fontSize: "1rem" }}>

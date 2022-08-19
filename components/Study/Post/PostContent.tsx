@@ -69,7 +69,6 @@ const PostContainer = styled.div<{ isMe: string }>`
   width: ${(props) => (props.isMe === "1" ? "65%" : "100%")};
   height: 100%;
   display: flex;
-  border: 1px solid black;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
@@ -77,43 +76,6 @@ const PostContainer = styled.div<{ isMe: string }>`
   padding: 3% 3% 0 3%;
   @media screen and (max-width: 768px) {
     width: 100%;
-  }
-`;
-
-const ListContainer = styled.div`
-  width: 30%;
-  height: 95%;
-  border: 1px solid black;
-  border-radius: 0.625rem;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  .title {
-    width: 100%;
-    height: 3.5rem;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    border-bottom: 1px solid black;
-  }
-  .create-button {
-    width: 6rem;
-    height: 2.5rem;
-    border-radius: 0.625rem;
-    background: #47d2d2;
-  }
-`;
-
-const ResumeContainer = styled.div`
-  width: 100%;
-  height: calc(90% - 3.5rem);
-  border: 1px solid black;
-  overflow-y: scroll;
-  -ms-overflow-style: none; /* IE, Edge */
-  scrollbar-width: none; /* Firefox */
-  ::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
   }
 `;
 

@@ -142,14 +142,13 @@ const Describe = styled.div`
   font-weight: 400;
   background: #eaeaea;
   border-radius: 0.625em;
-  .study_content {
+  .class_content {
     width: 100%;
     display: flex;
     .descriptionTitle {
-      width: 50%;
+      width: 5rem;
     }
     .descriptionDetail {
-      width: 50%;
       color: #000000;
     }
   }
@@ -202,12 +201,11 @@ export const ProjectBox = (props) => {
   const [favorite, setFavorite] = useState(props.favorite);
   const { data: session, status } = useSession();
   const router = useRouter();
+  console.log(props);
+
   const diffDays = () => {
-    const entire = differenceInCalendarDays(
-      new Date(format(parseISO(props.deadline), "MM/dd/yyyy")),
-      new Date(format(parseISO(props.createdAt), "MM/dd/yyyy"))
-    );
-    const today = differenceInCalendarDays(new Date(), new Date(format(parseISO(props.createdAt), "MM/dd/yyyy")));
+    const entire = differenceInCalendarDays(new Date(parseISO(props.deadline)), new Date(parseISO(props.createdAt)));
+    const today = differenceInCalendarDays(new Date(), new Date(parseISO(props.createdAt)));
     return today / entire;
   };
   const appendFavorite = async (e) => {
@@ -306,15 +304,15 @@ export const ClassBox = (props) => {
         />
       </div>
       <Describe>
-        <div className="study_content">
+        <div className="class_content">
           <span className="descriptionTitle">교수님</span>
           <span className="descriptionDetail">{props.instructor}</span>
         </div>
-        <div className="study_content">
+        <div className="class_content">
           <span className="descriptionTitle">학점</span>
           <span className="descriptionDetail">{props.credit}</span>
         </div>
-        <div className="study_content">
+        <div className="class_content">
           <span className="descriptionTitle">시간</span>
           <span className="descriptionDetail">{props.time}</span>
         </div>

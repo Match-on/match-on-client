@@ -73,7 +73,7 @@ const myproject: NextPage = () => {
         {teamData
           .filter((p) => p.favorite)
           .map((v, i) => (
-            <Link href={`/myproject/${v.teamIdx}`} key={`favorite-${i}`}>
+            <Link href={`/myproject/${v.teamIdx}?tabNum=0`} key={`favorite-${i}`}>
               <a>
                 <ProjectBox {...v} />
               </a>
@@ -85,7 +85,7 @@ const myproject: NextPage = () => {
         {teamData
           .filter((p) => !p.favorite)
           .map((v, i) => (
-            <Link href={`/myproject/${v.teamIdx}`} key={`project-${i}`}>
+            <Link href={`/myproject/${v.teamIdx}?tabNum=0`} key={`project-${i}`}>
               <a>
                 <ProjectBox {...v} />
               </a>

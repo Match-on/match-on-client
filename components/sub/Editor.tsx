@@ -7,8 +7,9 @@ import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 
-const EditorContainer = styled.div`
+const EditorContainer = styled.div<{ clickable: string }>`
   height: calc(100% - 2rem);
+  pointer-events: ${(props) => props.clickable};
   .wrapper-class {
     display: flex;
     flex-direction: column;
@@ -16,7 +17,7 @@ const EditorContainer = styled.div`
     height: 100%;
   }
   .editor {
-    height: 80%;
+    height: 90%;
     border: 1px solid #f1f1f1 !important;
     padding: 5px !important;
     border-radius: 0.5rem !important;
@@ -29,7 +30,7 @@ const EditorContainer = styled.div`
 //ReferenceError: window is not defined 해결법?
 const Editor = dynamic<EditorProps>(() => import("react-draft-wysiwyg").then((mod) => mod.Editor), { ssr: false });
 
-const EditorForm = ({ setBody, data }) => {
+const EditorForm = ({ setBody, data, clickable }) => {
   const blocksFromHTML = htmlToDraft(data);
   const { contentBlocks, entityMap } = blocksFromHTML;
   const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
@@ -50,7 +51,7 @@ const EditorForm = ({ setBody, data }) => {
   }, [editorToHtml]);
 
   return (
-    <EditorContainer>
+    <EditorContainer clickable={clickable ? "" : "none"}>
       <Editor
         // 에디터와 툴바 모두에 적용되는 클래스
         wrapperClassName="wrapper-class"

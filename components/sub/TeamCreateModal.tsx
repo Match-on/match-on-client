@@ -1,14 +1,15 @@
 import Modal from "react-modal";
 import styled from "@emotion/styled";
+import { css } from "@emotion/react";
 //1367 645
-import Close from "../../../../public/componentSVG/CloseButton.svg";
-import EditorForm from "../../../sub/Editor";
+import Close from "../../public/componentSVG/CloseButton.svg";
 import axios from "axios";
-import { API_URL } from "../../../api/API";
+import { API_URL } from "../api/API";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 import CustomCheck from "../../../../public/componentSVG/register/CustomCheck.svg";
+import { useRouter } from "next/router";
 
 const customStyles = {
   overlay: {
@@ -37,7 +38,9 @@ const StyledModal = styled(Modal)`
   }
   .bottom {
     display: flex;
-    margin-left: calc(100% - 11.5rem);
+    height: 4rem;
+    justify-content: flex-end;
+    align-items: flex-end;
   }
   padding: 5%;
 `;
@@ -45,7 +48,7 @@ const StyledModal = styled(Modal)`
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  height: 7%;
+  height: 10%;
 `;
 
 const Title = styled.div`
@@ -60,6 +63,9 @@ const CloseButton = styled.div`
 const Contents = styled.div`
   width: 100%;
   height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const UploadButton = styled.div<{ possible: boolean }>`
@@ -76,14 +82,14 @@ const UploadButton = styled.div<{ possible: boolean }>`
 
 const ContentInput = styled.input`
   width: 100%;
-  height: 2rem;
+  height: 2.3rem;
   border: 0.5px solid #aaaaaa;
   border-radius: 8px;
   padding-left: 10px;
   margin-bottom: 2%;
   border: 1px solid #f1f1f1;
   &:focus {
-    outline: none;
+    outline: 2px solid #47d2d2;
   }
   ::placeholder,
   ::-webkit-input-placeholder {
@@ -91,71 +97,90 @@ const ContentInput = styled.input`
   :-ms-input-placeholder {
   }
 `;
-
-const Anonymous = styled.span`
-  font-size: 0.75rem;
-  width: 3.5rem;
+const ContentsRow = styled.div`
+  width: 100%;
+  height: 5rem;
   display: flex;
+  flex-direction: column;
   justify-content: space-evenly;
-  color: #989898;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin-right: 1rem;
+  .row_title {
+    font-size: 0.75rem;
+    color: #aaaaaa;
+  }
+  .input_wrapper {
+    display: flex;
+    justify-content: space-between;
+  }
+`;
+const MemberWrapper = styled.div`
+  width: 100%;
+  height: 65%;
+  border: 1px solid black;
 `;
 
-const UploadModal = ({ isOpen, handleOpen, lectureIdx, type }) => {
+const TeamCreateModal = ({ isOpen, handleOpen, member, type }) => {
   const { data: session, status } = useSession();
-  const [title, setTitle] = useState<string>("");
+  const [teamName, setTeamName] = useState<string>("");
   const [body, setBody] = useState<string>("");
-  const [anonymous, setAnonymous] = useState<boolean>(false);
-  const postBoard = () => {
-    axios
-      .post(
-        API_URL + `lectures/${lectureIdx}/posts`,
-        { type: type, title: title, body: body, isAnonymous: anonymous },
+  const router = useRouter();
+
+  const createTeam = async () => {
+    try {
+      const res = await axios.post(
+        API_URL + `teams`,
+        {
+          name: teamName,
+          type: "스터디",
+          members: member,
+        },
         {
           headers: {
             Authorization: `Bearer ${session.accessToken}`,
           },
         }
-      )
-      .then(handleOpen)
-      .catch((err) => console.log(err));
+      );
+      if (res.data.code === 1000) {
+        router.push("/myproject");
+      } else {
+        alert("팀 생성에 실패하였습니다.");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
-
-  useEffect(() => {
-    console.log(body.length);
-  }, []);
 
   return (
     <StyledModal isOpen={isOpen} onRequesClose={handleOpen} ariaHideApp={false} style={customStyles}>
       <Header>
-        <Title>
-          {type === "free" && "자유게시판"}
-          {type === "info" && "정보게시판"}
-          {type === "team" && "팀원모집게시판"}
-        </Title>
+        <Title>팀 생성</Title>
         <CloseButton onClick={handleOpen}>
           <Close />
         </CloseButton>
       </Header>
       <Contents>
-        <ContentInput placeholder="제목" onChange={(e) => setTitle(e.target.value)} />
-        <EditorForm setBody={setBody} data={null} clickable={true} />
+        <ContentsRow>
+          <ContentInput
+            onChange={(e) => setTeamName(e.target.value)}
+            placeholder="팀 이름을 입력하세요. (추후 변경 가능)"
+          />
+        </ContentsRow>
+        <ContentsRow>
+          <span className="row_title">사용자 초대하기</span>
+          <div className="input_wrapper">
+            <ContentInput style={{ width: "calc(100% - 6rem)" }} placeholder="사용자 이메일 입력"></ContentInput>
+            <UploadButton style={{ width: "5rem", height: "2.3rem" }} possible={true}>
+              등록
+            </UploadButton>
+          </div>
+        </ContentsRow>
+        <MemberWrapper>
+          {member.map((userIdx, idx) => (
+            <div key={idx}>{userIdx}</div>
+          ))}
+        </MemberWrapper>
       </Contents>
       <div className="bottom">
-        {type !== "team" && (
-          <Anonymous onClick={() => setAnonymous((prev) => !prev)}>
-            익명
-            <CustomCheck fill={anonymous ? "#47d2d2" : "#aaaaaa"} />
-          </Anonymous>
-        )}
-
-        <UploadButton
-          onClick={title.length !== 0 && body.length !== 8 ? postBoard : undefined}
-          possible={title.length !== 0 && body.length > 7}
-        >
+        <UploadButton onClick={createTeam} possible={teamName.length > 0}>
           등록
         </UploadButton>
       </div>
@@ -163,4 +188,4 @@ const UploadModal = ({ isOpen, handleOpen, lectureIdx, type }) => {
   );
 };
 
-export default UploadModal;
+export default TeamCreateModal;

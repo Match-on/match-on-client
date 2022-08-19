@@ -3,15 +3,14 @@ import axios from "axios";
 import { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 import { API_URL } from "../../components/api/API";
-import { ClassBox, StudyBox } from "../../components/myprojects/components/BoxContainer";
+import { StudyBox } from "../../components/myprojects/components/BoxContainer";
 import Carousel, { SlideButton } from "../../components/sub/Carousel";
-import { RootState } from "../../src/redux/store";
 import CustomCheck from "../../public/componentSVG/register/CustomCheck.svg";
 import qs from "qs";
-import ResultRow from "../../components/ClassBoard/components/ResultRow";
+import UploadModal from "../../components/Study/Modal/UploadModal";
+import ResultRow from "../../components/Study/table/ResultRow";
 interface FavortieStudy {
   studyIdx: number;
   title: string;
@@ -69,21 +68,27 @@ const SubTitle = styled.div`
   color: #aaaaaa;
 `;
 
-const ClassSearch = styled.div<{ scroll: boolean }>`
+const StudySearch = styled.div`
   width: 100%;
-  margin-top: ${(props) => (props.scroll ? "2.5rem" : "5%")};
-  position: ${(props) => (props.scroll ? "fixed" : "relative")};
-  top: ${(props) => (props.scroll ? "0" : "0")};
+  display: flex;
+  flex-direction: column;
 `;
 
-const FilterContainer = styled.div`
-  width: 100%;
+const FilterContainer = styled.div<{ scroll: boolean }>`
+  width: ${(props) => (props.scroll ? "calc(90% - 5rem)" : "100%")};
+  min-width: 768px;
   height: 8rem;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
   background: #ffffff;
+  border-radius: 0.625rem 0.625rem 0 0;
+  margin-top: ${(props) => (props.scroll ? "2.5rem" : "5%")};
+  position: ${(props) => (props.scroll ? "fixed" : "relative")};
+  top: ${(props) => (props.scroll ? "0" : "0")};
+  left: ${(props) => (props.scroll ? "5rem + 2%" : "0")};
+
   .upper {
     width: 100%;
     display: flex;
@@ -144,7 +149,8 @@ const OptionList = styled.li<{ selected: boolean }>`
   top: 3rem;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  width: 4rem;
+  justify-content: space-between;
   height: 2rem;
   font-size: 0.75rem;
   padding: 5%;
@@ -176,9 +182,9 @@ const SearchResult = styled.div`
   min-width: 768px;
   background: #ffffff;
   min-height: 280px;
-  margin: 1rem 0;
   padding: 0.5rem 0;
-  border-radius: 0.625rem;
+  border-radius: 0 0 0.625rem 0.625rem;
+  border-top: 0.5px solid #dcdcdc;
 `;
 
 const CategoryContainer = styled.div`
@@ -203,11 +209,6 @@ const Category = styled.div<{ selected: boolean }>`
   }
 `;
 
-interface Props {
-  isLastItem: boolean;
-  onFetchMorePassengers: () => void;
-}
-
 const Study: NextPage = () => {
   const { data: session, status } = useSession();
   const [slideRef, setSlideRef] = useState(null);
@@ -221,13 +222,14 @@ const Study: NextPage = () => {
   const [sort, setSort] = useState<string>("latest");
   const [region, setRegion] = useState<Region[]>([]);
   const [category, setCategory] = useState<Category[]>([]);
+  const [cursor, setCursor] = useState<string>("0");
 
   const [searchResult, setSearchResult] = useState<Study[]>([]);
 
   const [scroll, setScroll] = useState(false);
 
   const handleScroll = () => {
-    if (document.getElementById("main").scrollTop >= 350) {
+    if (document.getElementById("main").scrollTop >= 450) {
       setScroll(true);
     } else {
       // 스크롤이 50px 미만일경우 false를 넣어줌
@@ -248,7 +250,8 @@ const Study: NextPage = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      console.log("favorite", response.data.result);
+      console.log(response.data.result);
+      setFavoriteStudy(response.data.result);
     } catch (err) {
       alert("수업 데이터 로딩 실패");
     }
@@ -293,18 +296,26 @@ const Study: NextPage = () => {
     setSort(value);
     onFilterOpen("sort");
   };
+  // 한 번 더 클릭하면 해제 하는 기능
   const setRegionValue = (name, idx) => {
-    setRegion([...region, { regionIdx: idx, region: name }]);
+    if (region.some((x) => x.regionIdx === idx)) {
+      setRegion(region.filter((region) => region.regionIdx !== idx));
+    } else {
+      setRegion([...region, { regionIdx: idx, region: name }]);
+    }
     onFilterOpen("region");
   };
   const setCategoryValue = (name, idx) => {
-    setCategory([...category, { categoryIdx: idx, category: name }]);
+    if (category.some((x) => x.categoryIdx === idx)) {
+      setCategory(category.filter((category) => category.categoryIdx !== idx));
+    } else {
+      setCategory([...category, { categoryIdx: idx, category: name }]);
+    }
   };
   const getSearchResult = async () => {
-    setSearchResult([]);
     const params = {
       sort: sort,
-      cursor: 0,
+      cursor: cursor,
       keyword: keyword,
       regionIdx: region.map((v, i) => v.regionIdx),
       categoryIdx: category.map((v, i) => v.categoryIdx),
@@ -319,13 +330,19 @@ const Study: NextPage = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      console.log(response);
+      setSearchResult((prev) => [...prev, ...response.data.result]);
     } catch (err) {
       console.log(err);
       alert("수업 데이터 로딩 실패");
     }
   };
-
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const handleModalOpen = () => {
+    setModalOpen((prev) => !prev);
+  };
+  useEffect(() => {
+    if (cursor === null) getSearchResult();
+  }, [cursor]);
   return (
     <StudyPage>
       <StudyTitle>스터디</StudyTitle>
@@ -343,7 +360,7 @@ const Study: NextPage = () => {
       <div style={{ height: "18.75rem" }}>
         <Carousel setSlideRef={setSlideRef}>
           {favoriteStudy.map((v, i) => (
-            <Link href={`/classboard/${v.studyIdx}?`} key={`favoriteStudy-${i}`}>
+            <Link href={`/study/${v.studyIdx}?`} key={`favoriteStudy-${i}`}>
               <a>
                 <StudyBox {...v} select={i === select} />
               </a>
@@ -351,8 +368,8 @@ const Study: NextPage = () => {
           ))}
         </Carousel>
       </div>
-      <ClassSearch scroll={scroll} id="class_search">
-        <FilterContainer>
+      <StudySearch id="class_search">
+        <FilterContainer scroll={scroll}>
           <div className="upper">
             <InputFilter type="text" placeholder="검색" onChange={onKeywordChange} />
             <InputSelect>
@@ -411,8 +428,16 @@ const Study: NextPage = () => {
                 </SelectOption>
               )}
             </InputSelect>
-            <SearchButton onClick={getSearchResult}>검색</SearchButton>
-            <SearchButton>글쓰기</SearchButton>
+            <SearchButton
+              onClick={() => {
+                setCursor(null);
+                setSearchResult([]);
+                if (cursor === null) getSearchResult();
+              }}
+            >
+              검색
+            </SearchButton>
+            <SearchButton onClick={handleModalOpen}>글쓰기</SearchButton>
           </div>
           <CategoryContainer>
             {filters.categories.map((v, idx) => (
@@ -426,23 +451,29 @@ const Study: NextPage = () => {
             ))}
           </CategoryContainer>
         </FilterContainer>
-      </ClassSearch>
-      <SearchResult>
-        {searchResult.map((v, idx) => (
-          <Link href={`/study/${v.studyIdx}?tabnum=0`} key={v.studyIdx}>
-            <a>
-              {/* <ResultRow
-                {...v}
-                isLastItem={searchResult.length - 1 === idx}
-                filter={selectedFilters}
-                setSearchResult={setSearchResult}
-                setPage={() => setPage((prev) => prev + 1)}
-                page={page}
-              /> */}
-            </a>
-          </Link>
-        ))}
-      </SearchResult>
+        <SearchResult>
+          {searchResult.map((v, idx) => (
+            <Link href={`/study/${v.studyIdx}?tabnum=0`} key={v.studyIdx}>
+              <a>
+                <ResultRow
+                  {...v}
+                  isLastItem={searchResult.length - 1 === idx}
+                  getSearchResult={getSearchResult}
+                  setCursor={() => setCursor(searchResult[searchResult.length - 1].cursor)}
+                />
+              </a>
+            </Link>
+          ))}
+        </SearchResult>
+      </StudySearch>
+      {modalOpen && (
+        <UploadModal
+          isOpen={modalOpen}
+          handleOpen={handleModalOpen}
+          categoryFilter={filters.categories}
+          regionFilter={filters.regions}
+        />
+      )}
     </StudyPage>
   );
 };

@@ -15,6 +15,8 @@ import { useAppDispatch, useAppSelector } from "../../../src/hooks/hooks";
 import { RootState } from "../../../src/redux/store";
 import { unCommentAction } from "../../../src/redux/reducers/comment";
 import PostMenu from "../../sub/PostMenu";
+import ResumeModal from "../../sub/ResumeModal";
+import ResumeList from "../../sub/ResumeList";
 
 interface ChildComment {
   comment: string;
@@ -36,6 +38,15 @@ interface Comment {
   name: string;
   profileUrl: string | null;
 }
+interface ResumeUser {
+  userIdx: number;
+  nickname: string;
+  profileUrl: string | null;
+}
+interface Resume {
+  body: string;
+  user: ResumeUser;
+}
 
 interface Detail {
   body: string;
@@ -48,15 +59,19 @@ interface Detail {
   profileUrl: string | null;
   title: string;
   writer: string;
+  resumes: Resume[] | null;
 }
 const Container = styled.div`
   width: 100%;
   height: 100%;
   background-color: #ffffff;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 `;
 
-const LeftContainer = styled.div<{ type: string | string[]; isMe: string }>`
-  width: ${(props) => (props.type === "team" && props.isMe === "1" ? "68%" : "100%")};
+const PostContainer = styled.div<{ type: string | string[]; isMe: string }>`
+  width: ${(props) => (props.type === "team" && props.isMe === "1" ? "65%" : "100%")};
   height: 100%;
   display: flex;
   /* border: ${(props) => (props.type === "team" && props.isMe === "1" ? "1px solid black" : "")}; */
@@ -65,6 +80,9 @@ const LeftContainer = styled.div<{ type: string | string[]; isMe: string }>`
   align-items: center;
   background-color: #ffffff;
   padding: 3% 3% 0 3%;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const Content = styled.div`
@@ -199,8 +217,6 @@ const MentionBox = styled.div`
 const PostContent = ({ postIdx }) => {
   const router = useRouter();
   const { lectureIdx, type, tabnum } = router.query;
-  console.log("type", router.query);
-
   const { data: session, status } = useSession();
   const [detail, setDetail] = useState<Detail>({
     body: "",
@@ -213,9 +229,11 @@ const PostContent = ({ postIdx }) => {
     profileUrl: null,
     title: "",
     writer: "",
+    resumes: null,
   });
   const [reply, setReply] = useState<string>("");
   const [parentIdx, setParentIdx] = useState<number>(null);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState<boolean>(false);
 
   const commentState = useAppSelector((state: RootState) => state.comment.value);
   const dispatch = useAppDispatch();
@@ -227,10 +245,9 @@ const PostContent = ({ postIdx }) => {
         },
       });
       if (response.data.code === 1000) {
-        console.log(response.data.result);
-
         setDetail(response.data.result);
         dispatch(unCommentAction());
+        console.log(response.data.result);
       }
     } catch (err) {
       console.log(err);
@@ -271,6 +288,7 @@ const PostContent = ({ postIdx }) => {
       );
       if (res.data.code === 1000) {
         getPostContent();
+        setReply("");
       } else {
         alert("수정에 실패하였습니다.");
       }
@@ -279,13 +297,19 @@ const PostContent = ({ postIdx }) => {
     }
   };
 
+  const handleResume = () => {
+    setIsResumeModalOpen((prev) => !prev);
+  };
+
   useEffect(() => {
-    getPostContent();
+    if (session?.user) {
+      getPostContent();
+    }
   }, [session]);
 
   return (
     <Container>
-      <LeftContainer type={type} isMe={detail.isMe}>
+      <PostContainer type={type} isMe={detail.isMe}>
         <Content>
           <Detail>
             <div className="left">
@@ -351,8 +375,13 @@ const PostContent = ({ postIdx }) => {
               <p>수정하기</p>
             )}
           </WriteButton>
+          {type === "team" && detail.isMe === "0" && <WriteButton onClick={handleResume}>지원서 작성</WriteButton>}
         </WriteComment>
-      </LeftContainer>
+      </PostContainer>
+      {type === "team" && detail.isMe === "1" && <ResumeList resumeList={detail.resumes} type={""} />}
+      {isResumeModalOpen && (
+        <ResumeModal isOpen={isResumeModalOpen} handleOpen={handleResume} postIdx={postIdx} type={"lecture"} />
+      )}
     </Container>
   );
 };

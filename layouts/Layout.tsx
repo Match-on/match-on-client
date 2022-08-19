@@ -17,7 +17,7 @@ const LayoutContainer = styled.div`
 
 const MainContent = styled.div`
   position: fixed;
-  width: calc(100% - 5em);
+  width: calc(100% - 5rem);
   height: calc(100% - 2.5rem);
   left: 5em;
   top: 2.5rem;
@@ -30,7 +30,7 @@ export default function Layout({ children }: LayoutProps) {
       <Header />
       <NavBar />
       <Topbar />
-      <MainContent>{children}</MainContent>
+      <MainContent id="main">{children}</MainContent>
     </LayoutContainer>
   );
 }

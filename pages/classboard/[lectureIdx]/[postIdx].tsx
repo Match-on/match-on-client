@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import PostContent from "../../../components/ClassBoard/components/PostContent";
-import RecruitPostContent from "../../../components/ClassBoard/components/RecruitList";
 
 const MyprojectPage = styled.div`
   position: absolute;
@@ -17,7 +16,7 @@ const Header = styled.div`
   height: 8%;
   display: flex;
   align-items: center;
-  margin-bottom: 3%;
+  margin-bottom: 2%;
 `;
 
 const Title = styled.div`

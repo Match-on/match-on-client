@@ -19,7 +19,7 @@ const Header = styled.div`
   height: 8%;
   display: flex;
   align-items: center;
-  margin-bottom: 3%;
+  margin-bottom: 2%;
 `;
 
 const Title = styled.div`
@@ -119,7 +119,6 @@ export default function ClassDetail() {
     <MyprojectPage>
       <Header>
         <Title>{lectureIdx}</Title>
-        <SubTitle>ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</SubTitle>
       </Header>
       <MainContent>
         <Tab>

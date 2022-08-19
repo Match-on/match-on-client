@@ -225,6 +225,8 @@ const ClassBoard: NextPage = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
+      console.log("favoritee", response.data.result);
+
       setFavoriteClass(response.data.result);
     } catch (err) {
       alert("수업 데이터 로딩 실패");
