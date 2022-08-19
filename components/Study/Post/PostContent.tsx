@@ -15,6 +15,11 @@ import { useAppDispatch, useAppSelector } from "../../../src/hooks/hooks";
 import { RootState } from "../../../src/redux/store";
 import { unCommentAction } from "../../../src/redux/reducers/comment";
 import PostMenu from "../../sub/PostMenu";
+import ShareIcon from "../../../public/componentSVG/Share.svg";
+import MenuIcon from "../../../public/componentSVG/Menu.svg";
+import FavoriteIcon from "../../../public/myprojectSVG/Favorite.svg";
+import ResumeModal from "../../sub/ResumeModal";
+import ResumeList from "../../sub/ResumeList";
 
 interface Comment {
   commentIdx: number;
@@ -29,11 +34,11 @@ interface Comment {
 interface ResumeUser {
   userIdx: number;
   nickname: string;
-  profileUrl: string;
+  profileUrl: string | null;
 }
 interface Resume {
   body: string;
-  user: ResumeUser[];
+  user: ResumeUser;
 }
 
 interface StudyPost {
@@ -45,9 +50,14 @@ interface StudyPost {
   body: string;
   comments: Comment[];
   resumes: Resume[] | null;
+  category: string;
+  region: string;
+  isLike: string;
+  count: number;
 }
 const Container = styled.div`
   width: 100%;
+  min-width: 550px;
   height: 100%;
   background-color: #ffffff;
   display: flex;
@@ -55,8 +65,8 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const PostContainer = styled.div`
-  width: 100%;
+const PostContainer = styled.div<{ isMe: string }>`
+  width: ${(props) => (props.isMe === "1" ? "65%" : "100%")};
   height: 100%;
   display: flex;
   border: 1px solid black;
@@ -65,6 +75,9 @@ const PostContainer = styled.div`
   align-items: center;
   background-color: #ffffff;
   padding: 3% 3% 0 3%;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const ListContainer = styled.div`
@@ -112,11 +125,10 @@ const PostInfo = styled.div`
   align-items: center;
 `;
 const TagWrapper = styled.div`
-  width: 100%;
+  min-width: 16rem;
   height: 3rem;
   display: flex;
 `;
-
 const Tag = styled.div<{ background: string }>`
   min-width: 4rem;
   height: 1.8rem;
@@ -124,13 +136,22 @@ const Tag = styled.div<{ background: string }>`
   justify-content: center;
   align-items: center;
   margin-right: 1rem;
+  padding: 0.2rem;
   color: #ffffff;
   font-size: 1rem;
   font-weight: 300;
   border-radius: 1rem;
   background: ${(props) => props.background};
 `;
-
+const SettingWrapper = styled.div`
+  width: 8rem;
+  height: 3rem;
+  display: flex;
+  justify-content: space-between;
+  > svg {
+    cursor: pointer;
+  }
+`;
 const Content = styled.div`
   width: 100%;
   height: calc(100% - 5rem);
@@ -157,6 +178,24 @@ const Content = styled.div`
     display: flex;
     justify-content: space-between;
     margin-top: 1rem;
+  }
+`;
+const StudyInfo = styled.div`
+  width: 100%;
+  height: 15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  .info_row {
+    width: 100%;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    .info_row_title {
+      width: 3rem;
+      color: #a6a6a6;
+    }
   }
 `;
 
@@ -254,7 +293,13 @@ const PostContent = () => {
     body: "",
     comments: [],
     resumes: null,
+    category: "",
+    region: "",
+    isLike: "",
+    count: null,
   });
+  const [favorite, setFavorite] = useState<boolean>(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState<boolean>(false);
   const commentState = useAppSelector((state: RootState) => state.comment.value);
   const dispatch = useAppDispatch();
   const getStudyPost = async () => {
@@ -264,9 +309,40 @@ const PostContent = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      console.log(res.data.result);
-
+      res.data.result.isLike === "1" ? setFavorite(true) : setFavorite(false);
       setStudyPost(res.data.result);
+      dispatch(unCommentAction());
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const appendFavorite = async (e) => {
+    await e.preventDefault();
+    try {
+      const res = await axios.post(
+        API_URL + "studies/favorites",
+        { studyIdx: Number(studyIdx) },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+      setFavorite(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteFavorite = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.delete(API_URL + `studies/favorites/${studyIdx}`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      setFavorite(false);
     } catch (err) {
       console.log(err);
     }
@@ -276,60 +352,86 @@ const PostContent = () => {
       getStudyPost();
     }
   }, [session]);
-  //   const postComment = async () => {
-  //     try {
-  //       const response = await axios.post(
-  //         API_URL + `studies/${studyIdx}/comments`,
-  //         { type: type, comment: reply, parentIdx: parentIdx },
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${session.accessToken}`,
-  //           },
-  //         }
-  //       );
-  //       if (response.data.code === 1000) {
-  //         setReply("");
-  //         setParentIdx(null);
-  //         getStudyPost();
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   const patchComment = async () => {
-  //     try {
-  //       const res = await axios.patch(
-  //         API_URL + `lectures/posts/comments/${commentState.idx}`,
-  //         {
-  //           comment: reply,
-  //         },
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${session.accessToken}`,
-  //           },
-  //         }
-  //       );
-  //       if (res.data.code === 1000) {
-  //         getPostContent();
-  //       } else {
-  //         alert("수정에 실패하였습니다.");
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-
+  const postComment = async () => {
+    try {
+      const response = await axios.post(
+        API_URL + `studies/${studyIdx}/comments`,
+        { comment: reply, parentIdx: parentIdx },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+      if (response.data.code === 1000) {
+        setReply("");
+        setParentIdx(null);
+        getStudyPost();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const patchComment = async () => {
+    try {
+      const res = await axios.patch(
+        API_URL + `studies/comments/${commentState.idx}`,
+        {
+          comment: reply,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+      if (res.data.code === 1000) {
+        getStudyPost();
+        setReply("");
+      } else {
+        alert("수정에 실패하였습니다.");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleResume = () => {
+    setIsResumeModalOpen((prev) => !prev);
+  };
   return (
     <Container>
-      <PostContainer>
+      <PostContainer isMe={studyPost.isMe}>
         <PostInfo>
           <TagWrapper>
-            {/* <Tag background="#47d2d2">모집중</Tag>
-            {category && <Tag background="#c4c4c4">{studyPost.}</Tag>}{" "}
-            {region && <Tag background="#c4c4c4">{region.name}</Tag>} */}
+            <Tag background="#47d2d2">모집중</Tag>
+            {studyPost.category.length > 0 && <Tag background="#c4c4c4">{studyPost.category}</Tag>}
+            {studyPost.region.length > 0 && <Tag background="#c4c4c4">{studyPost.region}</Tag>}
           </TagWrapper>
+          <SettingWrapper>
+            <ShareIcon />
+            <FavoriteIcon
+              onClick={favorite ? deleteFavorite : appendFavorite}
+              fill={favorite ? "#47d2d2" : "#ffffff"}
+              stroke={favorite ? "#47d2d2" : "#aaaaaa"}
+            />
+            <MenuIcon />
+          </SettingWrapper>
         </PostInfo>
         <Content>
+          <StudyInfo>
+            <div className="info_row">
+              <span className="info_row_title">분야</span>
+              <span>{studyPost.category}</span>
+            </div>
+            <div className="info_row">
+              <span className="info_row_title">지역</span>
+              <span>{studyPost.region}</span>
+            </div>
+            <div className="info_row">
+              <span className="info_row_title">인원</span>
+              <span>{studyPost.count}명</span>
+            </div>
+          </StudyInfo>
           <HtmlBody dangerouslySetInnerHTML={{ __html: studyPost.body }} />
           <div className="lower">
             <div className="icon">
@@ -347,11 +449,13 @@ const PostContent = () => {
             </Link>
           </div>
           <Comments>
-            {/* <ShowComment commentList={studyPost.comments} setParentIdx={setParentIdx} getPost={getPostContent} /> */}
+            <ShowComment commentList={studyPost.comments} setParentIdx={setParentIdx} getPost={getStudyPost} />
           </Comments>
         </Content>
         <WriteComment>
-          <div></div>
+          <div>
+            {commentState.idx}에게{commentState.state}
+          </div>
           <InputComment
             type="text"
             id="input_comment"
@@ -361,21 +465,26 @@ const PostContent = () => {
             onKeyPress={(e) => {
               if (e.key === "Enter") {
                 if (commentState.state === "patch") {
-                  //   patchComment();
+                  patchComment();
                 } else {
-                  //   postComment();
+                  postComment();
                 }
               }
             }}
           ></InputComment>
           <WriteButton
             id="button_comment"
-            // onClick={reply.length !== 0 ? (commentState.state !== "patch" ? postComment : patchComment) : undefined}
+            onClick={reply.length !== 0 ? (commentState.state !== "patch" ? postComment : patchComment) : undefined}
           >
             댓글 쓰기
           </WriteButton>
+          {studyPost.isMe === "0" && <WriteButton onClick={handleResume}>지원서 작성</WriteButton>}
         </WriteComment>
       </PostContainer>
+      {studyPost.isMe === "1" && <ResumeList resumeList={studyPost.resumes} type={""} />}
+      {isResumeModalOpen && (
+        <ResumeModal isOpen={isResumeModalOpen} handleOpen={handleResume} postIdx={studyIdx} type={"study"} />
+      )}
     </Container>
   );
 };
