@@ -218,6 +218,7 @@ const PostContent = ({ postIdx }) => {
   const router = useRouter();
   const { lectureIdx, type, tabnum } = router.query;
   const { data: session, status } = useSession();
+  const [lectureName, setLectureName] = useState<string>("");
   const [detail, setDetail] = useState<Detail>({
     body: "",
     commentCount: "",
@@ -237,6 +238,18 @@ const PostContent = ({ postIdx }) => {
 
   const commentState = useAppSelector((state: RootState) => state.comment.value);
   const dispatch = useAppDispatch();
+  const getLectureName = async () => {
+    try {
+      const res = await axios.get(API_URL + `lectures/${lectureIdx}/name`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      setLectureName(res.data.result.name + " " + res.data.result.classNumber);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const getPostContent = async () => {
     try {
       const response = await axios.get(API_URL + `lectures/posts/${postIdx}`, {
@@ -303,8 +316,10 @@ const PostContent = ({ postIdx }) => {
 
   useEffect(() => {
     if (session?.user) {
+      getLectureName();
       getPostContent();
     }
+    console.log(lectureName);
   }, [session]);
 
   return (
@@ -378,7 +393,7 @@ const PostContent = ({ postIdx }) => {
           {type === "team" && detail.isMe === "0" && <WriteButton onClick={handleResume}>지원서 작성</WriteButton>}
         </WriteComment>
       </PostContainer>
-      {type === "team" && detail.isMe === "1" && <ResumeList resumeList={detail.resumes} type={""} />}
+      {type === "team" && detail.isMe === "1" && <ResumeList resumeList={detail.resumes} type={lectureName} />}
       {isResumeModalOpen && (
         <ResumeModal isOpen={isResumeModalOpen} handleOpen={handleResume} postIdx={postIdx} type={"lecture"} />
       )}
