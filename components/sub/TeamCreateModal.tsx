@@ -118,10 +118,9 @@ const MemberWrapper = styled.div`
   border: 1px solid black;
 `;
 
-const TeamCreateModal = ({ isOpen, handleOpen, member, type }) => {
+const TeamCreateModal = ({ isOpen, handleOpen, member, type, index }) => {
   const { data: session, status } = useSession();
   const [teamName, setTeamName] = useState<string>("");
-  const [body, setBody] = useState<string>("");
   const router = useRouter();
 
   const createTeam = async () => {
@@ -130,8 +129,9 @@ const TeamCreateModal = ({ isOpen, handleOpen, member, type }) => {
         API_URL + `teams`,
         {
           name: teamName,
-          type: "스터디",
+          type: type,
           members: member,
+          index: index,
         },
         {
           headers: {
