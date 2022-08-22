@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import TableComponent from "../../sub/Table/Table";
-import NoticeModal from "./TabContents/Input/NoticeInputModal";
 
 const Container = styled.div`
   width: 100%;
@@ -48,7 +47,6 @@ const Notice = () => {
   return (
     <Container>
       <TableComponent columns={columns} data={data} handleInputOpen={handleModalOpen} upload="업로드" />
-      {isOpen && <NoticeModal isOpen={isOpen} handleOpen={handleModalOpen} />}
     </Container>
   );
 };
