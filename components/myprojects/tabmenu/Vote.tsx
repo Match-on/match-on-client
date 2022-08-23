@@ -193,7 +193,11 @@ const Vote = () => {
       </TopSection>
       <Table>
         {voteList.map((v, i) => (
-          <VoteRow key={i} {...v} />
+          <Link href={`/myproject/${projectIdx}/${v.voteIdx}?tabNum=4`} key={i}>
+            <a>
+              <VoteRow key={i} {...v} />
+            </a>
+          </Link>
         ))}
       </Table>
       {isOpen && <VoteModal isOpen={isOpen} handleOpen={handleModalOpen} projectIdx={projectIdx} />}
