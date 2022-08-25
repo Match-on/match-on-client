@@ -114,7 +114,6 @@ const Table = styled.div`
   ::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
-  border: 1px solid black;
 `;
 
 const Vote = () => {
