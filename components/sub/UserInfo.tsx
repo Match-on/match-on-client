@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 import React from "react";
 
 import Setting from "../../public/topbarSVG/AccountSetting.svg";
@@ -75,11 +76,14 @@ const LowerText = styled.p`
 `;
 
 const UserInfo: React.FC<UserInformation> = (props) => {
+  const router = useRouter();
   const SignOut = () => {
     signOut({
       callbackUrl: "http://localhost:3000/",
     });
   };
+  console.log(props);
+
   return (
     <Container>
       <UpperDesign />
@@ -91,7 +95,12 @@ const UserInfo: React.FC<UserInformation> = (props) => {
           <LowerText>{props.email}</LowerText>
         </LowerDiv>
         <LowerDiv style={{ textAlign: "left", borderTop: "0.5px solid #aaaaaa" }}>
-          <LowerText style={{ width: "45%", justifyContent: "space-evenly" }}>
+          <LowerText
+            onClick={() => {
+              router.push("/setting");
+            }}
+            style={{ width: "45%", justifyContent: "space-evenly", cursor: "pointer" }}
+          >
             <Setting />
             계정설정
           </LowerText>
