@@ -7,6 +7,10 @@ import {
   parseISO,
 } from "date-fns";
 import SurveyIcon from "../../../public/componentSVG/survey/survey.svg";
+import DownloadIcon from "../../../public/myprojectSVG/Cloud_Download.svg";
+import ChatIcon from "../../../public/myprojectSVG/Chat_Circle.svg";
+import ShareIcon from "../../../public/myprojectSVG/Share_Export.svg";
+
 interface VoteProps {
   count: string;
   endTime: string;
@@ -54,6 +58,11 @@ const Column = styled.div<{ width: number }>`
   }
   .gray_color {
     color: #aaaaaa;
+  }
+  .icon_wrapper {
+    display: flex;
+    justify-content: center;
+    width: 3rem;
   }
   @media screen and (max-width: 700px) {
     display: none;
@@ -128,19 +137,21 @@ export const MeetingRow = (props: MeetingProps) => {
       new Date(),
       new Date(parseISO(props.createdAt))
     );
-    console.log(`${Math.floor(diff / 1440)} 일 전`);
     if (diff / 60 >= 1 && diff / 60 < 24) {
       return `${Math.floor(diff / 60)} 시간 전`;
     }
     if (diff / 60 >= 24) {
       return `${Math.floor(diff / 1440)} 일 전`;
     }
-    if (diff / 60 < 1) {
+    if (diff >= 1 && diff / 60 < 1) {
       return `${diff} 분 전`;
+    }
+    if (diff < 1) {
+      return `방금 전`;
     }
   };
   return (
-    <Row style={{ border: "1px solid black" }} onClick={getDateDifference}>
+    <Row>
       <TitleCol width={50}>
         <div className="col_title">
           {props.title}
@@ -149,8 +160,20 @@ export const MeetingRow = (props: MeetingProps) => {
         <div className="col_date">{getDateDifference()}</div>
       </TitleCol>
       <Column width={10}>{props.name}</Column>
-      <Column width={20}>{props.createdAt}</Column>
-      <Column width={20}>d</Column>
+      <Column width={20}>
+        {format(parseISO(props.createdAt), "yyyy.MM.dd")}
+      </Column>
+      <Column width={20}>
+        <div className="icon_wrapper">
+          <DownloadIcon />
+        </div>
+        <div className="icon_wrapper">
+          <ChatIcon />
+        </div>
+        <div className="icon_wrapper">
+          <ShareIcon />
+        </div>
+      </Column>
     </Row>
   );
 };
