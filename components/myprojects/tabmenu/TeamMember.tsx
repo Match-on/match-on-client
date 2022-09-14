@@ -5,6 +5,7 @@ import { API_URL } from "../../api/API";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import MenuIcon from "../../../public/componentSVG/Menu.svg";
+import ImageContainer from "../../sub/ImageContainer";
 interface MemoProps {
   memoIdx: number;
   memo: string;
@@ -25,7 +26,7 @@ const Container = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(25%, 250px));
   grid-auto-rows: 300px;
   justify-content: space-evenly;
-  align-content: space-between;
+  /* align-content: space-between; */
   /* grid-template-rows: 1fr 1fr 1fr 1fr; */
   background-color: #ffffff;
   overflow-y: scroll;
@@ -114,7 +115,7 @@ const AddContainer = styled.div`
   display: flex;
   font-size: 4rem;
   background-color: #ffffff;
-  box-shadow: 0px 0px 0.625em rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
   border-radius: 1.25rem;
   align-items: center;
   justify-content: center;
@@ -139,12 +140,11 @@ const TeamMember = (props) => {
         Authorization: `Bearer ${session.accessToken}`,
       },
     });
-    console.log(res.data.result);
-
     setTeamMember(res.data.result);
   };
   useEffect(() => {
     getTeamMember();
+    console.log(teamMember);
   }, []);
   return (
     <Container>
@@ -152,8 +152,17 @@ const TeamMember = (props) => {
         <MemberContainer key={idx}>
           <MemberBox>
             <div className="upper_section">
-              <div className="menu_section">{member.isMe === "1" && <MenuIcon style={{ cursor: "pointer" }} />}</div>
-              <div className="profile_img"></div>
+              <div className="menu_section">
+                {member.isMe === "1" && (
+                  <MenuIcon style={{ cursor: "pointer" }} />
+                )}
+              </div>
+              <div className="profile_img">
+                <ImageContainer
+                  size={[50, 50]}
+                  imageUrl={member.profileUrl === null ? "" : member.profileUrl}
+                />
+              </div>
               <div className="member_info">
                 <div className="member_name">{member.name}</div>
                 <div className="member_detail">dfsd{member.detail}</div>

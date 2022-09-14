@@ -46,7 +46,7 @@ const StyledModal = styled(Modal)`
 
   .bottom {
     display: flex;
-    margin-left: calc(100% - 11.5rem);
+    justify-content: flex-end;
   }
   padding: 5%;
 `;
@@ -310,7 +310,7 @@ const VoteModal = ({ isOpen, handleOpen, projectIdx }) => {
         </VoteSetting>
       </Contents>
       <div className="bottom">
-        <UploadButton possible={isPossible()} onClick={postVote}>
+        <UploadButton possible={isPossible()} onClick={isPossible() ? postVote : undefined}>
           등록
         </UploadButton>
       </div>

@@ -3,7 +3,21 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { NextPage } from "next";
-
+import Image from "next/image";
+const TopLogo = styled.div`
+  position: fixed;
+  width: 100%;
+  height: 8%;
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 2rem;
+`;
+const LoginDescription = styled.div`
+  width: 500px;
+  height: 211px;
+  border: 1px solid black;
+`;
 //main
 const LogIn = styled.div`
   position: fixed;
@@ -66,22 +80,33 @@ const Login: NextPage = () => {
   const router = useRouter();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await signIn("matchOn-credential", {
-      id,
-      password,
-      redirect: false,
-      callbackUrl: "https://localhost:3000/",
-    });
-    if (response.status === 200) {
-      await router.push("/main");
-    } else {
-      alert("로그인 실패");
+    try {
+      e.preventDefault();
+      const response = await signIn("matchOn-credential", {
+        id,
+        password,
+        redirect: false,
+        callbackUrl: "https://localhost:3000/",
+      });
+      console.log(response);
+
+      if (response.status === 200) {
+        console.log(response);
+        await router.push("/main");
+      } else {
+        alert("로그인 실패");
+      }
+    } catch (err) {
+      console.log(err.response.data);
     }
   };
 
   return (
     <LogIn>
+      <TopLogo>
+        <Image src="/LoginLogo.png" width={"112px"} height={"22px"} />
+      </TopLogo>
+      {/* <LoginDescription></LoginDescription> */}
       <LoginForm onSubmit={handleSubmit}>
         <LoginText>Login</LoginText>
         <InputContainer>

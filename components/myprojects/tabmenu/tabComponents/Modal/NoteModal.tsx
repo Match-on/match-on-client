@@ -198,6 +198,7 @@ const NoteModal = ({ isOpen, handleOpen, projectIdx, member }: Props) => {
   const { data: session, status } = useSession();
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [files, setFiles] = useState([]);
   const [todo, setTodo] = useState<Todo[]>([
     {
       isOpen: false,

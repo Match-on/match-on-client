@@ -272,7 +272,11 @@ const CalendarTab = () => {
     <Container>
       <CalendarContainer>
         <SearchContainer>
-          <input className="calendar_search_input" placeholder="검색" onChange={(e) => setKeyword(e.target.value)} />
+          <input
+            className="calendar_search_input"
+            placeholder="검색"
+            onChange={(e) => setKeyword(e.target.value)}
+          />
           <Glass style={{ cursor: "pointer" }} />
         </SearchContainer>
         <Calendar

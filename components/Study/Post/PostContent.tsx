@@ -54,6 +54,7 @@ interface StudyPost {
   region: string;
   isLike: string;
   count: number;
+  isRecruiting: string;
 }
 const Container = styled.div`
   width: 100%;
@@ -259,6 +260,7 @@ const PostContent = () => {
     region: "",
     isLike: "",
     count: null,
+    isRecruiting: "",
   });
   const [favorite, setFavorite] = useState<boolean>(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState<boolean>(false);
@@ -365,7 +367,11 @@ const PostContent = () => {
       <PostContainer isMe={studyPost.isMe}>
         <PostInfo>
           <TagWrapper>
-            <Tag background="#47d2d2">모집중</Tag>
+            {studyPost.isRecruiting === "1" ? (
+              <Tag background="#47d2d2">모집중</Tag>
+            ) : (
+              <Tag background="#c4c4c4">모집완료</Tag>
+            )}
             {studyPost.category.length > 0 && <Tag background="#c4c4c4">{studyPost.category}</Tag>}
             {studyPost.region.length > 0 && <Tag background="#c4c4c4">{studyPost.region}</Tag>}
           </TagWrapper>
@@ -440,10 +446,12 @@ const PostContent = () => {
           >
             댓글 쓰기
           </WriteButton>
-          {studyPost.isMe === "0" && <WriteButton onClick={handleResume}>지원서 작성</WriteButton>}
+          {studyPost.isMe === "0" && studyPost.isRecruiting === "1" && (
+            <WriteButton onClick={handleResume}>지원서 작성</WriteButton>
+          )}
         </WriteComment>
       </PostContainer>
-      {studyPost.isMe === "1" && <ResumeList resumeList={studyPost.resumes} type={""} />}
+      {studyPost.isMe === "1" && <ResumeList resumeList={studyPost.resumes} type={"스터디"} index={Number(studyIdx)} />}
       {isResumeModalOpen && (
         <ResumeModal isOpen={isResumeModalOpen} handleOpen={handleResume} postIdx={studyIdx} type={"study"} />
       )}

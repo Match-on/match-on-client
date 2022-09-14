@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 import styled from "@emotion/styled";
 import FreeBoard from "../../../components/ClassBoard/TabContents/FreeBoard";
 import InfoBoard from "../../../components/ClassBoard/TabContents/InfoBoard";
 import RecruitBoard from "../../../components/ClassBoard/TabContents/RecruitBoard";
+import axios from "axios";
+import { API_URL } from "../../../components/api/API";
+import { useSession } from "next-auth/react";
 
 const MyprojectPage = styled.div`
   position: absolute;
@@ -107,18 +110,33 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
 
 export default function ClassDetail() {
   const router = useRouter();
-  console.log("router", router.query);
+  const { data: session, status } = useSession();
 
   const { lectureIdx, tabnum } = router.query; //class_id로 쿼리 던져서 정보 얻기
   const [tab, setTab] = useState(Number(tabnum) || 0);
-
+  const [lectureName, setLectureName] = useState<string>("");
+  const getLectureName = async () => {
+    try {
+      const res = await axios.get(API_URL + `lectures/${lectureIdx}/name`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      setLectureName(res.data.result.name + " " + res.data.result.classNumber);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleTabMenu = (index) => {
     setTab(index);
   };
+  useEffect(() => {
+    getLectureName();
+  }, []);
   return (
     <MyprojectPage>
       <Header>
-        <Title>{lectureIdx}</Title>
+        <Title>{lectureName}</Title>
       </Header>
       <MainContent>
         <Tab>

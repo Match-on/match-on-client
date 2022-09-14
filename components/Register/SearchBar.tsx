@@ -9,12 +9,14 @@ interface univData {
   univIdx: number;
   name: string;
   domain: string;
+  region: string;
+  campus: string | null;
+  address: string;
 }
 
 const customStyles = {
   overlay: {
-    width: "40%",
-    minWidth: "600px",
+    width: "800px",
     height: "85%",
     margin: "auto",
     backgroundColor: "white",
@@ -22,9 +24,10 @@ const customStyles = {
     border: "3px solid #47d2d2",
   },
   content: {
+    width: "750px",
     border: "none",
-    left: "4%", //30px
-    right: "4%",
+    left: "20px", //30px
+    right: "20px",
     top: "1%",
     bottom: "3%",
   },
@@ -92,11 +95,17 @@ const RowGroup = styled.div`
   overflow-y: scroll;
   width: 100%;
   height: calc(98% - 2rem);
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+  ::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 `;
 const ResultRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 2fr;
-  grid-template-rows: 20px;
+  /* grid-template-rows: 20px; */
+  min-height: 30px;
   font-size: 0.9rem;
   margin: 5px;
   &:hover {
@@ -153,9 +162,14 @@ const UniversitySearchBar = ({ isOpen, handleOpen, university, setUniversity }) 
     };
   }, [keyword]);
 
-  const UniversitySelect = (name, idx) => {
-    university["name"] = name;
+  const UniversitySelect = (name, campus, idx, domain) => {
+    if (campus === null) {
+      university["name"] = name;
+    } else {
+      university["name"] = name + " " + campus;
+    }
     university["idx"] = idx;
+    university["domain"] = domain;
     handleOpen();
   };
   return (
@@ -167,7 +181,7 @@ const UniversitySearchBar = ({ isOpen, handleOpen, university, setUniversity }) 
         </CloseButton>
       </ModalHeader>
       <SearchContainer>
-        <Search onChange={onChangeKeyword} />
+        <Search placeholder="학교명을 검색하세요." onChange={onChangeKeyword} />
         <SearchButton onClick={() => setUniversity("ccc")}>학교 검색</SearchButton>
         {/*기능 추가해야 함 fetch하면 될듯*/}
       </SearchContainer>
@@ -178,12 +192,19 @@ const UniversitySearchBar = ({ isOpen, handleOpen, university, setUniversity }) 
           <div>주소</div>
         </ResultHeader>
         <RowGroup>
-          {keyItems.length === 0 ? (
+          {keyItems.length === 0 && keyword.length > 0 ? (
             <div>등록되어 있지 않은 학교입니다.</div>
           ) : (
             keyItems.map((univ, i) => (
-              <ResultRow key={`searchUniv-${i}`} onClick={() => UniversitySelect(univ.name, univ.univIdx)}>
-                {univ.name}
+              <ResultRow
+                key={`searchUniv-${i}`}
+                onClick={() => UniversitySelect(univ.name, univ.campus, univ.univIdx, univ.domain)}
+              >
+                <div>
+                  {univ.name} {univ.campus}
+                </div>
+                <div>{univ.region}</div>
+                <div>{univ.address}</div>
               </ResultRow>
             ))
           )}

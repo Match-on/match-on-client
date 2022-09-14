@@ -14,6 +14,7 @@ interface Resume {
 interface ResumeProps {
   resumeList: Resume[] | null;
   type: string;
+  index: number;
 }
 
 const ListContainer = styled.div`
@@ -190,6 +191,7 @@ const ResumeList = (props: ResumeProps) => {
           handleOpen={() => setTeamCreating((prev) => !prev)}
           member={teamMember}
           type={props.type}
+          index={props.index}
         />
       )}
     </ListContainer>

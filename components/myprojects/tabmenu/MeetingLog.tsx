@@ -158,7 +158,14 @@ const MeetingLog = ({ member }) => {
       </TopSection>
       <Table>
         {noteList.map((note, idx) => (
-          <MeetingRow key={idx} {...note} />
+          <Link
+            href={`/myproject/${projectIdx}/${note.noteIdx}?tabNum=1`}
+            key={idx}
+          >
+            <a>
+              <MeetingRow {...note} />
+            </a>
+          </Link>
         ))}
       </Table>
       {isOpen && (

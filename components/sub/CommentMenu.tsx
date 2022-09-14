@@ -63,7 +63,7 @@ const CommentMenu = (props) => {
     };
   }, [menuRef]);
 
-  const deleteComment = async () => {
+  const deleteLectureComment = async () => {
     try {
       const res = await axios.delete(API_URL + `lectures/posts/comments/${props.commentIdx}`, {
         headers: {
@@ -90,7 +90,7 @@ const CommentMenu = (props) => {
     <MenuSelect isOpen={openMenu} ref={menuRef}>
       {openMenu && (
         <MenuOption>
-          <OptionList position="left" onClick={deleteComment}>
+          <OptionList position="left" onClick={deleteLectureComment}>
             삭제하기
           </OptionList>
           <OptionList position="right" onClick={() => onPatchComment()}>

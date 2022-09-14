@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import Image from "next/image";
 import { useAppSelector } from "../../src/hooks/hooks";
 import { RootState } from "../../src/redux/store";
+import ImageContainer from "../../components/sub/ImageContainer";
 
 const SettingWrapper = styled.div`
   width: 100%;
@@ -103,9 +104,9 @@ const profile = () => {
       <Title>내 프로필</Title>
       <SubTitle>프로필 설정</SubTitle>
       <ProfileContainer>
-        <span className="profile_img">
-          <Image src={user.profileUrl === null ? "/user.png" : user.profileUrl} width={80} height={80} />
-        </span>
+        <div style={{ margin: "0 3rem" }}>
+          <ImageContainer size={[100, 100]} mode="change" imageUrl="" />
+        </div>
         <div className="profile_info">
           <div className="info_left">
             <div style={{ margin: "0.5rem" }}>
@@ -127,23 +128,30 @@ const profile = () => {
           <div className="account_content"></div>
         </div>
         <div className="account_row">
-          <div className="account_title">아이디</div> <div className="account_content">{user.id}</div>
+          <div className="account_title">아이디</div>{" "}
+          <div className="account_content">{user.id}</div>
         </div>
         <div className="account_row">
-          <div className="account_title">닉네임</div> <div className="account_content">{user.nickname}</div>
+          <div className="account_title">닉네임</div>{" "}
+          <div className="account_content">{user.nickname}</div>
         </div>
         <div className="account_row">
           <div className="account_title">소속 대학</div>
-          <div className="account_content">{user.univName === null ? "없음" : user.univName}</div>
+          <div className="account_content">
+            {user.univName === null ? "없음" : user.univName}
+          </div>
         </div>
         <div className="account_row">
-          <div className="account_title">이메일</div> <div className="account_content">{user.email}</div>
+          <div className="account_title">이메일</div>{" "}
+          <div className="account_content">{user.email}</div>
         </div>
         <div className="account_row">
-          <div className="account_title">전화번호</div> <div className="account_content">{user.phone}</div>
+          <div className="account_title">전화번호</div>{" "}
+          <div className="account_content">{user.phone}</div>
         </div>
         <div className="account_row">
-          <div className="account_title">비밀번호</div> <div className="account_content"></div>
+          <div className="account_title">비밀번호</div>{" "}
+          <div className="account_content"></div>
         </div>
       </AccountWrapper>
       <SubTitle>계정설정</SubTitle>

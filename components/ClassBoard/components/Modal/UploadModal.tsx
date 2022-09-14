@@ -142,7 +142,7 @@ const UploadModal = ({ isOpen, handleOpen, lectureIdx, type }) => {
       </Header>
       <Contents>
         <ContentInput placeholder="제목" onChange={(e) => setTitle(e.target.value)} />
-        <EditorForm setBody={setBody} data={null} clickable={true} />
+        <EditorForm setBody={setBody} data={""} clickable={true} />
       </Contents>
       <div className="bottom">
         {type !== "team" && (

@@ -8,6 +8,7 @@ import { API_URL } from "../../../components/api/API";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import VotePost from "../../../components/myprojects/tabmenu/TabContents/VotePost";
+import MeetPost from "../../../components/myprojects/tabmenu/TabContents/MeetPost";
 
 interface MemberInformation {
   memberIdx: number;
@@ -96,7 +97,8 @@ const TabMenu = styled.a<{ clicked: boolean }>`
   font-weight: 400;
   background-color: ${(props) => (props.clicked ? "#ffffff" : "#F1F7F7")};
   color: ${(props) => (props.clicked ? "#000000" : "#aaaaaa")};
-  border-bottom: ${(props) => (props.clicked ? "#ffffff" : "0.15em solid #47d2d2")};
+  border-bottom: ${(props) =>
+    props.clicked ? "#ffffff" : "0.15em solid #47d2d2"};
   border-top: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
   border-left: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
   border-right: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
@@ -167,14 +169,17 @@ export default function ProjectPost() {
       <MainContent>
         <Tab>
           {tabContArr.map((v, index) => (
-            <Link href={`/myproject/${projectIdx}?tabNum=${index + 1}`} key={`tab=${index}`}>
+            <Link
+              href={`/myproject/${projectIdx}?tabNum=${index + 1}`}
+              key={`tab=${index}`}
+            >
               <TabMenu clicked={index === tab - 1}>{v.tabTitle}</TabMenu>
             </Link>
           ))}
         </Tab>
         <Container>
-          {/* {tab === 1 && <MeetingLog />}
-          {tab === 2 && <VedioConference />}
+          {tab === 1 && <MeetPost />}
+          {/* {tab === 2 && <VedioConference />}
           {tab === 3 && <Drive />} */}
           {tab === 4 && <VotePost />}
           {/* {tab === 5 && <Notice />}

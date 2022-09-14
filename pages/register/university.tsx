@@ -11,6 +11,8 @@ import { ref, getDownloadURL, uploadBytes, deleteObject } from "firebase/storage
 import { v4 as uuidv4 } from "uuid";
 import ChangeImg from "../../public/register/changeImg.svg";
 import DeleteImg from "../../public/register/deleteImg.svg";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 interface FormValue {
   id: string;
@@ -183,6 +185,8 @@ const BoldText = styled.div`
 const yearValue = Array.from(new Array(10), (x, i) => Number(new Date().getFullYear()) - i);
 
 const SignUpForm: FC = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -199,12 +203,12 @@ const SignUpForm: FC = () => {
     data["profileUrl"] = displayImage;
     setResult(JSON.stringify(data));
   };
-  const [university, setUniversity] = useState({ name: "", idx: null });
+  const [university, setUniversity] = useState({ name: "", idx: null, domain: "" });
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
 
   const [id, setId] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
-
+  const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [verify, setVerify] = useState<string>("");
   const [emailAuth, setEmailAuth] = useState<boolean>(false);
@@ -215,23 +219,29 @@ const SignUpForm: FC = () => {
   const [emailAgree, setEmailAgree] = useState<boolean>(false);
   const [serviceAgree, setServiceAgree] = useState<boolean>(false);
   const [privacyAgree, setPrivacyAgree] = useState<boolean>(false);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
 
   const [imageUpload, setImageUpload] = useState(null);
   const [displayImage, setDisplayImage] = useState<string>(null);
   const [imageRef, setImageRef] = useState(null);
+  const [postImage, setPostImage] = useState<string>("");
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
   };
   const SendCertification = () => {
-    document.getElementById("sendEmail").setAttribute("readOnly", "readOnly");
-    axios
-      .post(API_URL + "users/code", { email: email })
-      .then((res) => {
-        console.log("res", res);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
+    if (email.split("@")[1].split(".")[0] === university.domain) {
+      document.getElementById("sendEmail").setAttribute("readOnly", "readOnly");
+      axios
+        .post(API_URL + "users/code", { email: email })
+        .then((res) => {
+          console.log("res", res);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    } else {
+      alert("학교 이메일을 다시 확인해주세요.");
+    }
   };
   const VerifyCertification = () => {
     axios
@@ -250,7 +260,7 @@ const SignUpForm: FC = () => {
     if (type === "id") {
       axios.get(API_URL + "users/check", { params: { id: id } }).then((res) => {
         if (res.data.isSuccess) {
-          alert("처음 ");
+          alert("사용 가능한 아이디입니다.");
         } else {
           alert("중복된 아이디입니다.");
         }
@@ -259,9 +269,9 @@ const SignUpForm: FC = () => {
     if (type === "nickname") {
       axios.get(API_URL + "users/check", { params: { nickname: nickname } }).then((res) => {
         if (res.data.isSuccess) {
-          alert("처음 ");
+          alert("사용 가능한 닉네임입니다.");
         } else {
-          alert("중복된 아이디입니다.");
+          alert("중복된 닉네임입니다.");
         }
       });
     }
@@ -278,7 +288,7 @@ const SignUpForm: FC = () => {
 
   const storeImage = async () => {
     if (imageUpload === null) return;
-    const imageRef = ref(storage, `profile/${uuidv4()}`);
+    const imageRef = ref(storage, `profile/${postImage}`);
     await setImageRef(imageRef);
     uploadBytes(imageRef, imageUpload).then(() => {
       getDownloadURL(imageRef).then((url) => {
@@ -286,10 +296,10 @@ const SignUpForm: FC = () => {
       }); //그냥 올리고 store안하고 삭제하면 오류 뜸.
     });
   };
-  const onImageChange = (event) => {
+  const onImageChange = async (event) => {
     if (imageRef !== null) {
       console.log("imageRef", imageRef);
-      clearImage();
+      await clearImage();
     }
     if (event.target.value) {
       const {
@@ -299,6 +309,7 @@ const SignUpForm: FC = () => {
 
       const theImage = files[0];
       setImageUpload(theImage);
+      setPostImage(uuidv4());
       const reader: FileReader = new FileReader();
       reader.onloadend = () => {
         const fileUrl = reader.result.toString();
@@ -311,7 +322,7 @@ const SignUpForm: FC = () => {
   const clearImage = async () => {
     setImageUpload(null);
     setDisplayImage(null);
-    await deleteObject(imageRef).catch((err) => {
+    deleteObject(imageRef).catch((err) => {
       alert(err);
     });
     setImageRef(null);
@@ -319,11 +330,34 @@ const SignUpForm: FC = () => {
 
   useEffect(() => {
     storeImage();
+    // console.log(imageUpload);
+    // console.log(imageRef);
+    console.log(displayImage);
   }, [imageUpload]);
+  const SignUpUser = async () => {
+    try {
+      const res = await axios.post(API_URL + `users`, {
+        univIdx: university.idx,
+        id: id,
+        email: email,
+        password: firstPW,
+        name: name,
+        nickname: nickname,
+        profileUrl: displayImage,
+        countryCode: "+82",
+        phone: "010-1234-5678",
+        birth: "1998-05-21",
+        emailAgree: emailAgree,
+        enrolledAt: 2017,
+      });
+      console.log(res);
 
-  useEffect(() => {
-    console.log("err", errors);
-  }, [errors]);
+      router.push("/login");
+    } catch (err) {
+      console.log(err);
+      console.log(err.response.data);
+    }
+  };
 
   //https://codingsalon.tistory.com/62 스타일 지정
   return (
@@ -390,12 +424,11 @@ const SignUpForm: FC = () => {
               autoComplete="off"
               onChange={(e) => setEmail(e.currentTarget.value)}
             />
-            {"email" in errors || !email ? (
-              <ConfirmButton style={{ background: "#aaaaaa" }}>인증번호 전송</ConfirmButton>
+            {"email" in errors || email.length === 0 ? (
+              <ConfirmButton>인증번호 전송</ConfirmButton>
             ) : (
               <ConfirmButton onClick={SendCertification}>인증번호 전송</ConfirmButton>
             )}
-            {/* <ConfirmButton onClick={SendCertification}>인증번호 전송</ConfirmButton> */}
           </InputButton>
           {errors.email && errors.email.type === "required" && (
             <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
@@ -440,9 +473,9 @@ const SignUpForm: FC = () => {
             autoComplete="new-password"
             onChange={(e) => setFirstPW(e.target.value)}
           />
-          {errors.password && errors.password.type === "required" && (
+          {/* {errors.password && errors.password.type === "required" && (
             <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
-          )}
+          )} */}
           <RegisterInput type="password" placeholder="비밀번호 확인" onChange={(e) => setSecondPW(e.target.value)} />
           {secondPW !== "" && firstPW !== secondPW && <ErrorMessage>비밀번호가 다릅니다.</ErrorMessage>}
           <RegisterInput
@@ -450,6 +483,7 @@ const SignUpForm: FC = () => {
               required: true,
             })}
             placeholder="이름"
+            onChange={(e) => setName(e.target.value)}
           />
           {errors.name && errors.name.type === "required" && (
             <ErrorMessage>필수로 입력해야 하는 항목입니다.</ErrorMessage>
@@ -509,7 +543,6 @@ const SignUpForm: FC = () => {
               개인정보 수집 및 이용 동의 (필수)
             </Message>
           </div>
-          {result}
         </FormRight>
         {searchOpen && (
           <UniversitySearchBar
@@ -525,7 +558,7 @@ const SignUpForm: FC = () => {
         form="register-form"
         // disabled={!privacyAgree || !serviceAgree || Boolean(Object.keys(errors).length)}
         agree={privacyAgree && serviceAgree && !Object.keys(errors).length}
-        onClick={() => console.log(email)}
+        onClick={() => SignUpUser()}
       >
         회원가입
       </RegisterButton>

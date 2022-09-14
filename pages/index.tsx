@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
+import Image from "next/image";
 
 const OnboardingPage = styled.div`
   width: 100%;
@@ -12,7 +13,9 @@ const TopLogo = styled.div`
   width: 100%;
   height: 8%;
   top: 0;
-  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  padding-left: 2rem;
 `;
 const Container = styled.div`
   position: fixed;
@@ -67,7 +70,9 @@ const Index: NextPage = () => {
 
   return (
     <OnboardingPage>
-      <TopLogo>Logo 예정</TopLogo>
+      <TopLogo>
+        <Image src="/LoginLogo.png" width={"112px"} height={"22px"} />
+      </TopLogo>
       <Container>
         <MainText>
           <div>협업툴의 모든 것</div>
@@ -78,8 +83,16 @@ const Index: NextPage = () => {
             <p>Match On에서 당신의 협업 활동을 편리하게 관리하세요.</p>
           </SubText>
         </MainText>
-        <div style={{ display: "flex", justifyContent: "space-around", width: "32rem" }}>
-          <SignButton onClick={() => router.push("/register")}>회원가입</SignButton>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            width: "32rem",
+          }}
+        >
+          <SignButton onClick={() => router.push("/register")}>
+            회원가입
+          </SignButton>
           <SignButton onClick={() => router.push("/login")}>로그인</SignButton>
         </div>
       </Container>

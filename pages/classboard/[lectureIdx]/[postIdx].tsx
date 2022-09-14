@@ -1,6 +1,9 @@
 import styled from "@emotion/styled";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { API_URL } from "../../../components/api/API";
 import PostContent from "../../../components/ClassBoard/components/PostContent";
 
 const MyprojectPage = styled.div`
@@ -100,22 +103,38 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
   );
 };
 const PostDetail = () => {
+  const { data: session, status } = useSession();
   const router = useRouter();
+
   const { lectureIdx, postIdx, tabnum } = router.query;
-  console.log(router.query);
+  const [lectureName, setLectureName] = useState<string>("");
+  const getLectureName = async () => {
+    try {
+      const res = await axios.get(API_URL + `lectures/${lectureIdx}/name`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      setLectureName(res.data.result.name + " " + res.data.result.classNumber);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const [tab, setTab] = useState(0);
   useEffect(() => {
     setTab(Number(tabnum));
   }, [tabnum]);
-
+  useEffect(() => {
+    getLectureName();
+  }, []);
   const handleTabMenu = (index) => {
     router.push(`/classboard/${lectureIdx}?tabnum=${index}`);
   };
   return (
     <MyprojectPage>
       <Header>
-        <Title>{postIdx}</Title>
+        <Title>{lectureName}</Title>
       </Header>
       <MainContent>
         <Tab>

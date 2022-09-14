@@ -250,7 +250,6 @@ const Study: NextPage = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      console.log(response.data.result);
       setFavoriteStudy(response.data.result);
     } catch (err) {
       alert("수업 데이터 로딩 실패");

@@ -126,7 +126,12 @@ const Vote = () => {
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<string>("latest");
   const [keyword, setKeyword] = useState<string>("");
-  const [params, setParams] = useState({ type: "free", sort: "latest", keyword: "", cursor: null });
+  const [params, setParams] = useState({
+    type: "free",
+    sort: "latest",
+    keyword: "",
+    cursor: null,
+  });
 
   const handleModalOpen = () => {
     setIsOpen((prev) => !prev);
@@ -168,7 +173,7 @@ const Vote = () => {
   return (
     <Container>
       <TopSection>
-        <InputFilter type="text" placeholder="수업명을 검색하세요" />
+        <InputFilter type="text" placeholder="검색" />
         <div className="right-section">
           <SortSelect onClick={() => setFilterOpen((prev) => !prev)}>
             <span>분류 :</span>
@@ -199,7 +204,13 @@ const Vote = () => {
           </Link>
         ))}
       </Table>
-      {isOpen && <VoteModal isOpen={isOpen} handleOpen={handleModalOpen} projectIdx={projectIdx} />}
+      {isOpen && (
+        <VoteModal
+          isOpen={isOpen}
+          handleOpen={handleModalOpen}
+          projectIdx={projectIdx}
+        />
+      )}
     </Container>
   );
 };

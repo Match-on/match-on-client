@@ -393,7 +393,9 @@ const PostContent = ({ postIdx }) => {
           {type === "team" && detail.isMe === "0" && <WriteButton onClick={handleResume}>지원서 작성</WriteButton>}
         </WriteComment>
       </PostContainer>
-      {type === "team" && detail.isMe === "1" && <ResumeList resumeList={detail.resumes} type={lectureName} />}
+      {type === "team" && detail.isMe === "1" && (
+        <ResumeList resumeList={detail.resumes} type={lectureName} index={Number(lectureIdx)} />
+      )}
       {isResumeModalOpen && (
         <ResumeModal isOpen={isResumeModalOpen} handleOpen={handleResume} postIdx={postIdx} type={"lecture"} />
       )}

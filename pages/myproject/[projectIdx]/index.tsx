@@ -103,7 +103,8 @@ const TabMenu = styled.div<{ clicked: boolean }>`
   font-weight: 400;
   background-color: ${(props) => (props.clicked ? "#ffffff" : "#F1F7F7")};
   color: ${(props) => (props.clicked ? "#000000" : "#aaaaaa")};
-  border-bottom: ${(props) => (props.clicked ? "#ffffff" : "0.15em solid #47d2d2")};
+  border-bottom: ${(props) =>
+    props.clicked ? "#ffffff" : "0.15em solid #47d2d2"};
   border-top: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
   border-left: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
   border-right: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
@@ -148,13 +149,16 @@ export default function ProjectDetail() {
   });
 
   const { data: session, status } = useSession();
-
-  const [tab, setTab] = useState(0);
   const router = useRouter();
   const { projectIdx, tabNum } = router.query;
+  const [tab, setTab] = useState(0);
+
   const handleTabMenu = (index) => {
     setTab(index + 1);
   };
+  useEffect(() => {
+    setTab(Number(tabNum));
+  }, [tabNum]);
 
   useEffect(() => {
     if (session?.user) {
@@ -166,7 +170,6 @@ export default function ProjectDetail() {
           },
         })
         .then((res) => {
-          console.log(res.data.result);
           setTeamInfo(res.data.result);
         })
         .catch((err) => alert("팀 데이터 로딩 실패"));
@@ -182,18 +185,23 @@ export default function ProjectDetail() {
       <MainContent>
         <Tab>
           {tabContArr.map((v, index) => (
-            <TabItem title={v.tabTitle} index={index} tab={tab} handleTabMenu={handleTabMenu} key={`tab=${index}`} />
+            <TabItem
+              title={v.tabTitle}
+              index={index}
+              tab={tab}
+              handleTabMenu={handleTabMenu}
+              key={`tab=${index}`}
+            />
           ))}
         </Tab>
         <Container>
           {tab === 0 && <TabMain />}
-          {tab === 1 && <MeetingLog />}
+          {tab === 1 && <MeetingLog member={teamInfo.members} />}
           {tab === 2 && <VedioConference />}
           {tab === 3 && <Drive />}
           {tab === 4 && <Vote />}
           {tab === 5 && <Notice />}
           {tab === 6 && <CalendarTab />}
-          {/* {tab === 7 && <TeamMember teamIdx={teamInfo.teamIdx} member={teamInfo.members} />} */}
           {tab === 7 && <TeamMember />}
         </Container>
       </MainContent>

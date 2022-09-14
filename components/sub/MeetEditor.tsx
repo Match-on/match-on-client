@@ -8,8 +8,9 @@ import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 
 const EditorContainer = styled.div<{ clickable: string }>`
-  height: calc(100%);
+  height: 500px;
   pointer-events: ${(props) => props.clickable};
+  margin-bottom: 1rem;
   .wrapper-class {
     display: flex;
     flex-direction: column;
@@ -29,9 +30,9 @@ const EditorContainer = styled.div<{ clickable: string }>`
       display: none; /* Chrome, Safari, Opera */
     }
   }
-  .toolbar-class {
+  /* .toolbar-class {
     display: none;
-  }
+  } */
 `;
 //ReferenceError: window is not defined 해결법?
 const Editor = dynamic<EditorProps>(
@@ -39,7 +40,7 @@ const Editor = dynamic<EditorProps>(
   { ssr: false }
 );
 
-const EditorForm = ({
+const MeetEditor = ({
   setBody,
   data,
   clickable,
@@ -81,14 +82,13 @@ const EditorForm = ({
         // 툴바 주위에 적용된 클래스
         toolbarClassName="toolbar-class"
         // 툴바 설정
-        // toolbar={{
-        //   // inDropdown: 해당 항목과 관련된 항목을 드롭다운으로 나타낼것인지
-        //   list: { inDropdown: true },
-        //   textAlign: { inDropdown: true },
-        //   link: { inDropdown: true },
-        //   history: { inDropdown: false },
-        // }}
-        toolbar={{}}
+        toolbar={{
+          // inDropdown: 해당 항목과 관련된 항목을 드롭다운으로 나타낼것인지
+          list: { inDropdown: true },
+          textAlign: { inDropdown: true },
+          link: { inDropdown: true },
+          history: { inDropdown: false },
+        }}
         placeholder={placeholder}
         // 한국어 설정
         localization={{
@@ -103,6 +103,6 @@ const EditorForm = ({
   );
 };
 
-export default EditorForm;
+export default MeetEditor;
 
 //https://haranglog.tistory.com/12
