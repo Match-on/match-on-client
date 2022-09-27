@@ -193,7 +193,7 @@ const ColorOptions = [
   "#652cb3",
 ];
 
-const CalendarModal = ({ isOpen, handleOpen }) => {
+const CalendarModal = ({ isOpen, handleOpen, isPatch }) => {
   const { data: session, status } = useSession();
 
   const [startDate, setStartDate] = useState(new Date());
@@ -236,9 +236,20 @@ const CalendarModal = ({ isOpen, handleOpen }) => {
     }
   };
 
-  const ExampleCustomInput = (props: React.HTMLProps<HTMLDivElement>, ref: React.Ref<HTMLInputElement>) => {
+  const ExampleCustomInput = (
+    props: React.HTMLProps<HTMLDivElement>,
+    ref: React.Ref<HTMLInputElement>
+  ) => {
     return (
-      <div {...props} style={{ width: "120px", height: "100%", color: "#47d2d2", marginLeft: "calc(100% - 120px)" }}>
+      <div
+        {...props}
+        style={{
+          width: "120px",
+          height: "100%",
+          color: "#47d2d2",
+          marginLeft: "calc(100% - 120px)",
+        }}
+      >
         {props.value}
       </div>
     );
@@ -276,7 +287,12 @@ const CalendarModal = ({ isOpen, handleOpen }) => {
     console.log(startDate);
   }, [values, startDate]);
   return (
-    <StyledModal isOpen={isOpen} onRequesClose={handleOpen} ariaHideApp={false} style={customStyles}>
+    <StyledModal
+      isOpen={isOpen}
+      onRequesClose={handleOpen}
+      ariaHideApp={false}
+      style={customStyles}
+    >
       <Header>
         <Title onClick={() => console.log(values)}>일정 추가</Title>
         <CloseButton onClick={handleOpen}>
@@ -284,7 +300,10 @@ const CalendarModal = ({ isOpen, handleOpen }) => {
         </CloseButton>
       </Header>
       <Contents>
-        <ContentInput placeholder="제목" onChange={(e) => setValues({ ...values, title: e.target.value })} />
+        <ContentInput
+          placeholder="제목"
+          onChange={(e) => setValues({ ...values, title: e.target.value })}
+        />
         <ContentBox style={{ padding: "5px 0" }}>
           <DateBox style={{ borderRight: "0.2px solid #dcdcdc" }}>
             <div className="date_text">시작일</div>
@@ -303,11 +322,19 @@ const CalendarModal = ({ isOpen, handleOpen }) => {
           </div>
         </ColorRow>
         <div style={{ width: "100%", height: "calc(100% - 9rem)" }}>
-          <EditorForm setBody={setBody} data={""} clickable={!colorClick} placeholder="일정을 입력하세요." />
+          <EditorForm
+            setBody={setBody}
+            data={""}
+            clickable={!colorClick}
+            placeholder="일정을 입력하세요."
+          />
         </div>
       </Contents>
       <div className="modal_bottom">
-        <CompleteButton onClick={isPostPossible() ? postSchedule : undefined} isPossible={isPostPossible()}>
+        <CompleteButton
+          onClick={isPostPossible() ? postSchedule : undefined}
+          isPossible={isPostPossible()}
+        >
           완료
         </CompleteButton>
       </div>
