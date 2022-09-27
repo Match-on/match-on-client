@@ -13,7 +13,7 @@ interface NoteProps {
   title: string;
   name: string;
   createdAt: string;
-  isNew: string;
+  isNew: number;
   commentCount: string;
   files: string[];
 }
@@ -141,7 +141,7 @@ const MeetingLog = ({ member }) => {
       console.log(response.data.result);
       setNoteList(response.data.result);
     } catch (err) {
-      console.log(err);
+      console.log(err.response);
     }
   };
 

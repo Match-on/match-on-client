@@ -1,7 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import CalendarTabMain from "./components/Calendar";
+import CalendarTeamMain from "./components/Calendar";
 import MemberProfile from "./components/MemberProfile";
+import axios from "axios";
+import { API_URL } from "../../../api/API";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+
+interface Noti {
+  index: number;
+  type: string;
+  writer: string;
+  createdAt: string;
+}
+interface Schedule {
+  scheduleIdx: number;
+  title: string;
+  startTime: string;
+  endTime: string;
+  color: string;
+  member: { name: string };
+}
+interface dDay {
+  scheduleIdx: number;
+  title: string;
+  startTime: string;
+  dDay: string;
+}
+interface Member {
+  memberIdx: number;
+  profileUrl: string;
+  name: string;
+  detail: string;
+  isMe: string;
+  memos: { memoIdx: number; memo: string }[];
+}
+interface MainProps {
+  noti: Noti[];
+  schedule: { month: Schedule[]; today: Schedule[] };
+  dDay: dDay[];
+  members: Member[];
+}
 
 const Container = styled.div`
   display: flex;
@@ -14,12 +53,12 @@ const LeftContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 67%;
+  width: 72%;
   height: 100%;
 `;
 
 const RightContainer = styled.div`
-  width: 33%;
+  width: 28%;
   margin-left: 2%;
   height: 100%;
 `;
@@ -32,12 +71,12 @@ const AlarmDday = styled.div`
 `;
 
 const RecentAlarm = styled.div`
-  width: 80%;
+  width: 75%;
   height: 100%;
 `;
 
 const Dday = styled.div`
-  width: 17%;
+  width: 22%;
   height: 100%;
 `;
 
@@ -53,7 +92,32 @@ const WhiteBox = styled.div`
   height: 95%;
 `;
 
-const Tabmain = () => {
+const TeamMain = () => {
+  const router = useRouter();
+  const { projectIdx, projectPostIdx } = router.query;
+  const { data: session, status } = useSession();
+  const [teamMain, setTeamMain] = useState<MainProps>({
+    noti: [],
+    schedule: { month: [], today: [] },
+    dDay: [],
+    members: [],
+  });
+  const getTeamMain = async () => {
+    try {
+      const res = await axios.get(API_URL + `teams/${projectIdx}/main`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      console.log("teamMain", res.data.result);
+      setTeamMain(res.data.result);
+    } catch (err) {
+      console.log(err.response);
+    }
+  };
+  useEffect(() => {
+    if (session?.user) getTeamMain();
+  }, [session]);
   return (
     <Container>
       <LeftContainer>
@@ -70,7 +134,7 @@ const Tabmain = () => {
         <CalendarContainer>
           <div style={{ fontSize: "1rem", color: "#aaaaaa" }}>달력</div>
           <WhiteBox>
-            <CalendarTabMain />
+            <CalendarTeamMain />
           </WhiteBox>
         </CalendarContainer>
       </LeftContainer>
@@ -84,4 +148,4 @@ const Tabmain = () => {
   );
 };
 
-export default Tabmain;
+export default TeamMain;

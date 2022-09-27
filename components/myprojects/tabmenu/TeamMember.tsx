@@ -5,7 +5,7 @@ import { API_URL } from "../../api/API";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import MenuIcon from "../../../public/componentSVG/Menu.svg";
-import ImageContainer from "../../sub/ImageContainer";
+import ImageContainer from "../../sub/ProfileImage";
 interface MemoProps {
   memoIdx: number;
   memo: string;

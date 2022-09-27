@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import Calendar from "react-calendar";
 import CalendarModal from "./tabComponents/Modal/CalendarModal";
 import { API_URL } from "../../api/API";
@@ -8,7 +8,20 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import Glass from "/public/MagnifyingGlass.svg";
+import Edit from "/public/myprojectSVG/Edit_Pencil.svg";
 //1367 645
+interface Member {
+  name: string;
+}
+interface Schedule {
+  schedulIdx: number;
+  title: string;
+  startTime: string;
+  endTime: string;
+  color: string;
+  member: Member;
+}
+
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -114,7 +127,7 @@ const CalendarContainer = styled.div`
     }
     cursor: pointer;
     &:hover {
-      border-bottom: 1px solid #47d2d2;
+      font-weight: bold;
     }
 
     &:active {
@@ -193,7 +206,6 @@ const ScheduleDate = styled.div`
 const ScheduleListGroup = styled.div`
   width: 100%;
   height: calc(100% - 5.5rem);
-  border: 1px solid black;
   overflow-y: scroll;
   -ms-overflow-style: none; /* IE, Edge */
   scrollbar-width: none; /* Firefox */
@@ -202,12 +214,27 @@ const ScheduleListGroup = styled.div`
   }
 `;
 
-const ScheduleList = styled.div`
-  width: 100%;
-  height: 2.8rem;
-  border: 1px solid black;
+const ScheduleList = styled.div<{ color: string }>`
+  width: calc(100% - 1rem);
+  height: 3rem;
+  border-left: ${(props) => `4px solid ${props.color}`};
   font-size: 1rem;
-  margin-bottom: 0.5rem;
+  margin: 0.5rem;
+  padding: 0.2rem 0 0.2rem 1rem;
+  background-clip: content-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .schedule_title {
+    font-size: 0.85rem;
+    > svg {
+      cursor: pointer;
+    }
+  }
+  .schedule_member {
+    font-size: 0.75rem;
+    color: #c6c6c6;
+  }
 `;
 
 const AddButton = styled.div`
@@ -222,52 +249,68 @@ const AddButton = styled.div`
   cursor: pointer;
 `;
 
-const todolist = [
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-];
+const Dot = styled.div`
+  width: 100%;
+  height: 2px;
+  background: #47d2d2;
+  margin-right: 3px;
+`;
 
 const CalendarTab = () => {
   const { data: session, status } = useSession();
 
   const router = useRouter();
   const { projectIdx } = router.query;
-
+  const [daySchedule, setDaySchedule] = useState<Schedule[]>([]);
+  const [monthSchedule, setMonthSchedule] = useState<Schedule[]>([]);
   const [value, setValue] = useState(new Date());
-  const [clickedDay, setClickedDay] = useState(format(new Date(), "MMMM dd"));
+  const [clickedDay, setClickedDay] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [keyword, setKeyword] = useState<string>("");
+  const [isPatch, setIsPatch] = useState(false);
   const clickDay = (value) => {
-    setClickedDay(format(value, "MMMM dd"));
+    setClickedDay(value);
   };
   const handleModalOpen = () => {
     setIsOpen(!isOpen);
   };
-  // const getSchedule = async () => {
-  //   try {
-  //     const params = { year: filter, month: keyword };
+  const getSchedule = async (day?: number | null) => {
+    try {
+      const params = {
+        year: clickedDay.getFullYear(),
+        month: clickedDay.getMonth() + 1,
+        day: day,
+      };
+      const res = await axios.get(API_URL + `teams/${projectIdx}/schedules`, {
+        params: params,
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      console.log("day", day);
 
-  //     const res = await axios.get(API_URL + `teams/${projectIdx}/schedules`, {
-  //       params: params,
-  //       headers: {
-  //         Authorization: `Bearer ${session.accessToken}`,
-  //       },
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+      if (day === null) {
+        setMonthSchedule(res.data.result);
+        console.log("month", res.data.result);
+        console.log(res.data.result[0].member.name);
+      } else {
+        setDaySchedule(res.data.result);
+        console.log(res.data.result);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
-    console.log(clickedDay);
+    getSchedule(clickedDay.getDate());
   }, [clickedDay]);
-
+  useEffect(() => {
+    getSchedule(null);
+  }, []);
+  useEffect(() => {
+    getSchedule(null);
+    getSchedule(clickedDay.getDate());
+  }, [isOpen]);
   return (
     <Container>
       <CalendarContainer>
@@ -290,15 +333,30 @@ const CalendarTab = () => {
           navigationLabel={null}
           onClickDay={clickDay}
           showNeighboringMonth={true}
+          tileContent={({ date, view }) => {
+            if (
+              view === "month" &&
+              monthSchedule.find((x) => {
+                return (
+                  parseISO(x.startTime) < date && parseISO(x.endTime) > date
+                );
+              })
+            ) {
+              return <Dot></Dot>;
+            }
+          }}
         />
       </CalendarContainer>
       <ScheduleContainer>
-        <ScheduleDate>{clickedDay}</ScheduleDate>
+        <ScheduleDate>{format(clickedDay, "MMMM d")}</ScheduleDate>
         <ScheduleListGroup>
-          {todolist.map((v, i) => (
-            <ScheduleList key={`list-${i}`}>
-              {v.title}
-              {v.author}
+          {daySchedule.map((v, i) => (
+            <ScheduleList key={`list-${i}`} color={v.color}>
+              <div className="schedule_title">
+                {v.title}
+                <Edit />
+              </div>
+              <div className="schedule_member">{v.member.name}</div>
             </ScheduleList>
           ))}
         </ScheduleListGroup>
@@ -306,7 +364,13 @@ const CalendarTab = () => {
           <AddButton onClick={handleModalOpen}>일정 추가</AddButton>
         </div>
       </ScheduleContainer>
-      {isOpen && <CalendarModal isOpen={isOpen} handleOpen={handleModalOpen} />}
+      {isOpen && (
+        <CalendarModal
+          isOpen={isOpen}
+          isPatch={isPatch}
+          handleOpen={handleModalOpen}
+        />
+      )}
     </Container>
   );
 };
