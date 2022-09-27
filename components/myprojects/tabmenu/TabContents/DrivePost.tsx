@@ -13,7 +13,9 @@ import { API_URL } from "../../../api/API";
 import ShowComment from "../../../sub/ShowComment";
 import { format, parseISO } from "date-fns";
 import CheckIcon from "/public/myprojectSVG/Check.svg";
-import ImageContainer from "../../../sub/ProfileImage";
+import FileContainer from "../../../sub/FileContainer";
+import getFileExtension from "../../../sub/checkExtenstion";
+import ImageContainer from "../../../sub/ImageContainer";
 
 interface Comment {
   commentIdx: number;
@@ -29,21 +31,17 @@ interface File {
   fileName: string;
   url: string;
 }
-interface Task {
-  description: string[];
-  name: string;
-  profileUrl: string | null;
-}
-interface MeetProps {
+
+interface NoticeProps {
   title: string;
   writer: string;
   body: string;
   comments: Comment[];
   files: File[];
-  tasks: Task[];
-  isMe: number;
+  isMe: string;
   createdAt: string;
-  noteIdx: number;
+  driveIdx: number;
+  team: { teamIdx: number };
 }
 const Container = styled.div`
   width: 100%;
@@ -56,7 +54,7 @@ const Container = styled.div`
 `;
 
 const PostContainer = styled.div`
-  width: 75%;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -66,40 +64,6 @@ const PostContainer = styled.div`
   padding: 3% 3% 0 3%;
   @media screen and (max-width: 1024px) {
     width: 100%;
-  }
-`;
-
-const TaskContainer = styled.div`
-  height: 95%;
-  width: 23%;
-  background-color: #f8fafa;
-  border-radius: 10px;
-  @media screen and (max-width: 1024px) {
-    display: none;
-  }
-`;
-const MemberTask = styled.div`
-  width: 100%;
-  min-height: 8rem;
-  display: flex;
-  justify-content: center;
-  border-bottom: 0.5px solid #dcdcdc;
-  padding: 1rem;
-  .image_div {
-    width: 20%;
-    height: 100%;
-  }
-  .task_div {
-    width: 80%;
-    height: 100%;
-    .task_nickname {
-      font-size: 0.875rem;
-      color: #000000;
-    }
-    .task_description {
-      font-size: 0.75rem;
-      color: #a0a0a0;
-    }
   }
 `;
 
@@ -114,10 +78,12 @@ const PostInfo = styled.div`
 
 const SettingWrapper = styled.div`
   width: 100%;
+  height: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   border-bottom: 0.5px solid #dcdcdc;
+  padding-bottom: 0.8rem;
   > svg {
     cursor: pointer;
   }
@@ -245,21 +211,24 @@ const WriteButton = styled.div`
 const MentionBox = styled.div`
   border: 1px solid black;
 `;
-
-const MeetPost = () => {
+const ImageWrapper = styled.div`
+  width: 100%;
+  display: flex;
+`;
+const DrivePost = () => {
   const router = useRouter();
   const { projectIdx, projectPostIdx } = router.query;
   const { data: session, status } = useSession();
-  const [meetPost, setMeetPost] = useState<MeetProps>({
+  const [drivePost, setDrivePost] = useState<NoticeProps>({
     body: "",
     comments: [],
     createdAt: "",
     files: [],
     isMe: null,
-    noteIdx: null,
-    tasks: [],
+    driveIdx: null,
     title: "",
     writer: "",
+    team: { teamIdx: null },
   });
   const [reply, setReply] = useState<string>("");
   const [parentIdx, setParentIdx] = useState<number>(null);
@@ -268,30 +237,32 @@ const MeetPost = () => {
     (state: RootState) => state.comment.value
   );
   const dispatch = useAppDispatch();
-  const getMeetPost = async () => {
+  const getDrivePost = async () => {
     try {
-      const res = await axios.get(API_URL + `teams/notes/${projectPostIdx}`, {
+      const res = await axios.get(API_URL + `teams/drives/${projectPostIdx}`, {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      console.log("res", res.data.result);
-      setMeetPost(res.data.result);
+      res.data.result.createdAt = format(
+        parseISO(res.data.result.createdAt),
+        "yyyy.MM.dd kk.mm"
+      );
+      setDrivePost(res.data.result);
     } catch (err) {
       console.log(err);
     }
   };
   useEffect(() => {
     if (session?.user) {
-      getMeetPost();
+      getDrivePost();
     }
-    console.log("dd", meetPost.createdAt);
   }, [session]);
 
   const postComment = async () => {
     try {
       const response = await axios.post(
-        API_URL + `teams/notes/${projectPostIdx}/comments`,
+        API_URL + `teams/drives/${projectPostIdx}/comments`,
         { comment: reply, parentIdx: parentIdx },
         {
           headers: {
@@ -302,7 +273,7 @@ const MeetPost = () => {
       if (response.data.code === 1000) {
         setReply("");
         setParentIdx(null);
-        getMeetPost();
+        getDrivePost();
       }
     } catch (err) {
       console.log(err);
@@ -311,7 +282,7 @@ const MeetPost = () => {
   const patchComment = async () => {
     try {
       const res = await axios.patch(
-        API_URL + `teams/notes/comments/${commentState.idx}`,
+        API_URL + `teams/drives/comments/${commentState.idx}`,
         {
           comment: reply,
         },
@@ -322,7 +293,7 @@ const MeetPost = () => {
         }
       );
       if (res.data.code === 1000) {
-        getMeetPost();
+        getDrivePost();
         setReply("");
       } else {
         alert("수정에 실패하였습니다.");
@@ -337,24 +308,46 @@ const MeetPost = () => {
       <PostContainer>
         <PostInfo>
           <SettingWrapper>
-            <div className="post_title">{meetPost.title}</div>
+            <div className="post_title">{drivePost.title}</div>
             <div className="post_info">
-              {/* {format(parseISO(meetPost.createdAt), "MMMM dd, yyyy")} */}
+              {drivePost.createdAt}
+              &nbsp;&nbsp;
+              {drivePost.writer}
             </div>
           </SettingWrapper>
         </PostInfo>
         <Content>
-          <HtmlBody dangerouslySetInnerHTML={{ __html: meetPost.body }} />
+          <HtmlBody dangerouslySetInnerHTML={{ __html: drivePost.body }} />
+          <ImageWrapper>
+            {drivePost.files.map((fi, idx) => {
+              if (getFileExtension(fi.fileName)) {
+                return (
+                  <ImageContainer
+                    fileName={fi.fileName}
+                    url={fi.url}
+                    key={`fi_${idx}`}
+                  />
+                );
+              }
+            })}
+          </ImageWrapper>
           <div className="bottom_contents">
             <Link href={`/myproject/${projectIdx}?tabNum=1`}>
               <BackToList>목록으로 돌아가기</BackToList>
             </Link>
           </div>
+          {drivePost.files.map((f, idx) => (
+            <FileContainer
+              fileName={f.fileName}
+              url={f.url}
+              key={`file_${idx}`}
+            />
+          ))}
           <Comments>
             <ShowComment
-              commentList={meetPost.comments}
+              commentList={drivePost.comments}
               setParentIdx={setParentIdx}
-              getPost={getMeetPost}
+              getPost={getDrivePost}
             />
           </Comments>
         </Content>
@@ -392,31 +385,8 @@ const MeetPost = () => {
           </WriteButton>
         </WriteComment>
       </PostContainer>
-      <TaskContainer>
-        {meetPost.tasks.map((task, idx) => {
-          return (
-            <MemberTask key={`task-${idx}`}>
-              <div className="image_div">
-                <ImageContainer
-                  size={[33, 33]}
-                  mode="display"
-                  imageUrl={task.profileUrl}
-                />
-              </div>
-              <div className="task_div">
-                <div className="task_nickname">{task.name}</div>
-                {task.description.map((v, idx) => (
-                  <span className="task_description" key={`member_task_${idx}`}>
-                    • {v}
-                  </span>
-                ))}
-              </div>
-            </MemberTask>
-          );
-        })}
-      </TaskContainer>
     </Container>
   );
 };
 
-export default MeetPost;
+export default DrivePost;

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "../../../../src/hooks/hooks";
-import MenuIcon from "../../../../public/componentSVG/Menu.svg";
+import MenuIcon from "/public/componentSVG/Menu.svg";
 import { unCommentAction } from "../../../../src/redux/reducers/comment";
 import { RootState } from "../../../../src/redux/store";
 import { API_URL } from "../../../api/API";
@@ -147,21 +147,34 @@ const VoteChoices = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-const Choice = styled.div<{ clicked?: boolean }>`
-  width: 95%;
+interface ChoiceProps {
+  clicked?: boolean;
+  isSelected?: boolean;
+  isEnd: boolean;
+  isMe?: boolean;
+}
+const Choice = styled.div<ChoiceProps>`
+  width: 100%;
   height: 3.2rem;
-  background: ${(props) => (props.clicked ? "#47d2d2" : "#ffffff")};
-  color: ${(props) => (props.clicked ? "#ffffff" : "#000000")};
+  background: ${(props) =>
+    props.clicked && !props.isMe ? "#47d2d2" : "#ffffff"};
+  color: ${(props) => (props.clicked || props.isMe ? "#47d2d2" : "#ffffff")};
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
-  margin-bottom: 20px;
-  padding-left: 1.5rem;
+  padding: 0 1.5rem;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
   font-size: 0.875rem;
   &:hover {
     border: 2px solid #47d2d2;
-    cursor: pointer;
+    cursor: ${(props) => (props.isMe ? "default" : "pointer")};
+  }
+  .flex_between {
+    display: flex;
+    justify-content: space-between;
+    color: ${(props) => (props.isMe ? "#47d2d2" : "#ababab")};
+    font-weight: ${(props) => props.isMe && "600"};
   }
   .add_button {
     width: 40px;
@@ -173,6 +186,13 @@ const Choice = styled.div<{ clicked?: boolean }>`
     border-radius: 8px;
     cursor: pointer;
   }
+`;
+const ChoiceBar = styled.div<{ count; member }>`
+  width: ${(props) => `${(props.count / props.member) * 100}%`};
+  height: 3px;
+  background-color: #47d2d2;
+  margin-bottom: 20px;
+  margin-left: 5px;
 `;
 const ChoiceInput = styled.input`
   width: 95%;
@@ -274,13 +294,18 @@ const VotePost = () => {
     title: "",
     voteIdx: null,
   });
+  const [myChoices, setMyChoices] = useState<number[]>([]);
+  const [isEnd, setIsEnd] = useState(false);
+  const [selectedChoice, setSelectedChoice] = useState<number>(null);
   const [choiceIdx, setChoiceIdx] = useState<number[]>([]);
   const [isAdd, setIsAdd] = useState<boolean>(false);
   const [addedChoice, setAddedChoice] = useState<string>("");
   const [reply, setReply] = useState<string>("");
   const [parentIdx, setParentIdx] = useState<number>(null);
 
-  const commentState = useAppSelector((state: RootState) => state.comment.value);
+  const commentState = useAppSelector(
+    (state: RootState) => state.comment.value
+  );
   const dispatch = useAppDispatch();
   const getVotePost = async () => {
     try {
@@ -289,8 +314,19 @@ const VotePost = () => {
           Authorization: `Bearer ${session.accessToken}`,
         },
       });
-      console.log(res.data.result);
+      const voteEndTime = parseISO(res.data.result.endTime);
+      if (voteEndTime < new Date()) {
+        setIsEnd(true);
+      }
+      res.data.result.endTime = format(voteEndTime, "yyyy.MM.dd kk.mm");
 
+      res.data.result.choices.forEach((el) => {
+        if (el.isMe) {
+          myChoices.push(el.choiceIdx);
+        }
+      });
+
+      console.log(res.data.result);
       setVotePost(res.data.result);
     } catch (err) {
       console.log(err);
@@ -300,6 +336,7 @@ const VotePost = () => {
     if (session?.user) {
       getVotePost();
     }
+    console.log("mychoices", myChoices);
   }, [session]);
   function isExistIdx(idx) {
     return choiceIdx.includes(idx);
@@ -342,9 +379,9 @@ const VotePost = () => {
           },
         }
       );
-      console.log(res);
+      getVotePost();
     } catch (err) {
-      console.log(err);
+      console.log(err.response);
     }
   };
   const postComment = async () => {
@@ -390,6 +427,15 @@ const VotePost = () => {
       console.log(err);
     }
   };
+  useEffect(() => {
+    if (isEnd) {
+      const maxChoice = Math.max(
+        ...votePost.choices.map((c) => c.choiceIdx),
+        0
+      );
+      setSelectedChoice(maxChoice);
+    }
+  }, [isEnd]);
 
   return (
     <Container>
@@ -399,8 +445,14 @@ const VotePost = () => {
             <div className="post_title">{votePost.title}</div>
             {votePost.isMe === "1" && <MenuIcon />}
           </SettingWrapper>
-          <SettingWrapper height="2" style={{ justifyContent: "flex-start", borderBottom: "0.5px solid #dcdcdc" }}>
-            {parseISO(votePost.endTime) < new Date() ? (
+          <SettingWrapper
+            height="2"
+            style={{
+              justifyContent: "flex-start",
+              borderBottom: "0.5px solid #dcdcdc",
+            }}
+          >
+            {!isEnd ? (
               <span className="post_info" style={{ borderLeft: "none" }}>
                 진행중
               </span>
@@ -418,33 +470,72 @@ const VotePost = () => {
               <span className="post_info">단일선택</span>
             )}
             <span className="post_info" style={{ borderRight: "none" }}>
-              {/* 마감일 {format(new Date(votePost.endTime), "yyyy-MM-dd HH:mm")} */}
+              마감일 {votePost.endTime}
             </span>
           </SettingWrapper>
         </PostInfo>
         <Content>
-          <HtmlBody dangerouslySetInnerHTML={{ __html: votePost.description }} />
+          <HtmlBody
+            dangerouslySetInnerHTML={{ __html: votePost.description }}
+          />
           <VoteChoices>
             {votePost.choices.map((choice, idx) => (
-              <Choice
-                key={idx}
-                onClick={() => handleChoiceIdx(choice.choiceIdx)}
-                clicked={isExistIdx(choice.choiceIdx)}
-              >
-                {isExistIdx(choice.choiceIdx) && <CheckIcon style={{ marginRight: "1rem" }} />}
-                {choice.description}
-              </Choice>
+              <div key={idx} style={{ width: "95%" }}>
+                <Choice
+                  onClick={() => handleChoiceIdx(choice.choiceIdx)}
+                  clicked={isExistIdx(choice.choiceIdx)}
+                  isEnd={isEnd}
+                  isMe={myChoices.includes(choice.choiceIdx)}
+                >
+                  <div className="flex_between">
+                    <div style={{ display: "flex" }}>
+                      {myChoices.includes(choice.choiceIdx) ? (
+                        <CheckIcon
+                          style={{ marginRight: "1rem" }}
+                          stroke="#47d2d2"
+                        />
+                      ) : (
+                        isExistIdx(choice.choiceIdx) && (
+                          <CheckIcon
+                            style={{ marginRight: "1rem" }}
+                            stroke="#ffffff"
+                          />
+                        )
+                      )}
+
+                      <p>{choice.description}</p>
+                    </div>
+                    <p>{choice.count}명</p>
+                  </div>
+                </Choice>
+                <ChoiceBar
+                  count={choice.count}
+                  member={parseInt(votePost.count.split("/")[1])}
+                />
+              </div>
             ))}
             {isAdd && (
-              <Choice style={{ paddingLeft: "0.2rem" }}>
-                <ChoiceInput type={"text"} onChange={(e) => setAddedChoice(e.target.value)} />
-                <div className="add_button" onClick={() => (addedChoice.length > 0 ? addChoice() : undefined)}>
+              <Choice style={{ paddingLeft: "0.2rem" }} isEnd={isEnd}>
+                <ChoiceInput
+                  type={"text"}
+                  onChange={(e) => setAddedChoice(e.target.value)}
+                />
+                <div
+                  className="add_button"
+                  onClick={() =>
+                    addedChoice.length > 0 ? addChoice() : undefined
+                  }
+                >
                   추가
                 </div>
               </Choice>
             )}
-            {votePost.isAddable && (
-              <Choice style={{ color: "#aaaaaa" }} onClick={() => setIsAdd(true)}>
+            {votePost.isAddable && !isEnd && (
+              <Choice
+                style={{ color: "#aaaaaa" }}
+                onClick={() => setIsAdd(true)}
+                isEnd={isEnd}
+              >
                 + 항목 추가하기
               </Choice>
             )}
@@ -453,15 +544,37 @@ const VotePost = () => {
             <Link href={`/myproject/${projectIdx}?tabNum=4`}>
               <BackToList>목록으로 돌아가기</BackToList>
             </Link>
-            <SubmitButton
-              isPossible={isSubmitPossible()}
-              onClick={() => (isSubmitPossible() ? submitChoice() : undefined)}
-            >
-              완료
-            </SubmitButton>
+            {isEnd ? (
+              <SubmitButton isPossible={false}>마감</SubmitButton>
+            ) : myChoices.length === 0 ? (
+              <SubmitButton
+                isPossible={isSubmitPossible()}
+                onClick={() =>
+                  isSubmitPossible() ? submitChoice() : undefined
+                }
+              >
+                완료
+              </SubmitButton>
+            ) : (
+              <SubmitButton
+                isPossible={true}
+                onClick={() => {
+                  setMyChoices([]);
+                  {
+                    isSubmitPossible() ? submitChoice() : undefined;
+                  }
+                }}
+              >
+                다시 하기
+              </SubmitButton>
+            )}
           </div>
           <Comments>
-            <ShowComment commentList={votePost.comments} setParentIdx={setParentIdx} getPost={getVotePost} />
+            <ShowComment
+              commentList={votePost.comments}
+              setParentIdx={setParentIdx}
+              getPost={getVotePost}
+            />
           </Comments>
         </Content>
         <WriteComment>
@@ -486,7 +599,13 @@ const VotePost = () => {
           ></InputComment>
           <WriteButton
             id="button_comment"
-            onClick={reply.length !== 0 ? (commentState.state !== "patch" ? postComment : patchComment) : undefined}
+            onClick={
+              reply.length !== 0
+                ? commentState.state !== "patch"
+                  ? postComment
+                  : patchComment
+                : undefined
+            }
           >
             댓글 쓰기
           </WriteButton>
