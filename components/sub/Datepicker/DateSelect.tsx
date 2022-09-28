@@ -26,9 +26,11 @@ const CustomDatePicker = styled(DatePicker)`
   }
 `;
 const ContentBox = styled.div`
+  position: relative;
   display: flex;
   font-size: 0.75rem;
   border-radius: 0.5rem;
+  z-index: 9;
 `;
 const DateSelect = ({ value, handleValue, time = "yes" }) => {
   const [date, setDate] = useState(new Date());

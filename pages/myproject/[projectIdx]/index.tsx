@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 
 import styled from "@emotion/styled";
 
-import TabMain from "../../../components/myprojects/tabmenu/TabMain/Tabmain";
+import TeamMain from "../../../components/myprojects/tabmenu/TabMain/Tabmain";
 import MeetingLog from "../../../components/myprojects/tabmenu/MeetingLog";
 import VedioConference from "../../../components/myprojects/tabmenu/VedioConference";
 import Drive from "../../../components/myprojects/tabmenu/Drive";
@@ -120,13 +120,13 @@ const TabMenu = styled.div<{ clicked: boolean }>`
 `;
 
 const tabContArr = [
-  { tabNumber: 0, tabTitle: "회의록" },
-  { tabNumber: 1, tabTitle: "화상 회의" },
-  { tabNumber: 2, tabTitle: "드라이브" },
-  { tabNumber: 3, tabTitle: "투표" },
-  { tabNumber: 4, tabTitle: "공지사항" },
-  { tabNumber: 5, tabTitle: "달력" },
-  { tabNumber: 6, tabTitle: "팀원" },
+  { tabNumber: 0, tabTitle: "회의록", url: "notes" },
+  { tabNumber: 1, tabTitle: "화상 회의", url: "video" },
+  { tabNumber: 2, tabTitle: "드라이브", url: "drives" },
+  { tabNumber: 3, tabTitle: "투표", url: "votes" },
+  { tabNumber: 4, tabTitle: "공지사항", url: "notices" },
+  { tabNumber: 5, tabTitle: "달력", url: "calendar" },
+  { tabNumber: 6, tabTitle: "팀원", url: "member" },
 ];
 
 const TabItem = ({ title, index, tab, handleTabMenu }) => {
@@ -159,27 +159,29 @@ export default function ProjectDetail() {
   useEffect(() => {
     setTab(Number(tabNum));
   }, [tabNum]);
-
-  useEffect(() => {
-    if (session?.user) {
-      axios
-        .get(API_URL + `teams/${projectIdx}`, {
-          params: { type: "profile" },
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`,
-          },
-        })
-        .then((res) => {
-          setTeamInfo(res.data.result);
-        })
-        .catch((err) => alert("팀 데이터 로딩 실패"));
+  const getTeamData = async () => {
+    try {
+      const res = await axios.get(API_URL + `teams/${projectIdx}`, {
+        params: { type: "profile" },
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      setTeamInfo(res.data.result);
+    } catch (err) {
+      // alert("팀 데이터 로딩 실패");
     }
+  };
+  useEffect(() => {
+    getTeamData();
   }, [session]);
 
   return (
     <MyprojectPage>
       <Header>
-        <Title onClick={() => handleTabMenu(-1)}>{teamInfo.name}</Title>
+        <Title onClick={() => router.push(`/myproject/${projectIdx}?tabNum=0`)}>
+          {teamInfo.name}
+        </Title>
         <SubTitle>{teamInfo.description}</SubTitle>
       </Header>
       <MainContent>
@@ -195,7 +197,7 @@ export default function ProjectDetail() {
           ))}
         </Tab>
         <Container>
-          {tab === 0 && <TabMain />}
+          {tab === 0 && <TeamMain />}
           {tab === 1 && <MeetingLog member={teamInfo.members} />}
           {tab === 2 && <VedioConference />}
           {tab === 3 && <Drive />}

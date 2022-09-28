@@ -1,15 +1,20 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { differenceInCalendarDays, format, parseISO } from "date-fns";
 
 import TeamMember from "../../../public/myprojectSVG/TeamMember.svg";
 import Favorite from "../../../public/myprojectSVG/Favorite.svg";
+import ContestFav from "/public/Favorite.svg";
 import Comment from "../../../public/componentSVG/table/comment.svg";
+import Comment2 from "/public/contest/Chat_Circle.svg";
 import Seen from "../../../public/componentSVG/table/seen.svg";
+import Seen2 from "/public/contest/Show.svg";
 import { API_URL } from "../../api/API";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import ImageContainer from "../../sub/ImageContainer";
+import useIntersectionObserver from "../../../src/hooks/useIntersectionObserver";
 
 const ProjectContainer = styled.div`
   width: 15.875rem;
@@ -65,7 +70,9 @@ const ContentsBox = styled.div<{ selected: boolean }>`
   background-color: white;
   border-radius: 1.25em;
   padding: 5%;
-  box-shadow: ${(props) => (props.selected ? "0px 0px 10px rgba(0, 0, 0, 0.3)" : "")};
+  box-shadow: ${(props) =>
+    props.selected ? "0px 0px 10px rgba(0, 0, 0, 0.3)" : ""};
+
   &:hover {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
   }
@@ -117,9 +124,55 @@ const ContentsBox = styled.div<{ selected: boolean }>`
     }
   }
 `;
+const ContestContentsBox = styled.div<{ selected: boolean }>`
+  width: 90%;
+  height: 22rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border-radius: 1.25em;
+  margin: 0 0.5rem 1rem 0.5rem;
+  padding: 0.5rem;
+  box-shadow: ${(props) =>
+    props.selected ? "0px 0px 10px rgba(0, 0, 0, 0.3)" : ""};
+  &:hover {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  }
+  .contest_title {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .contest_info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #a6a6a6;
+  }
+  .svg_wrapper {
+    width: 40px;
+    height: 1rem;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+`;
+const HeartIcon = styled.div<{ isMe: boolean }>`
+  width: 30px;
+  height: 30px;
+  background: ${(props) => (props.isMe ? "#47d2d2" : "#aaaaaa")};
+  border-radius: 50%;
+  position: absolute;
+  font-size: 0.6rem;
+  color: #ffffff;
+  text-align: center;
+  line-height: 30px;
+`;
 
 const Title = styled.div`
-  font-size: 1em;
+  font-size: 1rem;
   font-weight: 400;
 `;
 
@@ -204,8 +257,14 @@ export const ProjectBox = (props) => {
   console.log(props);
 
   const diffDays = () => {
-    const entire = differenceInCalendarDays(new Date(parseISO(props.deadline)), new Date(parseISO(props.createdAt)));
-    const today = differenceInCalendarDays(new Date(), new Date(parseISO(props.createdAt)));
+    const entire = differenceInCalendarDays(
+      new Date(parseISO(props.deadline)),
+      new Date(parseISO(props.createdAt))
+    );
+    const today = differenceInCalendarDays(
+      new Date(),
+      new Date(parseISO(props.createdAt))
+    );
     return today / entire;
   };
   const appendFavorite = async (e) => {
@@ -241,8 +300,14 @@ export const ProjectBox = (props) => {
           <Title>{props.name}</Title>
           <Subject>{props.type}</Subject>
         </div>
-        <div className="icon" onClick={favorite ? deleteFavorite : appendFavorite}>
-          <Favorite fill={favorite ? "#47d2d2" : "white"} stroke={favorite ? "#47d2d2" : "#aaaaaa"} />
+        <div
+          className="icon"
+          onClick={favorite ? deleteFavorite : appendFavorite}
+        >
+          <Favorite
+            fill={favorite ? "#47d2d2" : "white"}
+            stroke={favorite ? "#47d2d2" : "#aaaaaa"}
+          />
         </div>
       </div>
       <Describe>{props.description}</Describe>
@@ -257,7 +322,10 @@ export const ProjectBox = (props) => {
           ))}
         </div>
         <div className="progress">
-          <div className="highlight" style={{ width: `${diffDays() * 100}%` }}></div>
+          <div
+            className="highlight"
+            style={{ width: `${diffDays() * 100}%` }}
+          ></div>
         </div>
         <div style={{ fontSize: "0.75rem", color: "#a6a6a6" }}>
           팀 생성일: {format(parseISO(props.createdAt), "yyyy.MM.dd")}
@@ -335,23 +403,95 @@ export const ClassBox = (props) => {
     </ContentsBox>
   );
 };
-// credit: number;
-// instructor: string;
-// lectureIdx: number;
-// name: string;
-// time: string;
-// type: string;
 
-export const ContestBox = ({ title, category, deadline, seen, comments, imgsrc, selected }) => {
+interface ContestProps {
+  activityIdx: number;
+  title: string;
+  body: string;
+  imageUrl: string | null;
+  startTime: string;
+  endTime: string;
+  category: string;
+  favorite: number;
+  hitCount: number;
+  commentCount: string;
+  favoriteCount: string;
+  cursor: string;
+  isLastItem?: boolean;
+  getSearchResult?: () => void;
+  setCursor?: () => void;
+}
+
+export const ContestBox = (props: ContestProps) => {
+  console.log("setcursor", props);
+
+  const { data: session, status } = useSession();
+  const [favorite, setFavorite] = useState(Boolean(props.favorite));
+  const ref = useRef<HTMLDivElement | null>(null); // 감시할 엘리먼트
+  const entry = useIntersectionObserver(ref, {});
+  const isIntersecting = !!entry?.isIntersecting;
+
+  const appendFavorite = async (e) => {
+    await e.preventDefault();
+    try {
+      const res = await axios.post(
+        API_URL + "activities/favorites",
+        { activityIdx: props.activityIdx },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
+      console.log(res);
+      setFavorite(true);
+    } catch (err) {
+      console.log(err.response);
+    }
+  };
+
+  const diffDays = () => {
+    return differenceInCalendarDays(
+      new Date(parseISO(props.endTime)),
+      new Date()
+    );
+  };
+
+  useEffect(() => {
+    props.isLastItem && isIntersecting && props.getSearchResult(); // 목록의 마지막에 도달했을 때, 리스트를 더 불러오도록 요청한다.
+  }, [props.isLastItem, isIntersecting]);
+  useEffect(() => {
+    // if (props.favorite !== 1) props?.setCursor();
+  }, []);
   return (
-    <ContentsBox selected={selected}>
-      <img src={imgsrc} width={150} height={150} />
-      <div>{category}</div>
-      <div>{title}</div>
-      <div>{deadline}</div>
-      <div>{seen}</div>
-      <div>{comments}</div>
-    </ContentsBox>
+    <ContestContentsBox selected={false}>
+      <ImageContainer
+        fileName="contest"
+        url={props.imageUrl}
+        size={[250, 320]}
+      />
+      <HeartIcon isMe={favorite} onClick={appendFavorite}>
+        {parseInt(props.favoriteCount) > 99 ? "+99" : props.favoriteCount}
+      </HeartIcon>
+      <div className="contest_title">{props.title}</div>
+      <div className="contest_info">
+        <div
+          style={{ color: "#47d2d2", fontSize: "0.85rem", fontWeight: "600" }}
+        >
+          {`D-` + diffDays()}
+        </div>
+        <div style={{ display: "flex" }}>
+          <div className="svg_wrapper">
+            <Comment2 />
+            {props.hitCount}
+          </div>
+          <div className="svg_wrapper">
+            <Seen2 />
+            {props.commentCount}
+          </div>
+        </div>
+      </div>
+    </ContestContentsBox>
   );
 };
 
@@ -379,11 +519,14 @@ export const StudyBox = (props) => {
   const deleteFavorite = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.delete(API_URL + `studies/favorites/${props.studyIdx}`, {
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`,
-        },
-      });
+      const res = await axios.delete(
+        API_URL + `studies/favorites/${props.studyIdx}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        }
+      );
       setFavorite(false);
     } catch (err) {
       console.log(err);
@@ -396,8 +539,14 @@ export const StudyBox = (props) => {
           <Tag background="#47d2d2">모집중</Tag>
           <Tag background="#c4c4c4">{props.category}</Tag>
         </TagWrapper>
-        <div className="icon" onClick={favorite ? deleteFavorite : appendFavorite}>
-          <Favorite fill={favorite ? "#47d2d2" : "white"} stroke={favorite ? "#47d2d2" : "#aaaaaa"} />
+        <div
+          className="icon"
+          onClick={favorite ? deleteFavorite : appendFavorite}
+        >
+          <Favorite
+            fill={favorite ? "#47d2d2" : "white"}
+            stroke={favorite ? "#47d2d2" : "#aaaaaa"}
+          />
         </div>
       </div>
       <div className="title">{props.title}</div>
@@ -422,5 +571,52 @@ export const StudyBox = (props) => {
         <span>{props.commentCount}</span>
       </div>
     </ContentsBox>
+  );
+};
+
+export const MainProjectBox = (props) => {
+  return (
+    <ProjectContainer style={{ width: "95%", height: "95%" }}>
+      <div className="top">
+        <div>
+          <Title>{props.name}</Title>
+          <Subject>{props.type}</Subject>
+        </div>
+        <Subject>
+          Date: {format(parseISO(props.deadline), "yyyy.MM.dd")}
+        </Subject>
+      </div>
+      <Describe>{props.description}</Describe>
+      <div className="bottom">
+        <div>
+          {new Array(props.memberCount).fill(1).map((mem, index) => (
+            <TeamMember
+              fill={memberColor[index % 4]}
+              key={`${props.teamIdx}${index}`}
+              style={{ position: "relative", left: `${-13 * index}px` }}
+            />
+          ))}
+        </div>
+        <div style={{ fontSize: "0.75rem", color: "#a6a6a6" }}>
+          팀 생성일: {format(parseISO(props.createdAt), "yyyy.MM.dd")}
+        </div>
+      </div>
+    </ProjectContainer>
+  );
+};
+
+export const EmptyBox = (props) => {
+  return (
+    <ProjectContainer
+      style={{
+        width: "95%",
+        height: "95%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {props.children}
+    </ProjectContainer>
   );
 };

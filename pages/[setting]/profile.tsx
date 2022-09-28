@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import Image from "next/image";
 import { useAppSelector } from "../../src/hooks/hooks";
 import { RootState } from "../../src/redux/store";
-import ImageContainer from "../../components/sub/ImageContainer";
+import ImageContainer from "../../components/sub/ProfileImage";
 
 const SettingWrapper = styled.div`
   width: 100%;
@@ -99,13 +99,19 @@ const AccountWrapper = styled.div`
 `;
 const profile = () => {
   const user = useAppSelector((state: RootState) => state.user.value);
+  console.log("user", user);
+
   return (
     <SettingWrapper>
       <Title>내 프로필</Title>
       <SubTitle>프로필 설정</SubTitle>
       <ProfileContainer>
         <div style={{ margin: "0 3rem" }}>
-          <ImageContainer size={[100, 100]} mode="change" imageUrl="" />
+          <ImageContainer
+            size={[100, 100]}
+            mode="change"
+            imageUrl={user.profileUrl}
+          />
         </div>
         <div className="profile_info">
           <div className="info_left">

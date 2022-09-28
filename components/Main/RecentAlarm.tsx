@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { API_URL } from "../../../../api/API";
+import { API_URL } from "../api/API";
 
 interface Noti {
   index: number;
@@ -22,7 +22,7 @@ const noticeType = {
 
 const RowWrapper = styled.div`
   width: 100%;
-  height: 2.8rem;
+  height: 20%;
   display: flex;
   justify-content: space-between;
   padding: 0 1rem;
@@ -44,7 +44,7 @@ const NotiRow = ({ idx, notiRow }) => {
   const { data: session, status } = useSession();
   const [rowInfo, setRowInfo] = useState(null);
 
-  const getNotiDetail = async (idx) => {
+  const getNotiDetail = async () => {
     const apiUrl = `teams/${noticeType[notiRow.type]}`;
     try {
       const res = await axios.get(API_URL + `${apiUrl}/${notiRow.index}`, {
@@ -59,7 +59,7 @@ const NotiRow = ({ idx, notiRow }) => {
     }
   };
   useEffect(() => {
-    if (session?.user) getNotiDetail(idx);
+    if (session?.user) getNotiDetail();
   }, [session]);
   return (
     <RowWrapper>

@@ -5,7 +5,9 @@ import React from "react";
 
 import Setting from "../../public/topbarSVG/AccountSetting.svg";
 import LogOut from "../../public/topbarSVG/LogOut.svg";
-
+import { useAppSelector } from "../../src/hooks/hooks";
+import { RootState } from "../../src/redux/store";
+import ProfileImage from "./ProfileImage";
 interface UserInformation {
   accessedAt: string;
   createdAt: string;
@@ -82,14 +84,16 @@ const UserInfo: React.FC<UserInformation> = (props) => {
       callbackUrl: "http://localhost:3000/",
     });
   };
-  console.log(props);
+  const profileSrc = useAppSelector(
+    (state: RootState) => state.user.value.profileUrl
+  );
 
   return (
     <Container>
       <UpperDesign />
-      <ProfileImg
-        src={props.profileUrl === null ? "/user.png" : props.profileUrl}
-      />
+      <div style={{ position: "absolute", top: "1.3rem", left: "3.3rem" }}>
+        <ProfileImage size={[50, 50]} mode="top" imageUrl={profileSrc} />
+      </div>
       <LowerDesign>
         {props.nickname}
         <LowerDiv style={{ justifyContent: "center" }}>

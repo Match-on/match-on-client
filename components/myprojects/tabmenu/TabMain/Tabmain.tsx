@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import CalendarTeamMain from "./components/Calendar";
-import MemberProfile from "./components/MemberProfile";
+
 import axios from "axios";
 import { API_URL } from "../../../api/API";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-
+import Dday from "./components/Dday";
+import CalendarMain from "./components/CalendarMain";
+import MemberProfile from "./components/MemberProfile";
+import RecentAlarm from "./components/RecentAlarm";
 interface Noti {
   index: number;
   type: string;
@@ -70,12 +72,12 @@ const AlarmDday = styled.div`
   height: 32%;
 `;
 
-const RecentAlarm = styled.div`
+const AlarmLeft = styled.div`
   width: 75%;
   height: 100%;
 `;
 
-const Dday = styled.div`
+const AlarmRight = styled.div`
   width: 22%;
   height: 100%;
 `;
@@ -90,6 +92,12 @@ const WhiteBox = styled.div`
   border-radius: 0.625rem;
   width: 100%;
   height: 95%;
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+  ::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 `;
 
 const TeamMain = () => {
@@ -122,26 +130,33 @@ const TeamMain = () => {
     <Container>
       <LeftContainer>
         <AlarmDday>
-          <RecentAlarm>
+          <AlarmLeft>
             <div style={{ fontSize: "1rem", color: "#aaaaaa" }}>최근 알람</div>
-            <WhiteBox></WhiteBox>
-          </RecentAlarm>
-          <Dday>
+            <WhiteBox>
+              <RecentAlarm noti={teamMain.noti} />
+            </WhiteBox>
+          </AlarmLeft>
+          <AlarmRight>
             <div style={{ fontSize: "1rem", color: "#aaaaaa" }}>D-day</div>
-            <WhiteBox></WhiteBox>
-          </Dday>
+            <WhiteBox>
+              <Dday />
+            </WhiteBox>
+          </AlarmRight>
         </AlarmDday>
         <CalendarContainer>
           <div style={{ fontSize: "1rem", color: "#aaaaaa" }}>달력</div>
           <WhiteBox>
-            <CalendarTeamMain />
+            <CalendarMain
+              todaySchedule={teamMain.schedule.today}
+              monthSchedule={teamMain.schedule.month}
+            />
           </WhiteBox>
         </CalendarContainer>
       </LeftContainer>
       <RightContainer>
         <div style={{ fontSize: "1rem", color: "#aaaaaa" }}>팀원 프로필</div>
         <WhiteBox>
-          <MemberProfile />
+          <MemberProfile members={teamMain.members} />
         </WhiteBox>
       </RightContainer>
     </Container>

@@ -60,13 +60,15 @@ const Column = styled.div<{ width: number }>`
     align-items: center;
   }
   .title {
-    margin-left: 1rem;
     display: flex;
     align-items: center;
+    margin-bottom: 0.5rem;
   }
   .body {
     margin-top: 0.25rem;
     height: calc(100% - 1.5rem);
+    font-size: 0.75rem;
+    color: #aaaaaa;
   }
   > div {
     display: flex;
@@ -128,10 +130,7 @@ const PostResultRow = (props) => {
     <Row ref={ref}>
       <Column width={66}>
         <div>
-          <div className="user_info">
-            <div className="profileImg" />
-            {props.writer}
-          </div>
+          <div className="user_info">{props.writer}</div>
           <div className="title">{props.title}</div>
         </div>
         <span

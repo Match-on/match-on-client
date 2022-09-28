@@ -25,11 +25,14 @@ export const userSlice = createSlice({
       state.value = initialStateValue;
     },
     changeUserInfo: (state, action) => {
-      state.value[action.type] = action.payload;
+      console.log("state", state);
+      console.log("action", action);
+
+      state.value[action.payload.type] = action.payload.payload;
     },
   },
 });
 //dispatch(changeUserInfo({type:"profileUrl",payload:""}));
-export const { userLogin } = userSlice.actions; //위의 login이라는 함수를 action 기능이 작동하도록 다른 데서 쓸 예정이다.
+export const { userLogin, userLogOut, changeUserInfo } = userSlice.actions; //위의 login이라는 함수를 action 기능이 작동하도록 다른 데서 쓸 예정이다.
 
 export default userSlice.reducer;

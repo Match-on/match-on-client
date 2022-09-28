@@ -27,11 +27,11 @@ const sidebarData = [
     text: "Study",
     icon: <Study stroke="#aaaaaa" />,
   },
-  {
-    link: "survey",
-    text: "Survey",
-    icon: <Survey stroke="#aaaaaa" />,
-  },
+  // {
+  //   link: "survey",
+  //   text: "Survey",
+  //   icon: <Survey stroke="#aaaaaa" />,
+  // },
 ];
 
 export default sidebarData;

@@ -3,32 +3,36 @@ import React, { useEffect, useState } from "react";
 import FileContainer from "../../components/sub/FileContainer";
 import { v4 as uuidv4 } from "uuid";
 import io from "socket.io-client";
+import styled from "@emotion/styled";
+
+const HeartIcon = styled.div`
+  width: 20px;
+  height: 20px;
+  background: #ea2027;
+  position: relative;
+  transform: rotate(45deg);
+
+  &:before,
+  &:after {
+    content: "";
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    border-radius: 50%;
+    background: #ea2027;
+  }
+  &:before {
+    left: -50%;
+  }
+  &:after {
+    top: -50%;
+  }
+`;
 
 const Home: NextPage = () => {
-  const [fileUrl, setFileUrl] = useState<string[]>([]);
-  const [display, setDisplay] = useState<string[]>([]);
-  const ws = new WebSocket(`ws://${location.host}`);
-  ws.onopen = () => {
-    console.log("send");
-  };
-  function sendMessage() {
-    ws.send("hello");
-    ws.onmessage = (evt: MessageEvent) => {
-      console.log(evt);
-      console.log(evt.data);
-    };
-  }
   return (
     <div>
-      <div>
-        <FileContainer
-          mode="add"
-          setDisplay={(file) => setDisplay([...display, file])}
-        />
-      </div>
-      {display.map((f, i) => (
-        <FileContainer key={i} displayUrl={display[i]} />
-      ))}
+      <HeartIcon />
     </div>
   );
 };

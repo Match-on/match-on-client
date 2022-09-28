@@ -13,7 +13,11 @@ import { userLogin } from "../src/redux/reducers/user";
 import axios from "axios";
 import { API_URL } from "../components/api/API";
 
-export default function App({ Component, data, pageProps: { session, ...pageProps } }) {
+export default function App({
+  Component,
+  data,
+  pageProps: { session, ...pageProps },
+}) {
   const queryClient = new QueryClient();
 
   const [interval, setInterval] = useState(0);

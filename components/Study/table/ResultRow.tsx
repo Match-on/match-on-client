@@ -72,7 +72,10 @@ const ResultRow = (props) => {
     <Row ref={ref}>
       <TitleBody width={50} style={{ fontSize: "1rem" }}>
         <div className="title">{props.title}</div>
-        <div className="body" dangerouslySetInnerHTML={{ __html: props.body }} />
+        <div
+          className="body"
+          dangerouslySetInnerHTML={{ __html: props.body }}
+        />
       </TitleBody>
       <Column width={10}>
         <Prefix>지역</Prefix>

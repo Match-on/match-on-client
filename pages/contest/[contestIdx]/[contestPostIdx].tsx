@@ -3,9 +3,10 @@ import { useRouter } from "next/router";
 
 import styled from "@emotion/styled";
 
-import Introduction from "../../components/Contest/TabContents/Introduction";
-import RecruitContest from "../../components/Contest/TabContents/RecruitContest";
-import Comments from "../../components/Contest/TabContents/Comments";
+import Introduction from "../../../components/Contest/TabContents/Introduction";
+import Comments from "../../../components/Contest/TabContents/Comments";
+import RecruitContest from "../../../components/Contest/TabContents/RecruitContest";
+import PostContent from "../../../components/Contest/post/PostContent";
 
 const MyprojectPage = styled.div`
   position: absolute;
@@ -77,7 +78,8 @@ const TabMenu = styled.div<{ clicked: boolean }>`
   font-weight: 400;
   background-color: ${(props) => (props.clicked ? "#ffffff" : "#F1F7F7")};
   color: ${(props) => (props.clicked ? "#000000" : "#aaaaaa")};
-  border-bottom: ${(props) => (props.clicked ? "#ffffff" : "0.15em solid #47d2d2")};
+  border-bottom: ${(props) =>
+    props.clicked ? "#ffffff" : "0.15em solid #47d2d2"};
   border-top: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
   border-left: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
   border-right: ${(props) => (props.clicked ? "0.15em solid #47d2d2" : "")};
@@ -107,12 +109,18 @@ const TabItem = ({ title, index, tab, handleTabMenu }) => {
 };
 
 export default function ContestDetail() {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(1);
   const router = useRouter();
-  const { contest_id } = router.query; //class_id로 쿼리 던져서 정보 얻기
-  //이제 테이블에서 액션 디스패치하면 됨.
-  // dispatch(userLogin({ name: "조성훈", age: 25, email: "bbb@bbb.bbb" }))
+  console.log("router", router);
+
+  const { contestIdx, contestPostIdx } = router.query;
   const handleTabMenu = (index) => {
+    if (index === 0) {
+      router.push(`/contest/$${contestIdx}`);
+    }
+    if (index === 2) {
+      router.push(`/contest/$${contestIdx}`);
+    }
     setTab(index);
   };
 
@@ -124,14 +132,16 @@ export default function ContestDetail() {
       <MainContent>
         <Tab>
           {tabContArr.map((v, index) => (
-            <TabItem title={v.tabTitle} index={index} tab={tab} handleTabMenu={handleTabMenu} key={`tab=${index}`} />
+            <TabItem
+              title={v.tabTitle}
+              index={index}
+              tab={tab}
+              handleTabMenu={handleTabMenu}
+              key={`tab=${index}`}
+            />
           ))}
         </Tab>
-        <Container>
-          {tab === 0 && <Introduction />}
-          {tab === 1 && <RecruitContest />}
-          {tab === 2 && <Comments />}
-        </Container>
+        <Container>{tab === 1 && <PostContent />}</Container>
       </MainContent>
     </MyprojectPage>
   );

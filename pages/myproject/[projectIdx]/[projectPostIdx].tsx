@@ -9,6 +9,8 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import VotePost from "../../../components/myprojects/tabmenu/TabContents/VotePost";
 import MeetPost from "../../../components/myprojects/tabmenu/TabContents/MeetPost";
+import NoticePost from "../../../components/myprojects/tabmenu/TabContents/NoticePost";
+import DrivePost from "../../../components/myprojects/tabmenu/TabContents/DrivePost";
 
 interface MemberInformation {
   memberIdx: number;
@@ -114,13 +116,13 @@ const TabMenu = styled.a<{ clicked: boolean }>`
 `;
 
 const tabContArr = [
-  { tabNumber: 0, tabTitle: "회의록" },
-  { tabNumber: 1, tabTitle: "화상 회의" },
-  { tabNumber: 2, tabTitle: "드라이브" },
-  { tabNumber: 3, tabTitle: "투표" },
-  { tabNumber: 4, tabTitle: "공지사항" },
-  { tabNumber: 5, tabTitle: "달력" },
-  { tabNumber: 6, tabTitle: "팀원" },
+  { tabNumber: 0, tabTitle: "회의록", url: "notes" },
+  { tabNumber: 1, tabTitle: "화상 회의", url: "video" },
+  { tabNumber: 2, tabTitle: "드라이브", url: "drives" },
+  { tabNumber: 3, tabTitle: "투표", url: "votes" },
+  { tabNumber: 4, tabTitle: "공지사항", url: "notices" },
+  { tabNumber: 5, tabTitle: "달력", url: "calendar" },
+  { tabNumber: 6, tabTitle: "팀원", url: "member" },
 ];
 export default function ProjectPost() {
   const [teamInfo, setTeamInfo] = useState<teamInformation>({
@@ -137,7 +139,7 @@ export default function ProjectPost() {
   const router = useRouter();
   const { projectIdx, projectPostIdx, tabNum } = router.query;
 
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(1);
   const handleTabMenu = (index) => {
     setTab(index + 1);
   };
@@ -163,7 +165,9 @@ export default function ProjectPost() {
   return (
     <MyprojectPage>
       <Header>
-        <Title onClick={() => handleTabMenu(-1)}>{teamInfo.name}</Title>
+        <Title onClick={() => router.push(`/myproject/${projectIdx}?tabNum=0`)}>
+          {teamInfo.name}
+        </Title>
         <SubTitle>{teamInfo.description}</SubTitle>
       </Header>
       <MainContent>
@@ -179,11 +183,11 @@ export default function ProjectPost() {
         </Tab>
         <Container>
           {tab === 1 && <MeetPost />}
-          {/* {tab === 2 && <VedioConference />}
-          {tab === 3 && <Drive />} */}
+          {/* {tab === 2 && <VedioConference />} */}
+          {tab === 3 && <DrivePost />}
           {tab === 4 && <VotePost />}
-          {/* {tab === 5 && <Notice />}
-          {tab === 6 && <CalendarTab />}
+          {tab === 5 && <NoticePost />}
+          {/* {tab === 6 && <CalendarTab />}
           {tab === 7 && <TeamMember />} */}
         </Container>
       </MainContent>

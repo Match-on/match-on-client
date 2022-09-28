@@ -1,8 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import Calendar from "react-calendar";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import Edit from "/public/myprojectSVG/Edit_Pencil.svg";
 //1367 645
+interface Member {
+  name: string;
+}
+interface Schedule {
+  scheduleIdx: number;
+  title: string;
+  startTime: string;
+  endTime: string;
+  color: string;
+  member: Member;
+}
+
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -13,29 +28,29 @@ const Container = styled.div`
 `;
 
 const CalendarContainer = styled.div`
-  width: 50%;
+  width: 60%;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   .react-calendar {
     width: 100%;
-    height: calc(100% - 5rem);
+    height: 100%;
     background-color: #ffffff;
     padding: 5px 10px 5px 10px;
   }
   .react-calendar__navigation {
     display: flex;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     justify-content: space-evenly;
-    height: 0.5rem;
+    height: 3rem;
     .react-calendar__navigation__label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      &:hover {
+      font-size: 1rem;
+      font-weight: 500;
+      /* &:hover {
         color: #47d2d2;
         border: none;
-      }
+      } */
     }
     .react-calendar__navigation__next2-button {
       display: none;
@@ -44,33 +59,33 @@ const CalendarContainer = styled.div`
       display: flex;
       justify-content: flex-start;
       align-items: center;
-      height: 100%;
+      height: 80%;
     }
     .react-calendar__navigation__prev-button {
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      height: 100%;
+      height: 80%;
     }
     .react-calendar__navigation__prev2-button {
       display: none;
     }
     .react-calendar__navigation__arrow {
-      font-size: 2rem;
+      font-size: 3rem;
       flex-grow: 1;
       color: #c4c4c4;
-      &:hover {
+      /* &:hover {
         font-weight: bold;
         color: #47d2d2;
         border: none;
-      }
+      } */
     }
   }
 
   .react-calendar__viewContainer {
     width: 100%;
-    height: 100%;
-    border: 0.2px solid #c4c4c4;
+    height: 85%;
+    border: none;
     border-radius: 10px;
     padding: 15px 5px 0 5px;
   }
@@ -90,16 +105,15 @@ const CalendarContainer = styled.div`
     height: 50px;
     div > abbr {
       text-decoration: none;
-      font-size: 0.5rem;
     }
   }
   .react-calendar__month-view__weekdays {
     border: none;
   }
   button {
-    background-color: #ffffff;
     border: 0;
     color: black;
+    background-color: #ffffff;
     height: 100%;
     > abbr {
       font-size: 0.875rem;
@@ -108,16 +122,16 @@ const CalendarContainer = styled.div`
       }
     }
     cursor: pointer;
-    &:hover {
-      border-bottom: 1px solid #47d2d2;
+    /* &:hover {
+      font-weight: bold;
     }
 
     &:active {
       border-bottom: 0.25rem solid #47d2d2;
-    }
+    } */
   }
   .react-calendar__month-view__days {
-    height: 100%;
+    height: 90%;
     .react-calendar__tile {
       font-size: 1rem;
       max-width: initial !important;
@@ -131,50 +145,78 @@ const CalendarContainer = styled.div`
     color: red;
   }
   .react-calendar__tile--range {
+    color: #47d2d2;
   }
   @media screen and (max-width: 760px) {
     width: 100%;
   }
 `;
+
 const ScheduleContainer = styled.div`
-  width: 50%; //450
-  height: 100%; //594
+  width: 33%;
+  height: 92%;
+  padding: 10px;
   background-color: #ffffff;
   border-radius: 0.625rem;
+  @media screen and (max-width: 760px) {
+    display: none;
+  }
+  .add_section {
+    width: 100%;
+    height: 2.5rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
 `;
 
-const ScheduleDate = styled.div`
-  width: 100%;
-  height: 5%;
-  font-size: 1.563rem;
-  font-weight: bold;
-  text-align: center;
-`;
-
-const ScheduleListGroup = styled.div`
-  width: 100%;
-`;
-
-const ScheduleList = styled.div`
-  width: 90%;
-  height: 2.75rem;
+const ScheduleList = styled.div<{ color: string }>`
+  width: calc(100% - 1rem);
+  height: 3rem;
+  border-left: ${(props) => `4px solid ${props.color}`};
   font-size: 1rem;
+  margin: 0.5rem;
+  padding: 0.2rem 0 0.2rem 1rem;
+  background-clip: content-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .schedule_title {
+    font-size: 0.85rem;
+    > svg {
+      cursor: pointer;
+    }
+  }
+  .schedule_member {
+    font-size: 0.75rem;
+    color: #c6c6c6;
+  }
 `;
 
-const todolist = [
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-  { title: "회의 10시", author: "조성훈" },
-];
+const Dot = styled.div`
+  width: 100%;
+  height: 2px;
+  background: #47d2d2;
+  margin-right: 3px;
+`;
 
-const CalendarTabMain = () => {
+const CalendarMain = ({
+  todaySchedule,
+  monthSchedule,
+}: {
+  todaySchedule: Schedule[];
+  monthSchedule: Schedule[];
+}) => {
+  const { data: session, status } = useSession();
+
+  console.log(todaySchedule);
+
+  const router = useRouter();
   const [value, setValue] = useState(new Date());
-  const [clickedDay, setClickedDay] = useState("");
+  const [clickedDay, setClickedDay] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
   const clickDay = (value) => {
-    console.log(value);
-    setClickedDay(format(value, "MMMM dd"));
+    setClickedDay(value);
   };
   const handleModalOpen = () => {
     setIsOpen(!isOpen);
@@ -184,32 +226,42 @@ const CalendarTabMain = () => {
     <Container>
       <CalendarContainer>
         <Calendar
-          onChange={setValue}
           calendarType="US"
           value={value}
           locale="en-EN"
           maxDetail="month"
           minDetail="month"
+          formatDay={(locale, date) => format(date, "dd")}
           navigationLabel={null}
-          onClickDay={clickDay}
+          // onClickDay={clickDay}
+          showNeighboringMonth={true}
+          // tileContent={({ date, view }) => {
+          //   if (
+          //     view === "month" &&
+          //     monthSchedule.find((x) => {
+          //       return (
+          //         parseISO(x.startTime) < date && parseISO(x.endTime) > date
+          //       );
+          //     })
+          //   ) {
+          //     return <Dot></Dot>;
+          //   }
+          // }}
         />
       </CalendarContainer>
       <ScheduleContainer>
-        <ScheduleDate>{clickedDay}</ScheduleDate>
-        <ScheduleListGroup>
-          {todolist.map((v, i) => (
-            <ScheduleList key={`list-${i}`}>
-              {/* {v.title}
-              {v.author} */}
-            </ScheduleList>
-          ))}
-        </ScheduleListGroup>
+        {todaySchedule.map((v, i) => (
+          <ScheduleList key={`list-${i}`} color={v.color}>
+            <div className="schedule_title">
+              {v.title}
+              {/* <Edit /> */}
+            </div>
+            <div className="schedule_member">{v.member.name}</div>
+          </ScheduleList>
+        ))}
       </ScheduleContainer>
     </Container>
   );
 };
 
-//https://velog.io/@khy226/%EB%A6%AC%EC%95%A1%ED%8A%B8-%EC%95%B1%EC%97%90-%EB%8B%AC%EB%A0%A5react-calendar-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0
-//https://blog.logrocket.com/react-calendar-tutorial-build-customize-calendar/
-//https://dev.to/fitzgeraldkd/react-calendar-with-custom-styles-30c9
-export default CalendarTabMain;
+export default CalendarMain;

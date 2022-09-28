@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import ImageContainer from "../../components/sub/ProfileImage";
 import { useAppSelector } from "../../src/hooks/hooks";
 import { RootState } from "../../src/redux/store";
 
@@ -108,7 +109,11 @@ const ProfileSetting = () => {
       <SubTitle>프로필 설정</SubTitle>
       <ProfileContainer onClick={() => router.push("/setting/profile")}>
         <span className="profile_img">
-          <Image src={user.profileUrl === null ? "/user.png" : user.profileUrl} width={80} height={80} />
+          <ImageContainer
+            size={[100, 100]}
+            mode=""
+            imageUrl={user.profileUrl}
+          />
         </span>
         <div className="profile_info">
           <div className="info_left">

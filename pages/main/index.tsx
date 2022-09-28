@@ -1,6 +1,50 @@
 import styled from "@emotion/styled";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { API_URL } from "../../components/api/API";
+import CalendarMain from "../../components/Main/CalendarMain";
+import FavoriteTeam from "../../components/Main/FavoriteTeam";
+import RecentAlarm from "../../components/Main/RecentAlarm";
+import {
+  EmptyBox,
+  MainProjectBox,
+} from "../../components/myprojects/components/BoxContainer";
 import { useAppSelector } from "../../src/hooks/hooks";
 import { RootState } from "../../src/redux/store";
+
+interface Noti {
+  index: number;
+  teamIdx: number;
+  type: string;
+  writer: string;
+  createdAt: string;
+}
+interface FavoriteTeamProps {
+  teamIdx: number;
+  name: string;
+  description: string;
+  type: string;
+  deadline: string;
+  createdAt: string;
+  favorite: number;
+  memberCount: number;
+}
+interface Schedule {
+  scheduleIdx: number;
+  title: string;
+  startTime: string;
+  endTime: string;
+  color: string;
+  member: { name: string };
+}
+interface UserMainProps {
+  noti: Noti[];
+  favoriteTeam: FavoriteTeamProps[];
+  schedule: { month: Schedule[]; today: Schedule[] };
+  dm: [];
+}
 
 const MainPage = styled.div`
   width: 100%;
@@ -46,10 +90,25 @@ const Container = styled.div`
   justify-content: space-between;
 `;
 const Contents = styled.div`
-  width: 100%;
-  height: calc(100% - 1.5rem);
   background-color: #ffffff;
   border-radius: 10px;
+  background-color: #ffffff;
+  border-radius: 0.625rem;
+  width: 100%;
+  height: calc(100% - 2rem);
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+  ::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+`;
+const FavoriteTeamWrapper = styled.div`
+  width: 100%;
+  height: calc(100% - 2rem);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr;
 `;
 
 const SubTitle = styled.div`
@@ -59,7 +118,29 @@ const SubTitle = styled.div`
 
 const Main = () => {
   const user = useAppSelector((state: RootState) => state.user.value);
-  console.log("redux user", user);
+  const { data: session, status } = useSession();
+  const [userMain, setUserMain] = useState<UserMainProps>({
+    noti: [],
+    favoriteTeam: [],
+    schedule: { month: [], today: [] },
+    dm: [],
+  });
+  const getUserMain = async () => {
+    try {
+      const res = await axios.get(API_URL + `users/${user.userIdx}/main`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      console.log("userMain", res.data.result);
+      setUserMain(res.data.result);
+    } catch (err) {
+      console.log(err.response);
+    }
+  };
+  useEffect(() => {
+    if (session?.user && user.userIdx !== null) getUserMain();
+  }, [session, user]);
 
   return (
     <MainPage>
@@ -68,20 +149,45 @@ const Main = () => {
         <LeftSide>
           <Container style={{ height: "39%" }}>
             <SubTitle>최근 알림</SubTitle>
-            <Contents></Contents>
+            <Contents>
+              <RecentAlarm noti={userMain.noti} />
+            </Contents>
           </Container>
           <Container style={{ height: "59%" }}>
-            <SubTitle>최근 알림</SubTitle>
-            <Contents></Contents>
+            <SubTitle>즐겨찾기</SubTitle>
+            <FavoriteTeamWrapper>
+              {userMain.favoriteTeam.map((v, i) => (
+                <Link
+                  href={`/myproject/${v.teamIdx}?tabNum=0`}
+                  key={`main_favorite_${i}`}
+                >
+                  <a>
+                    <MainProjectBox {...v} />
+                  </a>
+                </Link>
+              ))}
+              {userMain.favoriteTeam.length < 6 && (
+                <Link href={`/myproject`}>
+                  <a>
+                    <EmptyBox style={{ fontSize: "5rem" }}>+</EmptyBox>
+                  </a>
+                </Link>
+              )}
+            </FavoriteTeamWrapper>
           </Container>
         </LeftSide>
         <RightSide>
           <Container style={{ height: "49%" }}>
-            <SubTitle>최근 알림</SubTitle>
-            <Contents></Contents>
+            <SubTitle>달력</SubTitle>
+            <Contents>
+              <CalendarMain
+                todaySchedule={userMain.schedule.today}
+                monthSchedule={userMain.schedule.month}
+              />
+            </Contents>
           </Container>
           <Container style={{ height: "49%" }}>
-            <SubTitle>최근 알림</SubTitle>
+            <SubTitle>DM</SubTitle>
             <Contents></Contents>
           </Container>
         </RightSide>

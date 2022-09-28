@@ -11,7 +11,9 @@ import { useAppSelector } from "../../src/hooks/hooks";
 
 import MessageIcon from "../../public/topbarSVG/directmsg.svg";
 import NotificationIcon from "../../public/topbarSVG/notification.svg";
-import ImageContainer from "../../components/sub/ImageContainer";
+import ImageContainer from "../../components/sub/ProfileImage";
+import { RootState } from "../../src/redux/store";
+import ProfileImage from "../../components/sub/ProfileImage";
 // import { getProfileImgUrl } from "../../components/sub/getProfileImg";
 
 const Top = styled.div`
@@ -51,9 +53,8 @@ const ProfileImg = styled.img`
 
 const Topbar: React.FC = () => {
   const { data: session, status } = useSession();
-  // useEffect(() => {
-  //   getProfileImgUrl();
-  // }, []);
+  const user = useAppSelector((state: RootState) => state.user.value);
+
   const userInfo = useAppSelector((state) => state.user.value);
 
   const [alarmClick, setAlaramClick] = useState<boolean>(false);
@@ -102,8 +103,8 @@ const Topbar: React.FC = () => {
             cursor: "pointer",
           }}
         >
-          {userInfo.nickname}
-          <ImageContainer size={[30, 30]} mode="top" />
+          {userInfo.nickname}&nbsp;
+          <ProfileImage size={[30, 30]} mode="top" imageUrl={user.profileUrl} />
         </Container>
       </Top>
       {profileClick && (
